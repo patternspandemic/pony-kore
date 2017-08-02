@@ -55,7 +55,8 @@ use @Kore_System_setPauseCallback[None](callback: @{()})
 use @Kore_System_setBackgroundCallback[None](callback: @{()})
 use @Kore_System_setShutdownCallback[None](callback: @{()})
 use @Kore_System_setOrientationCallback[None](callback: @{(WKoreOrientation)})
-use @Kore_System_setDropFilesCallback[None](callback: @{(Pointer[U32])})
+// TODO: How to deal with callback taking wchar_t* ?
+// use @Kore_System_setDropFilesCallback[None](callback: @{(Pointer[U32])})
 use @Kore_System_setKeepScreenOn[None](on: Bool)
 
 use @Kore_System_callback[None]()
@@ -65,8 +66,8 @@ use @Kore_System_pauseCallback[None]()
 use @Kore_System_backgroundCallback[None]()
 use @Kore_System_shutdownCallback[None]()
 use @Kore_System_orientationCallback[None](orientation: WKoreOrientation)
-// TODO: Check file_path type
-use @Kore_System_dropFilesCallback[None](file_path: Pointer[U32] tag) // if unix
+// TODO: How to deal with callback taking wchar_t* ?
+// use @Kore_System_dropFilesCallback[None](file_path: Pointer[U32] tag)
 
 primitive _KoreWindowHandle
 
@@ -89,21 +90,162 @@ type WKoreOrientation is
   | WOrientationUnknown
   )
 
+// TODO: Convert returns to non-FFI types where it makes sense
 primitive KoreSystem
-  fun init(name: String val, width: I32, height: I32) =>
-    @Kore_System_init(name.cstring(), width, height)
+  fun init(name': String val, width: I32, height: I32) =>
+    @Kore_System_init(name'.cstring(), width, height)
 
-  fun set_name(name: String val) =>
-    @Kore_System_setName(name.cstring())
-
-  fun setup() =>
-    @Kore_System_setup()
+  fun current_device(): I32 =>
+    @Kore_System_currentDevice()
 
   fun init_window(options: WKoreWindowOptions): I32 =>
     @Kore_System_initWindow(options)
 
-  fun set_callback(callback: @{()}) =>
-    @Kore_System_setCallback(callback)
+  fun destroy_window(id: I32) =>
+    @Kore_System_destroyWindow(id)
+
+  fun window_handle(window_id: I32): Pointer[_KoreWindowHandle] =>
+    @Kore_System_windowHandle(window_id)
+
+  fun window_width(id: I32): I32 =>
+    @Kore_System_windowWidth(id)
+
+  fun window_height(id: I32): I32 =>
+    @Kore_System_windowHeight(id)
+
+  fun window_count(): I32 =>
+    @Kore_System_windowCount()
+
+  fun screen_dpi(): I32 =>
+    @Kore_System_screenDpi()
+
+  fun change_resolution(width: I32, height: I32, fullscreen: Bool) =>
+    @Kore_System_changeResolution(width, height, fullscreen)
+
+  fun handle_messages(): Bool =>
+    @Kore_System_handleMessages()
+
+  fun show_keyboard() =>
+    @Kore_System_showKeyboard()
+
+  fun hide_keyboard() =>
+    @Kore_System_hideKeyboard()
+
+  fun load_url(url: String val) =>
+    @Kore_System_loadURL(url.cstring())
+
+  fun desktop_width(): I32 =>
+    @Kore_System_desktopWidth()
+
+  fun desktop_height(): I32 =>
+    @Kore_System_desktopHeight()
+
+  fun system_id(): Pointer[U8] => // TODO: Check return
+    @Kore_System_systemId()
+
+  fun set_title(title: String val) =>
+    @Kore_System_setTitle(title.cstring())
+
+  fun save_path(): Pointer[U8] => // TODO: Check return
+    @Kore_System_savePath()
+
+  fun show_window() =>
+    @Kore_System_showWindow()
+
+  fun swap_buffers(context_id: I32) =>
+    @Kore_System_swapBuffers(context_id)
+
+  fun make_current(context_id: I32) =>
+    @Kore_System_makeCurrent(context_id)
+
+  fun clear_current() =>
+    @Kore_System_clearCurrent()
+
+  fun frequency(): F64 =>
+    @Kore_System_frequency()
+
+  fun timestamp(): U128 =>
+    @Kore_System_timestamp()
+
+  fun time(): F64 =>
+    @Kore_System_time()
+
+  fun set_name(name': String val) =>
+    @Kore_System_setName(name'.cstring())
+
+  fun name(): Pointer[U8] =>
+    @Kore_System_name()
+
+  fun has_show_window_flag(): Bool =>
+    @Kore_System_hasShowWindowFlag()
+
+  fun set_show_window_flag(value: Bool) =>
+    @Kore_System_setShowWindowFlag(value)
+
+  fun setup() =>
+    @Kore_System_setup()
 
   fun start() =>
     @Kore_System_start()
+
+  fun stop() =>
+    @Kore_System_stop()
+
+  fun _shutdown() =>
+    @Kore_System__shutdown()
+
+  fun is_fullscreen(): Bool =>
+    @Kore_System_isFullscreen()
+
+  fun set_callback(callback': @{()}) =>
+    @Kore_System_setCallback(callback')
+
+  fun set_foreground_callback(callback': @{()}) =>
+    @Kore_System_setForegroundCallback(callback')
+
+  fun set_resume_callback(callback': @{()}) =>
+    @Kore_System_setResumeCallback(callback')
+
+  fun set_pause_callback(callback': @{()}) =>
+    @Kore_System_setPauseCallback(callback')
+
+  fun set_background_callback(callback': @{()}) =>
+    @Kore_System_setBackgroundCallback(callback')
+
+  fun set_shutdown_callback(callback': @{()}) =>
+    @Kore_System_setShutdownCallback(callback')
+
+  fun set_orientation_callback(callback': @{(WKoreOrientation)}) =>
+    @Kore_System_setOrientationCallback(callback')
+
+  // TODO: How to deal with callback taking wchar_t* ?
+  // fun set_drop_files_callback(callback': @{(Pointer[U32])}) =>
+  //   @Kore_System_setDropFilesCallback(callback')
+
+  fun set_keep_screen_on(on: Bool) =>
+    @Kore_System_setKeepScreenOn(on)
+
+  fun callback() =>
+    @Kore_System_callback()
+
+  fun foreground_callback() =>
+    @Kore_System_foregroundCallback()
+
+  fun resume_callback() =>
+    @Kore_System_resumeCallback()
+
+  fun pause_callback() =>
+    @Kore_System_pauseCallback()
+
+  fun background_callback() =>
+    @Kore_System_backgroundCallback()
+
+  fun shutdown_callback() =>
+    @Kore_System_shutdownCallback()
+
+  fun orientation_callback(orientation: WKoreOrientation) =>
+    @Kore_System_orientationCallback(orientation) // TODO: Can pass as is?
+
+// TODO: How to deal with callback taking wchar_t* ?
+  // fun drop_files_callback(file_path: String val) =>
+  //   @Kore_System_dropFilesCallback(file_path.cstring())
