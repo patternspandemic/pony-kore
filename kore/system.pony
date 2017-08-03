@@ -107,10 +107,10 @@ primitive KoreSystem
   fun window_handle(window_id: I32): Pointer[_KoreWindowHandle] =>
     @Kore_System_windowHandle(window_id)
 
-  fun window_width(id: I32): I32 =>
+  fun window_width(id: I32 = 0): I32 =>
     @Kore_System_windowWidth(id)
 
-  fun window_height(id: I32): I32 =>
+  fun window_height(id: I32 = 0): I32 =>
     @Kore_System_windowHeight(id)
 
   fun window_count(): I32 =>
