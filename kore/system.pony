@@ -4,7 +4,7 @@ use @Kore_System_init[None](name: Pointer[U8] tag, width: I32, height: I32)
 
 use @Kore_System_currentDevice[I32]()
 
-use @Kore_System_initWindow[I32](options: WKoreWindowOptions)
+use @Kore_System_initWindow[I32](options: KoreWindowOptions)
 use @Kore_System_destroyWindow[None](id: I32)
 use @Kore_System_windowHandle[Pointer[_KoreWindowHandle]](windowId: I32)
 use @Kore_System_windowWidth[I32](id: I32)
@@ -54,7 +54,7 @@ use @Kore_System_setResumeCallback[None](callback: @{()})
 use @Kore_System_setPauseCallback[None](callback: @{()})
 use @Kore_System_setBackgroundCallback[None](callback: @{()})
 use @Kore_System_setShutdownCallback[None](callback: @{()})
-use @Kore_System_setOrientationCallback[None](callback: @{(WKoreOrientation)})
+use @Kore_System_setOrientationCallback[None](callback: @{(KoreOrientation)})
 // TODO: How to deal with callback taking wchar_t* ?
 // use @Kore_System_setDropFilesCallback[None](callback: @{(Pointer[U32])})
 use @Kore_System_setKeepScreenOn[None](on: Bool)
@@ -65,29 +65,29 @@ use @Kore_System_resumeCallback[None]()
 use @Kore_System_pauseCallback[None]()
 use @Kore_System_backgroundCallback[None]()
 use @Kore_System_shutdownCallback[None]()
-use @Kore_System_orientationCallback[None](orientation: WKoreOrientation)
+use @Kore_System_orientationCallback[None](orientation: KoreOrientation)
 // TODO: How to deal with callback taking wchar_t* ?
 // use @Kore_System_dropFilesCallback[None](file_path: Pointer[U32] tag)
 
 primitive _KoreWindowHandle
 
-primitive WOrientationLandscapeLeft
+primitive OrientationLandscapeLeft
   fun apply(): I32 => 0
-primitive WOrientationLandscapeRight
+primitive OrientationLandscapeRight
   fun apply(): I32 => 1
-primitive WOrientationPortrait
+primitive OrientationPortrait
   fun apply(): I32 => 2
-primitive WOrientationPortraitUpsideDown
+primitive OrientationPortraitUpsideDown
   fun apply(): I32 => 3
-primitive WOrientationUnknown
+primitive OrientationUnknown
   fun apply(): I32 => 4
 
-type WKoreOrientation is
-  ( WOrientationLandscapeLeft
-  | WOrientationLandscapeRight
-  | WOrientationPortrait
-  | WOrientationPortraitUpsideDown
-  | WOrientationUnknown
+type KoreOrientation is
+  ( OrientationLandscapeLeft
+  | OrientationLandscapeRight
+  | OrientationPortrait
+  | OrientationPortraitUpsideDown
+  | OrientationUnknown
   )
 
 // TODO: Convert returns to non-FFI types where it makes sense
@@ -98,7 +98,7 @@ primitive KoreSystem
   fun current_device(): I32 =>
     @Kore_System_currentDevice()
 
-  fun init_window(options: WKoreWindowOptions): I32 =>
+  fun init_window(options: KoreWindowOptions): I32 =>
     @Kore_System_initWindow(options)
 
   fun destroy_window(id: I32) =>
@@ -215,7 +215,7 @@ primitive KoreSystem
   fun set_shutdown_callback(callback': @{()}) =>
     @Kore_System_setShutdownCallback(callback')
 
-  fun set_orientation_callback(callback': @{(WKoreOrientation)}) =>
+  fun set_orientation_callback(callback': @{(KoreOrientation)}) =>
     @Kore_System_setOrientationCallback(callback')
 
   // TODO: How to deal with callback taking wchar_t* ?
@@ -243,7 +243,7 @@ primitive KoreSystem
   fun shutdown_callback() =>
     @Kore_System_shutdownCallback()
 
-  fun orientation_callback(orientation: WKoreOrientation) =>
+  fun orientation_callback(orientation: KoreOrientation) =>
     @Kore_System_orientationCallback(orientation) // TODO: Can pass as is?
 
 // TODO: How to deal with callback taking wchar_t* ?
