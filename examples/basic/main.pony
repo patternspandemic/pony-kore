@@ -4,7 +4,7 @@ actor Main
   new create(env: Env) =>
     let name: String = "KoreC"
     let title: String = "Test of libkorec"
-    var options: WKoreWindowOptions = WKoreWindowOptions(title)
+    var options: KoreWindowOptions = KoreWindowOptions(title)
     options.width = 640
     options.height = 480
 
