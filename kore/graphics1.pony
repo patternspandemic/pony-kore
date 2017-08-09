@@ -67,3 +67,5 @@ type KoreGraphics1ImageFormat is
 
 
 primitive _KoreGraphics1ImageHandle
+
+// TODO: KoreGraphics1Image class

@@ -54,7 +54,7 @@ use @Kore_System_setResumeCallback[None](callback: @{()})
 use @Kore_System_setPauseCallback[None](callback: @{()})
 use @Kore_System_setBackgroundCallback[None](callback: @{()})
 use @Kore_System_setShutdownCallback[None](callback: @{()})
-use @Kore_System_setOrientationCallback[None](callback: @{(KoreOrientation)})
+use @Kore_System_setOrientationCallback[None](callback: @{(I32)})
 // TODO: How to deal with callback taking wchar_t* ?
 // use @Kore_System_setDropFilesCallback[None](callback: @{(Pointer[U32])})
 use @Kore_System_setKeepScreenOn[None](on: Bool)
@@ -215,7 +215,7 @@ primitive KoreSystem
   fun set_shutdown_callback(callback': @{()}) =>
     @Kore_System_setShutdownCallback(callback')
 
-  fun set_orientation_callback(callback': @{(KoreOrientation)}) =>
+  fun set_orientation_callback(callback': @{(I32)}) =>
     @Kore_System_setOrientationCallback(callback')
 
   // TODO: How to deal with callback taking wchar_t* ?
@@ -244,7 +244,7 @@ primitive KoreSystem
     @Kore_System_shutdownCallback()
 
   fun orientation_callback(orientation: KoreOrientation) =>
-    @Kore_System_orientationCallback(orientation) // TODO: Can pass as is?
+    @Kore_System_orientationCallback(orientation())
 
 // TODO: How to deal with callback taking wchar_t* ?
   // fun drop_files_callback(file_path: String val) =>
