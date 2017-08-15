@@ -1,8 +1,9 @@
 use "lib:korec"
 
-use @Kore_Graphics1_Color_create[Pointer[_KoreGraphics1ColorHandle]](color: U32)
+use @Kore_Graphics1_Color_create[Pointer[_KoreGraphics1ColorHandle] tag](
+  color: U32)
 use @Kore_Graphics1_Color_destroy[None](
-  self: Pointer[_KoreGraphics1ColorHandle])
+  self: Pointer[_KoreGraphics1ColorHandle] tag)
 
 
 primitive _KoreGraphics1ColorHandle

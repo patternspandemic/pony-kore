@@ -65,7 +65,7 @@ use @Kore_System_resumeCallback[None]()
 use @Kore_System_pauseCallback[None]()
 use @Kore_System_backgroundCallback[None]()
 use @Kore_System_shutdownCallback[None]()
-use @Kore_System_orientationCallback[None](orientation: KoreOrientation)
+use @Kore_System_orientationCallback[None](orientation: I32)
 // TODO: How to deal with callback taking wchar_t* ?
 // use @Kore_System_dropFilesCallback[None](file_path: Pointer[U32] tag)
 
