@@ -158,54 +158,54 @@ type KoreGraphics4VertexAttribute is
 primitive _KoreGraphics4VertexElementHandle
 
 class KoreGraphics4VertexElement
-  let _vertex_element_handle: Pointer[_KoreGraphics4VertexElementHandle] tag
+  let _handle: Pointer[_KoreGraphics4VertexElementHandle] tag
 
   new create(name: String val, data: KoreGraphics4VertexData) =>
-    _vertex_element_handle =
+    _handle =
       @Kore_Graphics4_VertexElement_createND(name.cstring(), data())
 
   fun get_name(): String val =>
     recover val String.from_cstring(
-      @Kore_Graphics4_VertexElement_getName(_vertex_element_handle))
+      @Kore_Graphics4_VertexElement_getName(_handle))
     end
 
   fun ref set_name(name: String val) =>
     @Kore_Graphics4_VertexElement_setName(
-      _vertex_element_handle,
+      _handle,
       name.cstring())
 
   /* Forget about Fixed-function vertex attributes
   fun get_attribute(): KoreGraphics4VertexAttribute =>
     ToKoreGraphics4VertexAttribute.from(
-      @Kore_Graphics4_VertexElement_getAttribute(_vertex_element_handle))
+      @Kore_Graphics4_VertexElement_getAttribute(_handle))
 
   fun ref set_attribute(attribute: KoreGraphics4VertexAttribute) =>
     @Kore_Graphics4_VertexElement_setAttribute(
-      _vertex_element_handle,
+      _handle,
       attribute())
   */
 
   fun get_data(): KoreGraphics4VertexData =>
     ToKoreGraphics4VertexData.from(
-      @Kore_Graphics4_VertexElement_getData(_vertex_element_handle))
+      @Kore_Graphics4_VertexElement_getData(_handle))
 
   fun ref set_data(data: KoreGraphics4VertexData) =>
-    @Kore_Graphics4_VertexElement_setData(_vertex_element_handle, data())
+    @Kore_Graphics4_VertexElement_setData(_handle, data())
 
   fun _final() =>
-    @Kore_Graphics4_VertexElement_destroy(_vertex_element_handle)
+    @Kore_Graphics4_VertexElement_destroy(_handle)
 
 primitive _KoreGraphics4VertexStructureHandle
 
 class KoreGraphics4VertexStructure
-  let _vertex_structure_handle: Pointer[_KoreGraphics4VertexStructureHandle] tag
+  let _handle: Pointer[_KoreGraphics4VertexStructureHandle] tag
 
   new create() =>
-    _vertex_structure_handle = @Kore_Graphics4_VertexStructure_create()
+    _handle = @Kore_Graphics4_VertexStructure_create()
 
   fun add(name: String val, data: KoreGraphics4VertexData) =>
     @Kore_Graphics4_VertexStructure_addND(
-      _vertex_structure_handle,
+      _handle,
       name.cstring(),
       data())
 
@@ -215,7 +215,7 @@ class KoreGraphics4VertexStructure
     data: KoreGraphics4VertexData)
   =>
     @Kore_Graphics4_VertexStructure_addAD(
-      _vertex_structure_handle,
+      _handle,
       attribute(),
       data())
   */
@@ -232,21 +232,21 @@ class KoreGraphics4VertexStructure
   //   at the use cases for manipulating elements after adding.
 
   fun get_size(): I32 =>
-    @Kore_Graphics4_VertexStructure_getSize(_vertex_structure_handle)
+    @Kore_Graphics4_VertexStructure_getSize(_handle)
 
   // TODO: KoreGraphics4VertexStructure.set_instanced?
   fun get_instanced(): Bool =>
-    @Kore_Graphics4_VertexStructure_getInstanced(_vertex_structure_handle)
+    @Kore_Graphics4_VertexStructure_getInstanced(_handle)
 
   // TODO: A setter for instanced needed?
   // Would need to expose a C FFI fuction
   // fun ref set_instanced(value: Bool) =>
   //   @Kore_Graphics4_VertexStructure_setInstanced(
-  //     _vertex_structure_handle, value)
+  //     _handle, value)
 
   fun get_max_elements_count(): I32 =>
     // Call to a static member, doesn't require handle.
     @Kore_Graphics4_VertexStructure_maxElementsCount()
 
   fun _final() =>
-    @Kore_Graphics4_VertexStructure_destroy(_vertex_structure_handle)
+    @Kore_Graphics4_VertexStructure_destroy(_handle)
