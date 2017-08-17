@@ -6,6 +6,7 @@ use "lib:korec"
 use @Kore_Graphics4_VertexElement_createND[
   Pointer[_KoreGraphics4VertexElementHandle] tag](
     name: Pointer[U8] tag, data: I32)
+// Forget about Fixed-function vertex attributes
 // use @Kore_Graphics4_VertexElement_createAD[
 //   Pointer[_KoreGraphics4VertexElementHandle] tag](
 //     attribute: I32, data: I32)
@@ -13,10 +14,20 @@ use @Kore_Graphics4_VertexElement_destroy[None](
   self: Pointer[_KoreGraphics4VertexElementHandle] tag)
 use @Kore_Graphics4_VertexElement_getName[Pointer[U8]](
   self: Pointer[_KoreGraphics4VertexElementHandle] tag)
-use @Kore_Graphics4_VertexElement_getAttribute[I32](
-  self: Pointer[_KoreGraphics4VertexElementHandle] tag)
+use @Kore_Graphics4_VertexElement_setName[None](
+  self: Pointer[_KoreGraphics4VertexElementHandle] tag,
+  name: Pointer[U8] tag)
+// Forget about Fixed-function vertex attributes
+// use @Kore_Graphics4_VertexElement_getAttribute[I32](
+//   self: Pointer[_KoreGraphics4VertexElementHandle] tag)
+// use @Kore_Graphics4_VertexElement_setAttribute[None](
+//   self: Pointer[_KoreGraphics4VertexElementHandle] tag,
+//   attribute: I32)
 use @Kore_Graphics4_VertexElement_getData[I32](
   self: Pointer[_KoreGraphics4VertexElementHandle] tag)
+use @Kore_Graphics4_VertexElement_setData[None](
+  self: Pointer[_KoreGraphics4VertexElementHandle] tag,
+  data: I32)
 
 /* FFI to WC_Kore_Graphics4_VertexStructure */
 use @Kore_Graphics4_VertexStructure_create[
@@ -26,9 +37,10 @@ use @Kore_Graphics4_VertexStructure_destroy[None](
 use @Kore_Graphics4_VertexStructure_addND[None](
   self: Pointer[_KoreGraphics4VertexStructureHandle] tag,
   name: Pointer[U8] tag, data: I32)
-use @Kore_Graphics4_VertexStructure_addAD[None](
-  self: Pointer[_KoreGraphics4VertexStructureHandle] tag,
-  attribute: I32, data: I32)
+// Forget about Fixed-function vertex attributes
+// use @Kore_Graphics4_VertexStructure_addAD[None](
+//   self: Pointer[_KoreGraphics4VertexStructureHandle] tag,
+//   attribute: I32, data: I32)
 // TODO: Check return typing
 use @Kore_Graphics4_VertexStructure_getElements[
   Pointer[Pointer[_KoreGraphics4VertexElementHandle] tag]](
@@ -157,13 +169,28 @@ class KoreGraphics4VertexElement
       @Kore_Graphics4_VertexElement_getName(_vertex_element_handle))
     end
 
+  fun ref set_name(name: String val) =>
+    @Kore_Graphics4_VertexElement_setName(
+      _vertex_element_handle,
+      name.cstring())
+
+  /* Forget about Fixed-function vertex attributes
   fun get_attribute(): KoreGraphics4VertexAttribute =>
     ToKoreGraphics4VertexAttribute.from(
       @Kore_Graphics4_VertexElement_getAttribute(_vertex_element_handle))
 
+  fun ref set_attribute(attribute: KoreGraphics4VertexAttribute) =>
+    @Kore_Graphics4_VertexElement_setAttribute(
+      _vertex_element_handle,
+      attribute())
+  */
+
   fun get_data(): KoreGraphics4VertexData =>
     ToKoreGraphics4VertexData.from(
       @Kore_Graphics4_VertexElement_getData(_vertex_element_handle))
+
+  fun ref set_data(data: KoreGraphics4VertexData) =>
+    @Kore_Graphics4_VertexElement_setData(_vertex_element_handle, data())
 
   fun _final() =>
     @Kore_Graphics4_VertexElement_destroy(_vertex_element_handle)
@@ -182,6 +209,7 @@ class KoreGraphics4VertexStructure
       name.cstring(),
       data())
 
+  /* Forget about Fixed-function vertex attributes
   fun add_by_attribute(
     attribute: KoreGraphics4VertexAttribute,
     data: KoreGraphics4VertexData)
@@ -190,13 +218,18 @@ class KoreGraphics4VertexStructure
       _vertex_structure_handle,
       attribute(),
       data())
+  */
 
-  // TODO
-  // fun get_elements(): Array[KoreGraphics4VertexElement] =>
-  //   // Not sure how to do this. Perhaps create a from_cpointer
-  //   // constructor on KoreGraphics4VertexElement that also sets
-  //   // that element NOT to be destroyed when that array is gc'd
-  //   // May not even need elemets access, what's use case?
+  // TODO: KoreGraphics4VertexStructure elements handling
+  //
+  //   Probably should provide indexed get_element & set_element
+  //   accessors as an interface to elements. Return & take 
+  //   KoreGraphics4VertexElement types, constructed specially such that they
+  //   are not finalised when gc'd, because the C side VertexStructure actually
+  //   holds ownership of the elements.
+  //
+  //   It may be the case that elements need not even be exposed. Need to look
+  //   at the use cases for manipulating elements after adding.
 
   fun get_size(): I32 =>
     @Kore_Graphics4_VertexStructure_getSize(_vertex_structure_handle)
@@ -204,6 +237,12 @@ class KoreGraphics4VertexStructure
   // TODO: KoreGraphics4VertexStructure.set_instanced?
   fun get_instanced(): Bool =>
     @Kore_Graphics4_VertexStructure_getInstanced(_vertex_structure_handle)
+
+  // TODO: A setter for instanced needed?
+  // Would need to expose a C FFI fuction
+  // fun ref set_instanced(value: Bool) =>
+  //   @Kore_Graphics4_VertexStructure_setInstanced(
+  //     _vertex_structure_handle, value)
 
   fun get_max_elements_count(): I32 =>
     // Call to a static member, doesn't require handle.
