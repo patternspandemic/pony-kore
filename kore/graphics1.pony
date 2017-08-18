@@ -12,13 +12,16 @@ primitive _KoreGraphics1ColorHandle
 // No need to use Kore's color object's up front, U32 (uint)
 // is used for all public functions/methods.
 class val KoreGraphics1Color
-  let _color_handle: Pointer[_KoreGraphics1ColorHandle] tag
+  let _handle: Pointer[_KoreGraphics1ColorHandle] tag
 
   new create(color: U32) =>
-    _color_handle = @Kore_Graphics1_Color_create(color)
+    _handle = @Kore_Graphics1_Color_create(color)
+
+  fun _get_handle(): Pointer[_KoreGraphics1ColorHandle] tag =>
+    _handle
 
   fun _final() =>
-    @Kore_Graphics1_Color_destroy(_color_handle)
+    @Kore_Graphics1_Color_destroy(_handle)
 
 
 primitive ImageCompressionNone

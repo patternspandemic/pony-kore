@@ -192,6 +192,9 @@ class KoreGraphics4VertexElement
   fun ref set_data(data: KoreGraphics4VertexData) =>
     @Kore_Graphics4_VertexElement_setData(_handle, data())
 
+  fun _get_handle(): Pointer[_KoreGraphics4VertexElementHandle] tag =>
+    _handle
+
   fun _final() =>
     @Kore_Graphics4_VertexElement_destroy(_handle)
 
@@ -247,6 +250,9 @@ class KoreGraphics4VertexStructure
   fun get_max_elements_count(): I32 =>
     // Call to a static member, doesn't require handle.
     @Kore_Graphics4_VertexStructure_maxElementsCount()
+
+  fun _get_handle(): Pointer[_KoreGraphics4VertexStructureHandle] tag =>
+    _handle
 
   fun _final() =>
     @Kore_Graphics4_VertexStructure_destroy(_handle)

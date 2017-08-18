@@ -44,6 +44,9 @@ class KoreGraphics4Shader
       data.size(),
       type())
 
+  fun _get_handle(): Pointer[_KoreGraphics4ShaderHandle] tag =>
+    _handle
+
   fun _final() =>
     @Kore_Graphics4_Shader_destroy(_handle)
 
@@ -54,6 +57,9 @@ class KoreGraphics4ConstantLocation
 
   new create() =>
     _handle = @Kore_Graphics4_ConstantLocation_create()
+
+  fun _get_handle(): Pointer[_KoreGraphics4ConstantLocationHandle] tag =>
+    _handle
 
   fun _final() =>
     @Kore_Graphics4_ConstantLocation_destroy(_handle)
