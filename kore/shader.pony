@@ -3,7 +3,7 @@ use "lib:korec"
 /* FFI to WC_Kore_Graphics4_Shader */
 use @Kore_Graphics4_Shader_createDLT[
   Pointer[_KoreGraphics4ShaderHandle] tag](
-    data: Pointer[U8] tag, length: I32, type: I32)
+    data: Pointer[U8] tag, length: I32, shader_type: I32)
 use @Kore_Graphics4_Shader_destroy[None](
   self: Pointer[_KoreGraphics4ShaderHandle] tag)
 
@@ -37,12 +37,15 @@ primitive _KoreGraphics4ShaderHandle
 
 class KoreGraphics4Shader
   let _handle: Pointer[_KoreGraphics4ShaderHandle] tag
+  let _data: String val
 
-  new create(data: String val, type: KoreGraphics4ShaderType) =>
+  // TODO: Neccessary to store data as private field to avoid GC?
+  new create(data: String val, shader_type: KoreGraphics4ShaderType) =>
+    _data = data
     _handle = @Kore_Graphics4_Shader_createDLT(
-      data.cpointer(),
-      data.size(),
-      type())
+      _data.cpointer(),
+      I32.from[USize](_data.size()),
+      shader_type())
 
   fun _get_handle(): Pointer[_KoreGraphics4ShaderHandle] tag =>
     _handle
@@ -55,8 +58,14 @@ primitive _KoreGraphics4ConstantLocationHandle
 class KoreGraphics4ConstantLocation
   let _handle: Pointer[_KoreGraphics4ConstantLocationHandle] tag
 
+  /*
+  // Use KoreGraphics4PipelineState.get_constant_location instead
   new create() =>
     _handle = @Kore_Graphics4_ConstantLocation_create()
+  */
+
+  new _from_handle(handle: Pointer[_KoreGraphics4ConstantLocationHandle] tag) =>
+    _handle = handle
 
   fun _get_handle(): Pointer[_KoreGraphics4ConstantLocationHandle] tag =>
     _handle
