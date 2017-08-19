@@ -49,6 +49,9 @@ use @Kore_Graphics4_VertexStructure_getSize[I32](
   self: Pointer[_KoreGraphics4VertexStructureHandle] tag)
 use @Kore_Graphics4_VertexStructure_getInstanced[Bool](
   self: Pointer[_KoreGraphics4VertexStructureHandle] tag)
+use @Kore_Graphics4_VertexStructure_setInstanced[None](
+  self: Pointer[_KoreGraphics4VertexStructureHandle] tag,
+  value: Bool)
  // Static member
 use @Kore_Graphics4_VertexStructure_maxElementsCount[I32]()
 
@@ -241,11 +244,9 @@ class KoreGraphics4VertexStructure
   fun get_instanced(): Bool =>
     @Kore_Graphics4_VertexStructure_getInstanced(_handle)
 
-  // TODO: A setter for instanced needed?
-  // Would need to expose a C FFI fuction
-  // fun ref set_instanced(value: Bool) =>
-  //   @Kore_Graphics4_VertexStructure_setInstanced(
-  //     _handle, value)
+  fun ref set_instanced(value: Bool) =>
+    @Kore_Graphics4_VertexStructure_setInstanced(
+      _handle, value)
 
   fun get_max_elements_count(): I32 =>
     // Call to a static member, doesn't require handle.

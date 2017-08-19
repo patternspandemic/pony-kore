@@ -15,12 +15,10 @@ use @Kore_Graphics4_PipelineState_getTextureUnit[
   Pointer[_KoreGraphics4TextureUnitHandle] tag](
     self: Pointer[_KoreGraphics4PipelineStateHandle] tag,
     name: Pointer[U8] tag)
-
-/*
-use @Kore_Graphics4_PipelineState_getInputLayout[](
-  self: Pointer[_KoreGraphics4PipelineStateHandle] tag)
-*/
-
+use @Kore_Graphics4_PipelineState_setInputLayoutAt[None](
+  self: Pointer[_KoreGraphics4PipelineStateHandle] tag,
+  index: I32,
+  vertex_structure: Pointer[_KoreGraphics4VertexStructureHandle] tag)
 // use @Kore_Graphics4_PipelineState_getVertexShader[
 //   Pointer[_KoreGraphics4ShaderHandle] tag](
 //     self: Pointer[_KoreGraphics4PipelineStateHandle] tag)
@@ -157,11 +155,36 @@ class KoreGraphics4PipelineState
   var _geometry_shader: (KoreGraphics4Shader iso | None) = None
   var _tessellation_control_shader: (KoreGraphics4Shader iso | None) = None
   var _tessellation_evaluation_shader: (KoreGraphics4Shader iso | None) = None
+  var input_layout: Array[KoreGraphics4VertexStructure]
 
   new create() =>
     _handle = @Kore_Graphics4_PipelineState_create()
+    input_layout = input_layout.create(16)
+
+  fun _assign_input_layout() =>
+    // Assign input_layout to C-side object's member.
+    let input_layout_slot_count: USize = 16
+    for (i, vertex_structure) in input_layout.pairs() do
+      if i < input_layout_slot_count then
+        @Kore_Graphics4_PipelineState_setInputLayoutAt(
+          _handle,
+          I32.from[USize](i),
+          vertex_structure._get_handle())
+      end
+    end
+    // Null out remaining slots in the layout.
+    var size = input_layout.size()
+    var space: USize = 16 //input_layout.space()
+    while size < space do
+      @Kore_Graphics4_PipelineState_setInputLayoutAt(
+        _handle,
+        I32.from[USize](size),
+        Pointer[_KoreGraphics4VertexStructureHandle].create())
+      size = size + 1
+    end
 
   fun compile() =>
+    _assign_input_layout() // Assign input_layout to C-side
     @Kore_Graphics4_PipelineState_compile(_handle)
 
   fun ref get_constant_location(
@@ -179,15 +202,6 @@ class KoreGraphics4PipelineState
     KoreGraphics4TextureUnit._from_handle(
       @Kore_Graphics4_PipelineState_getTextureUnit(
         _handle, name.cstring()))
-
-  // TODO: KoreGraphics4PipelineState - How to handle input layout assignments?
-
-  // TODO: KoreGraphics4PipelineState - Access to assigned shaders?
-  // fun ref get_vertex_shader(): KoreGraphics4Shader ref =>
-  // fun ref get_fragment_shader(): KoreGraphics4Shader ref =>
-  // fun ref get_geometry_shader(): KoreGraphics4Shader ref =>
-  // fun ref get_tessellation_control_shader(): KoreGraphics4Shader ref =>
-  // fun ref get_tessellation_evaluation_shader(): KoreGraphics4Shader ref =>
 
   fun ref set_vertex_shader(shader: KoreGraphics4Shader iso) =>
     @Kore_Graphics4_PipelineState_setVertexShader(
