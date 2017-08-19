@@ -52,84 +52,102 @@ use @Kore_Graphics4_PipelineState_setTessellationEvaluationShader[None](
   self: Pointer[_KoreGraphics4PipelineStateHandle] tag,
   shader: Pointer[_KoreGraphics4ShaderHandle] tag)
 
-/*
-use @Kore_Graphics4_PipelineState_getCullMode[](
+use @Kore_Graphics4_PipelineState_getCullMode[I32](
   self: Pointer[_KoreGraphics4PipelineStateHandle] tag)
-use @Kore_Graphics4_PipelineState_setCullMode[](
+use @Kore_Graphics4_PipelineState_setCullMode[None](
+  self: Pointer[_KoreGraphics4PipelineStateHandle] tag,
+  mode: I32)
+use @Kore_Graphics4_PipelineState_getDepthWrite[Bool](
   self: Pointer[_KoreGraphics4PipelineStateHandle] tag)
-use @Kore_Graphics4_PipelineState_getDepthWrite[](
+use @Kore_Graphics4_PipelineState_setDepthWrite[None](
+  self: Pointer[_KoreGraphics4PipelineStateHandle] tag,
+  value: Bool)
+use @Kore_Graphics4_PipelineState_getDepthMode[I32](
   self: Pointer[_KoreGraphics4PipelineStateHandle] tag)
-use @Kore_Graphics4_PipelineState_setDepthWrite[](
+use @Kore_Graphics4_PipelineState_setDepthMode[None](
+  self: Pointer[_KoreGraphics4PipelineStateHandle] tag,
+  mode: I32)
+use @Kore_Graphics4_PipelineState_getStencilMode[I32](
   self: Pointer[_KoreGraphics4PipelineStateHandle] tag)
-use @Kore_Graphics4_PipelineState_getDepthMode[](
+use @Kore_Graphics4_PipelineState_setStencilMode[None](
+  self: Pointer[_KoreGraphics4PipelineStateHandle] tag,
+  mode: I32)
+use @Kore_Graphics4_PipelineState_getStencilBothPass[I32](
   self: Pointer[_KoreGraphics4PipelineStateHandle] tag)
-use @Kore_Graphics4_PipelineState_setDepthMode[](
+use @Kore_Graphics4_PipelineState_setStencilBothPass[None](
+  self: Pointer[_KoreGraphics4PipelineStateHandle] tag,
+  action: I32)
+use @Kore_Graphics4_PipelineState_getStencilDepthFail[I32](
   self: Pointer[_KoreGraphics4PipelineStateHandle] tag)
-use @Kore_Graphics4_PipelineState_getStencilMode[](
+use @Kore_Graphics4_PipelineState_setStencilDepthFail[None](
+  self: Pointer[_KoreGraphics4PipelineStateHandle] tag,
+  action: I32)
+use @Kore_Graphics4_PipelineState_getStencilFail[I32](
   self: Pointer[_KoreGraphics4PipelineStateHandle] tag)
-use @Kore_Graphics4_PipelineState_setStencilMode[](
+use @Kore_Graphics4_PipelineState_setStencilFail[None](
+  self: Pointer[_KoreGraphics4PipelineStateHandle] tag,
+  action: I32)
+use @Kore_Graphics4_PipelineState_getStencilReferenceValue[I32](
   self: Pointer[_KoreGraphics4PipelineStateHandle] tag)
-use @Kore_Graphics4_PipelineState_getStencilBothPass[](
+use @Kore_Graphics4_PipelineState_setStencilReferenceValue[None](
+  self: Pointer[_KoreGraphics4PipelineStateHandle] tag,
+  value: I32)
+use @Kore_Graphics4_PipelineState_getStencilReadMask[I32](
   self: Pointer[_KoreGraphics4PipelineStateHandle] tag)
-use @Kore_Graphics4_PipelineState_setStencilBothPass[](
+use @Kore_Graphics4_PipelineState_setStencilReadMask[None](
+  self: Pointer[_KoreGraphics4PipelineStateHandle] tag,
+  value: I32)
+use @Kore_Graphics4_PipelineState_getStencilWriteMask[I32](
   self: Pointer[_KoreGraphics4PipelineStateHandle] tag)
-use @Kore_Graphics4_PipelineState_getStencilDepthFail[](
+use @Kore_Graphics4_PipelineState_setStencilWriteMask[None](
+  self: Pointer[_KoreGraphics4PipelineStateHandle] tag,
+  value: I32)
+use @Kore_Graphics4_PipelineState_getBlendSource[I32](
   self: Pointer[_KoreGraphics4PipelineStateHandle] tag)
-use @Kore_Graphics4_PipelineState_setStencilDepthFail[](
+use @Kore_Graphics4_PipelineState_setBlendSource[None](
+  self: Pointer[_KoreGraphics4PipelineStateHandle] tag,
+  operation: I32)
+use @Kore_Graphics4_PipelineState_getBlendDestination[I32](
   self: Pointer[_KoreGraphics4PipelineStateHandle] tag)
-use @Kore_Graphics4_PipelineState_getStencilFail[](
+use @Kore_Graphics4_PipelineState_setBlendDestination[None](
+  self: Pointer[_KoreGraphics4PipelineStateHandle] tag,
+  operation: I32)
+use @Kore_Graphics4_PipelineState_getAlphaBlendSource[I32](
   self: Pointer[_KoreGraphics4PipelineStateHandle] tag)
-use @Kore_Graphics4_PipelineState_setStencilFail[](
+use @Kore_Graphics4_PipelineState_setAlphaBlendSource[None](
+  self: Pointer[_KoreGraphics4PipelineStateHandle] tag,
+  operation: I32)
+use @Kore_Graphics4_PipelineState_getAlphaBlendDestination[I32](
   self: Pointer[_KoreGraphics4PipelineStateHandle] tag)
-use @Kore_Graphics4_PipelineState_getStencilReferenceValue[](
+use @Kore_Graphics4_PipelineState_setAlphaBlendDestination[None](
+  self: Pointer[_KoreGraphics4PipelineStateHandle] tag,
+  operation: I32)
+use @Kore_Graphics4_PipelineState_getColorWriteMaskRed[Bool](
   self: Pointer[_KoreGraphics4PipelineStateHandle] tag)
-use @Kore_Graphics4_PipelineState_setStencilReferenceValue[](
+use @Kore_Graphics4_PipelineState_setColorWriteMaskRed[None](
+  self: Pointer[_KoreGraphics4PipelineStateHandle] tag,
+  value: Bool)
+use @Kore_Graphics4_PipelineState_getColorWriteMaskGreen[Bool](
   self: Pointer[_KoreGraphics4PipelineStateHandle] tag)
-use @Kore_Graphics4_PipelineState_getStencilReadMask[](
+use @Kore_Graphics4_PipelineState_setColorWriteMaskGreen[None](
+  self: Pointer[_KoreGraphics4PipelineStateHandle] tag,
+  value: Bool)
+use @Kore_Graphics4_PipelineState_getColorWriteMaskBlue[Bool](
   self: Pointer[_KoreGraphics4PipelineStateHandle] tag)
-use @Kore_Graphics4_PipelineState_setStencilReadMask[](
+use @Kore_Graphics4_PipelineState_setColorWriteMaskBlue[None](
+  self: Pointer[_KoreGraphics4PipelineStateHandle] tag,
+  value: Bool)
+use @Kore_Graphics4_PipelineState_getColorWriteMaskAlpha[Bool](
   self: Pointer[_KoreGraphics4PipelineStateHandle] tag)
-use @Kore_Graphics4_PipelineState_getStencilWriteMask[](
+use @Kore_Graphics4_PipelineState_setColorWriteMaskAlpha[None](
+  self: Pointer[_KoreGraphics4PipelineStateHandle] tag,
+  value: Bool)
+use @Kore_Graphics4_PipelineState_getConservativeRasterization[Bool](
   self: Pointer[_KoreGraphics4PipelineStateHandle] tag)
-use @Kore_Graphics4_PipelineState_setStencilWriteMask[](
-  self: Pointer[_KoreGraphics4PipelineStateHandle] tag)
-use @Kore_Graphics4_PipelineState_getBlendSource[](
-  self: Pointer[_KoreGraphics4PipelineStateHandle] tag)
-use @Kore_Graphics4_PipelineState_setBlendSource[](
-  self: Pointer[_KoreGraphics4PipelineStateHandle] tag)
-use @Kore_Graphics4_PipelineState_getBlendDestination[](
-  self: Pointer[_KoreGraphics4PipelineStateHandle] tag)
-use @Kore_Graphics4_PipelineState_setBlendDestination[](
-  self: Pointer[_KoreGraphics4PipelineStateHandle] tag)
-use @Kore_Graphics4_PipelineState_getAlphaBlendSource[](
-  self: Pointer[_KoreGraphics4PipelineStateHandle] tag)
-use @Kore_Graphics4_PipelineState_setAlphaBlendSource[](
-  self: Pointer[_KoreGraphics4PipelineStateHandle] tag)
-use @Kore_Graphics4_PipelineState_getAlphaBlendDestination[](
-  self: Pointer[_KoreGraphics4PipelineStateHandle] tag)
-use @Kore_Graphics4_PipelineState_setAlphaBlendDestination[](
-  self: Pointer[_KoreGraphics4PipelineStateHandle] tag)
-use @Kore_Graphics4_PipelineState_getColorWriteMaskRed[](
-  self: Pointer[_KoreGraphics4PipelineStateHandle] tag)
-use @Kore_Graphics4_PipelineState_setColorWriteMaskRed[](
-  self: Pointer[_KoreGraphics4PipelineStateHandle] tag)
-use @Kore_Graphics4_PipelineState_getColorWriteMaskGreen[](
-  self: Pointer[_KoreGraphics4PipelineStateHandle] tag)
-use @Kore_Graphics4_PipelineState_setColorWriteMaskGreen[](
-  self: Pointer[_KoreGraphics4PipelineStateHandle] tag)
-use @Kore_Graphics4_PipelineState_getColorWriteMaskBlue[](
-  self: Pointer[_KoreGraphics4PipelineStateHandle] tag)
-use @Kore_Graphics4_PipelineState_setColorWriteMaskBlue[](
-  self: Pointer[_KoreGraphics4PipelineStateHandle] tag)
-use @Kore_Graphics4_PipelineState_getColorWriteMaskAlpha[](
-  self: Pointer[_KoreGraphics4PipelineStateHandle] tag)
-use @Kore_Graphics4_PipelineState_setColorWriteMaskAlpha[](
-  self: Pointer[_KoreGraphics4PipelineStateHandle] tag)
-use @Kore_Graphics4_PipelineState_getConservativeRasterization[](
-  self: Pointer[_KoreGraphics4PipelineStateHandle] tag)
-use @Kore_Graphics4_PipelineState_setConservativeRasterization[](
-  self: Pointer[_KoreGraphics4PipelineStateHandle] tag)
-*/
+use @Kore_Graphics4_PipelineState_setConservativeRasterization[None](
+  self: Pointer[_KoreGraphics4PipelineStateHandle] tag,
+  value: Bool)
+
 
 primitive _KoreGraphics4PipelineStateHandle
 

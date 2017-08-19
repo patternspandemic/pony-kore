@@ -18,6 +18,17 @@ primitive TextureAddressingClamp
 primitive TextureAddressingBorder
   fun apply(): I32 => 3
 
+primitive ToKoreGraphics4TextureAddressing
+  fun from(value: I32): KoreGraphics4TextureAddressing =>
+    match value
+    | 0 => TextureAddressingRepeat
+    | 1 => TextureAddressingMirror
+    | 2 => TextureAddressingClamp
+    | 3 => TextureAddressingBorder
+    else
+      TextureAddressingRepeat
+    end
+
 type KoreGraphics4TextureAddressing is
   ( TextureAddressingRepeat
   | TextureAddressingMirror
@@ -32,6 +43,16 @@ primitive TextureFilterLinearFilter
 primitive TextureFilterAnisotropicFilter
   fun apply(): I32 => 2
 
+primitive ToKoreGraphics4TextureFilter
+  fun from(value: I32): KoreGraphics4TextureFilter =>
+    match value
+    | 0 => TextureFilterPointFilter
+    | 1 => TextureFilterLinearFilter
+    | 2 => TextureFilterAnisotropicFilter
+    else
+      TextureFilterPointFilter
+    end
+
 type KoreGraphics4TextureFilter is
   ( TextureFilterPointFilter
   | TextureFilterLinearFilter
@@ -44,6 +65,16 @@ primitive MipmapFilterPointMipFilter
   fun apply(): I32 => 1
 primitive MipmapFilterLinearMipFilter
   fun apply(): I32 => 2
+
+primitive ToKoreGraphics4MipmapFilter
+  fun from(value: I32): KoreGraphics4MipmapFilter =>
+    match value
+    | 0 => MipmapFilterNoMipFilter
+    | 1 => MipmapFilterPointMipFilter
+    | 2 => MipmapFilterLinearMipFilter
+    else
+      MipmapFilterNoMipFilter
+    end
 
 type KoreGraphics4MipmapFilter is
   ( MipmapFilterNoMipFilter
@@ -71,6 +102,23 @@ primitive RenderStateAlphaReferenceState
   fun apply(): I32 => 8
 primitive RenderStateConservativeRasterization
   fun apply(): I32 => 9
+
+primitive ToKoreGraphics4RenderState
+  fun from(value: I32): KoreGraphics4RenderState =>
+    match value
+    | 0 => RenderStateBlendingState
+    | 1 => RenderStateDepthTest
+    | 2 => RenderStateDepthTestCompare
+    | 3 => RenderStateDepthWrite
+    | 4 => RenderStateNormalize
+    | 5 => RenderStateBackfaceCulling
+    | 6 => RenderStateScissorTestState
+    | 7 => RenderStateAlphaTestState
+    | 8 => RenderStateAlphaReferenceState
+    | 9 => RenderStateConservativeRasterization
+    else
+      RenderStateBlendingState
+    end
 
 type KoreGraphics4RenderState is
   ( RenderStateBlendingState
@@ -106,6 +154,23 @@ primitive BlendingOperationInverseSourceColor
 primitive BlendingOperationInverseDestinationColor
   fun apply(): I32 => 9
 
+primitive ToKoreGraphics4BlendingOperation
+  fun from(value: I32): KoreGraphics4BlendingOperation =>
+    match value
+    | 0 => BlendingOperationBlendOne
+    | 1 => BlendingOperationBlendZero
+    | 2 => BlendingOperationSourceAlpha
+    | 3 => BlendingOperationDestinationAlpha
+    | 4 => BlendingOperationInverseSourceAlpha
+    | 5 => BlendingOperationInverseDestinationAlpha
+    | 6 => BlendingOperationSourceColor
+    | 7 => BlendingOperationDestinationColor
+    | 8 => BlendingOperationInverseSourceColor
+    | 9 => BlendingOperationInverseDestinationColor
+    else
+      BlendingOperationBlendOne
+    end
+
 type KoreGraphics4BlendingOperation is
   ( BlendingOperationBlendOne
   | BlendingOperationBlendZero
@@ -136,6 +201,21 @@ primitive ZCompareModeZCompareGreater
 primitive ZCompareModeZCompareGreaterEqual
   fun apply(): I32 => 7
 
+primitive ToKoreGraphics4ZCompareMode
+  fun from(value: I32): KoreGraphics4ZCompareMode =>
+    match value
+    | 0 => ZCompareModeZCompareAlways
+    | 1 => ZCompareModeZCompareNever
+    | 2 => ZCompareModeZCompareEqual
+    | 3 => ZCompareModeZCompareNotEqual
+    | 4 => ZCompareModeZCompareLess
+    | 5 => ZCompareModeZCompareLessEqual
+    | 6 => ZCompareModeZCompareGreater
+    | 7 => ZCompareModeZCompareGreaterEqual
+    else
+      ZCompareModeZCompareAlways
+    end
+
 type KoreGraphics4ZCompareMode is
   ( ZCompareModeZCompareAlways
   | ZCompareModeZCompareNever
@@ -154,6 +234,16 @@ primitive CullModeCounterClockwise
 primitive CullModeNoCulling
   fun apply(): I32 => 2
 
+primitive ToKoreGraphics4CullMode
+  fun from(value: I32): KoreGraphics4CullMode =>
+    match value
+    | 0 => CullModeClockwise
+    | 1 => CullModeCounterClockwise
+    | 2 => CullModeNoCulling
+    else
+      CullModeClockwise
+    end
+
 type KoreGraphics4CullMode is
   ( CullModeClockwise
   | CullModeCounterClockwise
@@ -167,6 +257,16 @@ primitive TexDirV
 primitive TexDirW
   fun apply(): I32 => 2
 
+primitive ToKoreGraphics4TexDir
+  fun from(value: I32): KoreGraphics4TexDir =>
+    match value
+    | 0 => TexDirU
+    | 1 => TexDirV
+    | 2 => TexDirW
+    else
+      TexDirU
+    end
+
 type KoreGraphics4TexDir is
   ( TexDirU
   | TexDirV
@@ -175,6 +275,14 @@ type KoreGraphics4TexDir is
 
 primitive FogTypeLinearFog
   fun apply(): I32 => 0
+
+primitive ToKoreGraphics4FogType
+  fun from(value: I32): KoreGraphics4FogType =>
+    match value
+    | 0 => FogTypeLinearFog
+    else
+      FogTypeLinearFog
+    end
 
 type KoreGraphics4FogType is
   ( FogTypeLinearFog
@@ -194,6 +302,20 @@ primitive RenderTargetFormatTarget8BitRed
   fun apply():I32 => 5
 primitive RenderTargetFormatTarget16BitRedFloat
   fun apply():I32 => 6
+
+primitive ToKoreGraphics4RenderTargetFormat
+  fun from(value: I32): KoreGraphics4RenderTargetFormat =>
+    match value
+    | 0 => RenderTargetFormatTarget32Bit
+    | 1 => RenderTargetFormatTarget64BitFloat
+    | 2 => RenderTargetFormatTarget32BitRedFloat
+    | 3 => RenderTargetFormatTarget128BitFloat
+    | 4 => RenderTargetFormatTarget16BitDepth
+    | 5 => RenderTargetFormatTarget8BitRed
+    | 6 => RenderTargetFormatTarget16BitRedFloat
+    else
+      RenderTargetFormatTarget32Bit
+    end
 
 type KoreGraphics4RenderTargetFormat is
   ( RenderTargetFormatTarget32Bit
@@ -222,6 +344,21 @@ primitive StencilActionDecrementWrap
 primitive StencilActionInvert
   fun apply(): I32 => 7
 
+primitive ToKoreGraphics4StencilAction
+  fun from(value: I32): KoreGraphics4StencilAction =>
+    match value
+    | 0 => StencilActionKeep
+    | 1 => StencilActionZero
+    | 2 => StencilActionReplace
+    | 3 => StencilActionIncrement
+    | 4 => StencilActionIncrementWrap
+    | 5 => StencilActionDecrement
+    | 6 => StencilActionDecrementWrap
+    | 7 => StencilActionInvert
+    else
+      StencilActionKeep
+    end
+
 type KoreGraphics4StencilAction is
   ( StencilActionKeep
   | StencilActionZero
@@ -240,6 +377,16 @@ primitive TextureOperationSelectFirstOperation
 primitive TextureOperationSelectSecondOperation
   fun apply(): I32 => 2
 
+primitive ToKoreGraphics4TextureOperation
+  fun from(value: I32): KoreGraphics4TextureOperation =>
+    match value
+    | 0 => TextureOperationModulateOperation
+    | 1 => TextureOperationSelectFirstOperation
+    | 2 => TextureOperationSelectSecondOperation
+    else
+      TextureOperationModulateOperation
+    end
+
 type KoreGraphics4TextureOperation is
   ( TextureOperationModulateOperation
   | TextureOperationSelectFirstOperation
@@ -250,6 +397,15 @@ primitive TextureArgumentCurrentColorArgument
   fun apply(): I32 => 0
 primitive TextureArgumentTextureColorArgument
   fun apply(): I32 => 1
+
+primitive ToKoreGraphics4TextureArgument
+  fun from(value: I32): KoreGraphics4TextureArgument =>
+    match value
+    | 0 => TextureArgumentCurrentColorArgument
+    | 1 => TextureArgumentTextureColorArgument
+    else
+      TextureArgumentCurrentColorArgument
+    end
 
 type KoreGraphics4TextureArgument is
   ( TextureArgumentCurrentColorArgument

@@ -6,24 +6,6 @@ use @Kore_Graphics1_Color_destroy[None](
   self: Pointer[_KoreGraphics1ColorHandle] tag)
 
 
-primitive _KoreGraphics1ColorHandle
-
-// TODO: Replace with a Color class/setup more like in Kha
-// No need to use Kore's color object's up front, U32 (uint)
-// is used for all public functions/methods.
-class val KoreGraphics1Color
-  let _handle: Pointer[_KoreGraphics1ColorHandle] tag
-
-  new create(color: U32) =>
-    _handle = @Kore_Graphics1_Color_create(color)
-
-  fun _get_handle(): Pointer[_KoreGraphics1ColorHandle] tag =>
-    _handle
-
-  fun _final() =>
-    @Kore_Graphics1_Color_destroy(_handle)
-
-
 primitive ImageCompressionNone
   fun apply(): I32 => 0
 primitive ImageCompressionDXT5
@@ -68,7 +50,22 @@ type KoreGraphics1ImageFormat is
   | FormatA16
   )
 
+primitive _KoreGraphics1ColorHandle
 
+// TODO: Replace with a Color class/setup more like in Kha
+// No need to use Kore's color object's up front, U32 (uint)
+// is used for all public functions/methods.
+class val KoreGraphics1Color
+  let _handle: Pointer[_KoreGraphics1ColorHandle] tag
+
+  new create(color: U32) =>
+    _handle = @Kore_Graphics1_Color_create(color)
+
+  fun _get_handle(): Pointer[_KoreGraphics1ColorHandle] tag =>
+    _handle
+
+  fun _final() =>
+    @Kore_Graphics1_Color_destroy(_handle)
 
 primitive _KoreGraphics1ImageHandle
 
