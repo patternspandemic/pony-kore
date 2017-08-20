@@ -1,5 +1,62 @@
 use "lib:korec"
 
+/* FFI to WC_Kore_Graphics4_VertexBuffer */
+use @Kore_Graphics4_VertexBuffer_create[
+  Pointer[_KoreGraphics4VertexBufferHandle] tag](
+    count: I32,
+    Pointer[_KoreGraphics4VertexStructureHandle] tag,
+    instance_data_step_rate: I32)
+use @Kore_Graphics4_VertexBuffer_destroy[None](
+  self: Pointer[_KoreGraphics4VertexBufferHandle] tag)
+use @Kore_Graphics4_VertexBuffer_lock[
+  Pointer[F32]](
+    self: Pointer[_KoreGraphics4VertexBufferHandle] tag)
+use @Kore_Graphics4_VertexBuffer_lockSC[
+  Pointer[F32]](
+    self: Pointer[_KoreGraphics4VertexBufferHandle] tag,
+    start: I32,
+    count: I32)
+use @Kore_Graphics4_VertexBuffer_unlock[None](
+  self: Pointer[_KoreGraphics4VertexBufferHandle] tag)
+use @Kore_Graphics4_VertexBuffer_count[I32](
+  self: Pointer[_KoreGraphics4VertexBufferHandle] tag)
+use @Kore_Graphics4_VertexBuffer_stride[I32](
+  self: Pointer[_KoreGraphics4VertexBufferHandle] tag)
+
+/* FFI to WC_Kore_Graphics4_IndexBuffer */
+use @Kore_Graphics4_IndexBuffer_create[
+  Pointer[_KoreGraphics4IndexBufferHandle] tag](
+    count: I32)
+use @Kore_Graphics4_IndexBuffer_destroy[None](
+  self: Pointer[_KoreGraphics4IndexBufferHandle] tag)
+use @Kore_Graphics4_IndexBuffer_lock[
+  Pointer[I32]](
+    self: Pointer[_KoreGraphics4IndexBufferHandle] tag)
+use @Kore_Graphics4_IndexBuffer_unlock[None](
+  self: Pointer[_KoreGraphics4IndexBufferHandle] tag)
+use @Kore_Graphics4_IndexBuffer_count[I32](
+  self: Pointer[_KoreGraphics4IndexBufferHandle] tag)
+
+/* FFI to WC_Kore_Graphics4_RenderTarget */
+/*
+use @Kore_Graphics4_RenderTarget_createWHDAFSC[]()
+use @Kore_Graphics4_RenderTarget_createCDAFSC[]()
+use @Kore_Graphics4_RenderTarget_destroy[]()
+use @Kore_Graphics4_RenderTarget_useColorAsTexture[]()
+use @Kore_Graphics4_RenderTarget_useDepthAsTexture[]()
+use @Kore_Graphics4_RenderTarget_setDepthStencilFrom[]()
+// Note out param useage
+use @Kore_Graphics4_RenderTarget_getPixels[None]()
+use @Kore_Graphics4_RenderTarget_getWidth[]()
+use @Kore_Graphics4_RenderTarget_getHeight[]()
+use @Kore_Graphics4_RenderTarget_getTexWidth[]()
+use @Kore_Graphics4_RenderTarget_getTexHeight[]()
+use @Kore_Graphics4_RenderTarget_getContextId[]()
+use @Kore_Graphics4_RenderTarget_getIsCubeMap[]()
+use @Kore_Graphics4_RenderTarget_getIsDepthAttachment[]()
+*/
+
+/* FFI to Kore Graphics4 */
 use @Kore_Graphics4_begin[None](window_id: I32)
 use @Kore_Graphics4_clear[None](
   flags: U32,
@@ -412,10 +469,107 @@ type KoreGraphics4TextureArgument is
   | TextureArgumentTextureColorArgument
   )
 
+/*
 
+Strategy for exposing Vertex and Index buffer data:
 
+Upon lock, instead of returing an array built from the C
+pointer directly, return an object literal which closes
+over the array. Do not expose the closed over data directly,
+but include apply and update accessors to manipulate the
+data. This will prevent mutation of the array's size,
+obviously a bad idea for C-side held data.
 
+Also probably keep a privately held reference to the data
+in the Vertex and Index buffer objects, to ensure the memory
+is not GC'd by anonymous object's disposal (Not sure if 
+neccessary/things actually work this way).
 
+So steps:
+
+1. Build Array[F32/I32].from_cpointer(Pointer[F32/I32], length)
+   - Where length is count * structure_length, (stride / 4)
+   - Assign built array to private field
+   - Provide length as field?
+2. Upon lock(), return object literal which closes over array
+   - Build object literal with apply and update accessors to array
+   - Provide count/step/length fields on object literal if appropriate.
+     * count is number of vertex
+     * step is structure length (stride / 4)
+     * length is size of buffer (count * step)
+
+*/
+
+primitive _KoreGraphics4VertexBufferHandle
+
+class KoreGraphics4VertexBuffer
+  let _handle: Pointer[_KoreGraphics4VertexBufferHandle] tag
+
+  new create(
+    count: I32,
+    structure: KoreGraphics4VertexStructure val,
+    instance_data_step_rate: I32 = 0)
+  =>
+    _handle =
+      @Kore_Graphics4_VertexBuffer_create(
+        count, structure._get_handle(), instance_data_step_rate)
+
+  // TODO
+  // fun ref lock() =>
+  // fun ref lock_by_start_count() =>
+
+  fun ref unlock() =>
+    @Kore_Graphics4_VertexBuffer_unlock(_handle)
+
+  fun count() =>
+    @Kore_Graphics4_VertexBuffer_count(_handle)
+
+  fun stride() =>
+    @Kore_Graphics4_VertexBuffer_stride(_handle)
+
+  fun _get_handle(): Pointer[_KoreGraphics4VertexBufferHandle] tag =>
+    _handle
+
+  fun _final() =>
+    @Kore_Graphics4_VertexBuffer_destroy(_handle)
+
+primitive _KoreGraphics4IndexBufferHandle
+
+class KoreGraphics4IndexBuffer
+  let _handle: Pointer[_KoreGraphics4IndexBufferHandle] tag
+
+  new create(count: I32) =>
+    _handle = @Kore_Graphics4_IndexBuffer_create(count)
+
+  // TODO
+  // fun ref lock() =>
+
+  fun ref unlock() =>
+    @Kore_Graphics4_IndexBuffer_unlock(_handle)
+
+  fun count() =>
+    @Kore_Graphics4_IndexBuffer_count(_handle)
+
+  fun _get_handle(): Pointer[_KoreGraphics4IndexBufferHandle] tag =>
+    _handle
+
+  fun _final() =>
+    @Kore_Graphics4_IndexBuffer_destroy(_handle)
+
+primitive _KoreGraphics4RenderTargetHandle
+
+class KoreGraphics4RenderTarget
+  let _handle: Pointer[_KoreGraphics4RenderTargetHandle] tag
+
+  // new create(...) =>
+  //   _handle =
+  //     @Kore_Graphics4_RenderTarget_create(...)
+
+  fun _get_handle(): Pointer[_KoreGraphics4RenderTargetHandle] tag =>
+    _handle
+
+  fun _final() =>
+    @Kore_Graphics4_RenderTarget_destroy(_handle)
 
 primitive KoreGraphics4
   fun begin_gfx(window_id: I32 = 0) =>

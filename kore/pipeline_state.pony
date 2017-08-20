@@ -155,7 +155,7 @@ class KoreGraphics4PipelineState
   var _geometry_shader: (KoreGraphics4Shader iso | None) = None
   var _tessellation_control_shader: (KoreGraphics4Shader iso | None) = None
   var _tessellation_evaluation_shader: (KoreGraphics4Shader iso | None) = None
-  var input_layout: Array[KoreGraphics4VertexStructure]
+  var input_layout: Array[KoreGraphics4VertexStructure val]
 
   new create() =>
     _handle = @Kore_Graphics4_PipelineState_create()
