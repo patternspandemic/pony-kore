@@ -502,8 +502,20 @@ So steps:
 
 primitive _KoreGraphics4VertexBufferHandle
 
+trait VertexBufferData
+  fun count(): USize val
+  fun step(): USize val
+  fun size(): USize val
+  fun apply(i: USize val): F32 ?
+  fun ref update(i: USize val, value: F32): F32^ ?
+  fun dispose()
+
 class KoreGraphics4VertexBuffer
   let _handle: Pointer[_KoreGraphics4VertexBufferHandle] tag
+  let _count: I32 // vertex count
+  let _step: I32 // structure length
+  let _size: I32 // data size
+  let _data: Array[F32]
 
   new create(
     count: I32,
@@ -513,9 +525,28 @@ class KoreGraphics4VertexBuffer
     _handle =
       @Kore_Graphics4_VertexBuffer_create(
         count, structure._get_handle(), instance_data_step_rate)
+    _count = @Kore_Graphics4_VertexBuffer_count(_handle)
+    _step = @Kore_Graphics4_VertexBuffer_stride(_handle) / 4
+    _size = _count * _step
+    let data_pointer: Pointer[F32] =
+      @Kore_Graphics4_VertexBuffer_lock(_handle)
+    _data = Array[F32].from_cpointer(data_pointer, USize.from[I32](_size))
 
   // TODO
-  // fun ref lock() =>
+  fun ref lock(): VertexBufferData =>
+    object is VertexBufferData
+      fun count(): USize val => _count
+      fun step(): USize val => _step
+      fun size(): USize val => _size
+      fun apply(i: USize val): F32 ? =>
+        _data(i)
+      fun ref update(i: USize val, value: F32): F32^ ? =>
+        _data(i) = value
+      fun dispose() =>
+        // Hmm, how to call back to unlock() ?
+        // partial applicaiton? Close over function?
+    end
+
   // fun ref lock_by_start_count() =>
 
   fun ref unlock() =>
