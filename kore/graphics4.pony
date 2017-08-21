@@ -4,7 +4,7 @@ use "lib:korec"
 use @Kore_Graphics4_VertexBuffer_create[
   Pointer[_KoreGraphics4VertexBufferHandle] tag](
     count: I32,
-    Pointer[_KoreGraphics4VertexStructureHandle] tag,
+    structure: Pointer[_KoreGraphics4VertexStructureHandle] tag,
     instance_data_step_rate: I32)
 use @Kore_Graphics4_VertexBuffer_destroy[None](
   self: Pointer[_KoreGraphics4VertexBufferHandle] tag)
@@ -469,36 +469,6 @@ type KoreGraphics4TextureArgument is
   | TextureArgumentTextureColorArgument
   )
 
-/*
-
-Strategy for exposing Vertex and Index buffer data:
-
-Upon lock, instead of returing an array built from the C
-pointer directly, return an object literal which closes
-over the array. Do not expose the closed over data directly,
-but include apply and update accessors to manipulate the
-data. This will prevent mutation of the array's size,
-obviously a bad idea for C-side held data.
-
-Also probably keep a privately held reference to the data
-in the Vertex and Index buffer objects, to ensure the memory
-is not GC'd by anonymous object's disposal (Not sure if 
-neccessary/things actually work this way).
-
-So steps:
-
-1. Build Array[F32/I32].from_cpointer(Pointer[F32/I32], length)
-   - Where length is count * structure_length, (stride / 4)
-   - Assign built array to private field
-   - Provide length as field?
-2. Upon lock(), return object literal which closes over array
-   - Build object literal with apply and update accessors to array
-   - Provide count/step/length fields on object literal if appropriate.
-     * count is number of vertex
-     * step is structure length (stride / 4)
-     * length is size of buffer (count * step)
-
-*/
 
 primitive _KoreGraphics4VertexBufferHandle
 
@@ -518,13 +488,13 @@ class KoreGraphics4VertexBuffer
   let _data: Array[F32]
 
   new create(
-    count: I32,
+    count': I32,
     structure: KoreGraphics4VertexStructure val,
     instance_data_step_rate: I32 = 0)
   =>
     _handle =
       @Kore_Graphics4_VertexBuffer_create(
-        count, structure._get_handle(), instance_data_step_rate)
+        count', structure._get_handle(), instance_data_step_rate)
     _count = @Kore_Graphics4_VertexBuffer_count(_handle)
     _step = @Kore_Graphics4_VertexBuffer_stride(_handle) / 4
     _size = _count * _step
@@ -532,24 +502,27 @@ class KoreGraphics4VertexBuffer
       @Kore_Graphics4_VertexBuffer_lock(_handle)
     _data = Array[F32].from_cpointer(data_pointer, USize.from[I32](_size))
 
-  // TODO
   fun ref lock(): VertexBufferData =>
+    let this_vbuffer = this
     object is VertexBufferData
-      fun count(): USize val => _count
-      fun step(): USize val => _step
-      fun size(): USize val => _size
+      fun count(): USize val => USize.from[I32](_count)
+      fun step(): USize val => USize.from[I32](_step)
+      fun size(): USize val => USize.from[I32](_size)
       fun apply(i: USize val): F32 ? =>
-        _data(i)
+        _data(i) ?
       fun ref update(i: USize val, value: F32): F32^ ? =>
-        _data(i) = value
+        _data(i) ? = value
       fun dispose() =>
-        // Hmm, how to call back to unlock() ?
-        // partial applicaiton? Close over function?
+        this_vbuffer.unlock()
     end
 
-  // fun ref lock_by_start_count() =>
+  // TODO: KoreGraphics4VertexBuffer.lock_by_start_count()
+  // Probably keep a separate _ranged_data array to expose in the
+  // same manner as lock(). Will need to make sure start and count
+  // fit the underlying data, and will not be out of bounds.
 
-  fun ref unlock() =>
+  // Must be box for dispose callback from object literal to work.
+  fun unlock() =>
     @Kore_Graphics4_VertexBuffer_unlock(_handle)
 
   fun count() =>
@@ -566,16 +539,41 @@ class KoreGraphics4VertexBuffer
 
 primitive _KoreGraphics4IndexBufferHandle
 
+trait IndexBufferData
+  fun count(): USize val
+  fun size(): USize val
+  fun apply(i: USize val): I32 ?
+  fun ref update(i: USize val, value: I32): I32^ ?
+  fun dispose()
+
 class KoreGraphics4IndexBuffer
   let _handle: Pointer[_KoreGraphics4IndexBufferHandle] tag
+  let _count: I32 // index count
+  let _size: I32 // data size, same as count
+  let _data: Array[I32]
 
-  new create(count: I32) =>
-    _handle = @Kore_Graphics4_IndexBuffer_create(count)
+  new create(count': I32) =>
+    _handle = @Kore_Graphics4_IndexBuffer_create(count')
+    _count = @Kore_Graphics4_IndexBuffer_count(_handle)
+    _size = _count
+    let data_pointer: Pointer[I32] =
+      @Kore_Graphics4_IndexBuffer_lock(_handle)
+    _data = Array[I32].from_cpointer(data_pointer, USize.from[I32](_size))
 
-  // TODO
-  // fun ref lock() =>
+  fun ref lock(): IndexBufferData =>
+    let this_ibuffer = this
+    object is IndexBufferData
+      fun count(): USize val => USize.from[I32](_count)
+      fun size(): USize val => USize.from[I32](_size)
+      fun apply(i: USize val): I32 ? =>
+        _data(i) ?
+      fun ref update(i: USize val, value: I32): I32^ ? =>
+        _data(i) ? = value
+      fun dispose() =>
+        this_ibuffer.unlock()
+    end
 
-  fun ref unlock() =>
+  fun unlock() =>
     @Kore_Graphics4_IndexBuffer_unlock(_handle)
 
   fun count() =>
@@ -589,6 +587,7 @@ class KoreGraphics4IndexBuffer
 
 primitive _KoreGraphics4RenderTargetHandle
 
+/* TODO
 class KoreGraphics4RenderTarget
   let _handle: Pointer[_KoreGraphics4RenderTargetHandle] tag
 
@@ -601,6 +600,7 @@ class KoreGraphics4RenderTarget
 
   fun _final() =>
     @Kore_Graphics4_RenderTarget_destroy(_handle)
+*/
 
 primitive KoreGraphics4
   fun begin_gfx(window_id: I32 = 0) =>
