@@ -38,23 +38,51 @@ use @Kore_Graphics4_IndexBuffer_count[I32](
   self: Pointer[_KoreGraphics4IndexBufferHandle] tag)
 
 /* FFI to WC_Kore_Graphics4_RenderTarget */
-/*
-use @Kore_Graphics4_RenderTarget_createWHDAFSC[]()
-use @Kore_Graphics4_RenderTarget_createCDAFSC[]()
-use @Kore_Graphics4_RenderTarget_destroy[]()
-use @Kore_Graphics4_RenderTarget_useColorAsTexture[]()
-use @Kore_Graphics4_RenderTarget_useDepthAsTexture[]()
-use @Kore_Graphics4_RenderTarget_setDepthStencilFrom[]()
-// Note out param useage
-use @Kore_Graphics4_RenderTarget_getPixels[None]()
-use @Kore_Graphics4_RenderTarget_getWidth[]()
-use @Kore_Graphics4_RenderTarget_getHeight[]()
-use @Kore_Graphics4_RenderTarget_getTexWidth[]()
-use @Kore_Graphics4_RenderTarget_getTexHeight[]()
-use @Kore_Graphics4_RenderTarget_getContextId[]()
-use @Kore_Graphics4_RenderTarget_getIsCubeMap[]()
-use @Kore_Graphics4_RenderTarget_getIsDepthAttachment[]()
-*/
+use @Kore_Graphics4_RenderTarget_createWHDAFSC[
+  Pointer[_KoreGraphics4RenderTargetHandle] tag](
+    width: I32,
+    height: I32,
+    depth_buffer_bits: I32,
+    antialiasing: Bool,
+    format: I32,
+    stencil_buffer_bits: I32,
+    context_id: I32)
+use @Kore_Graphics4_RenderTarget_createCDAFSC[
+  Pointer[_KoreGraphics4RenderTargetHandle] tag](
+    cube_map_size: I32,
+    depth_buffer_bits: I32,
+    antialiasing: Bool,
+    format: I32,
+    stencil_buffer_bits: I32,
+    context_id: I32)
+use @Kore_Graphics4_RenderTarget_destroy[None](
+  self: Pointer[_KoreGraphics4RenderTargetHandle] tag)
+use @Kore_Graphics4_RenderTarget_useColorAsTexture[None](
+  self: Pointer[_KoreGraphics4RenderTargetHandle] tag,
+  unit: Pointer[_KoreGraphics4TextureUnitHandle] tag)
+use @Kore_Graphics4_RenderTarget_useDepthAsTexture[None](
+  self: Pointer[_KoreGraphics4RenderTargetHandle] tag,
+  unit: Pointer[_KoreGraphics4TextureUnitHandle] tag)
+use @Kore_Graphics4_RenderTarget_setDepthStencilFrom[None](
+  self: Pointer[_KoreGraphics4RenderTargetHandle] tag,
+  source: Pointer[_KoreGraphics4RenderTargetHandle] tag)
+use @Kore_Graphics4_RenderTarget_getPixels[None](
+  self: Pointer[_KoreGraphics4RenderTargetHandle] tag,
+  data: Pointer[U8] tag) // Note out param useage
+use @Kore_Graphics4_RenderTarget_getWidth[I32](
+  self: Pointer[_KoreGraphics4RenderTargetHandle] tag)
+use @Kore_Graphics4_RenderTarget_getHeight[I32](
+  self: Pointer[_KoreGraphics4RenderTargetHandle] tag)
+use @Kore_Graphics4_RenderTarget_getTexWidth[I32](
+  self: Pointer[_KoreGraphics4RenderTargetHandle] tag)
+use @Kore_Graphics4_RenderTarget_getTexHeight[I32](
+  self: Pointer[_KoreGraphics4RenderTargetHandle] tag)
+use @Kore_Graphics4_RenderTarget_getContextId[I32](
+  self: Pointer[_KoreGraphics4RenderTargetHandle] tag)
+use @Kore_Graphics4_RenderTarget_getIsCubeMap[Bool](
+  self: Pointer[_KoreGraphics4RenderTargetHandle] tag)
+use @Kore_Graphics4_RenderTarget_getIsDepthAttachment[Bool](
+  self: Pointer[_KoreGraphics4RenderTargetHandle] tag)
 
 /* FFI to Kore Graphics4 */
 use @Kore_Graphics4_begin[None](window_id: I32)
@@ -587,20 +615,79 @@ class KoreGraphics4IndexBuffer
 
 primitive _KoreGraphics4RenderTargetHandle
 
-/* TODO
 class KoreGraphics4RenderTarget
   let _handle: Pointer[_KoreGraphics4RenderTargetHandle] tag
 
-  // new create(...) =>
-  //   _handle =
-  //     @Kore_Graphics4_RenderTarget_create(...)
+  new create(
+    width: I32,
+    height: I32,
+    depth_buffer_bits: I32,
+    antialiasing: Bool,
+    format: KoreGraphics4RenderTargetFormat,
+    stencil_buffer_bits: I32,
+    context_id: I32)
+  =>
+    _handle = @Kore_Graphics4_RenderTarget_createWHDAFSC(
+      width, height, depth_buffer_bits, antialiasing,
+      format(), stencil_buffer_bits, context_id)
+
+  new cube_map(
+    cube_map_size: I32,
+    depth_buffer_bits: I32,
+    antialiasing: Bool,
+    format: KoreGraphics4RenderTargetFormat,
+    stencil_buffer_bits: I32,
+    context_id: I32)
+  =>
+    _handle = @Kore_Graphics4_RenderTarget_createCDAFSC(
+      cube_map_size, depth_buffer_bits, antialiasing,
+      format(), stencil_buffer_bits, context_id)
+
+  fun ref use_color_as_texture(texture_unit: KoreGraphics4TextureUnit) =>
+    @Kore_Graphics4_RenderTarget_useColorAsTexture(
+      _handle, texture_unit._get_handle())
+
+  fun ref use_depth_as_texture(texture_unit: KoreGraphics4TextureUnit) =>
+    @Kore_Graphics4_RenderTarget_useDepthAsTexture(
+      _handle, texture_unit._get_handle())
+
+  fun ref set_depth_stencil_from(source: KoreGraphics4RenderTarget) =>
+    @Kore_Graphics4_RenderTarget_setDepthStencilFrom(
+      _handle, source._get_handle())
+
+  fun get_pixels(): Array[U8] iso^ =>
+    let size: USize = USize.from[I32](
+      get_texture_width() * get_texture_height())
+    let data: Array[U8] iso = recover data.init(0, size) end
+    @Kore_Graphics4_RenderTarget_getPixels(_handle, data.cpointer())
+    consume data
+
+  fun get_width(): I32 =>
+    @Kore_Graphics4_RenderTarget_getWidth(_handle)
+
+  fun get_height(): I32 =>
+    @Kore_Graphics4_RenderTarget_getHeight(_handle)
+
+  fun get_texture_width(): I32 =>
+    @Kore_Graphics4_RenderTarget_getTexWidth(_handle)
+
+  fun get_texture_height(): I32 =>
+    @Kore_Graphics4_RenderTarget_getTexHeight(_handle)
+
+  fun get_context_id(): I32 =>
+    @Kore_Graphics4_RenderTarget_getContextId(_handle)
+
+  fun get_is_cube_map(): Bool =>
+    @Kore_Graphics4_RenderTarget_getIsCubeMap(_handle)
+
+  fun get_is_depth_attachment(): Bool =>
+    @Kore_Graphics4_RenderTarget_getIsDepthAttachment(_handle)
 
   fun _get_handle(): Pointer[_KoreGraphics4RenderTargetHandle] tag =>
     _handle
 
   fun _final() =>
     @Kore_Graphics4_RenderTarget_destroy(_handle)
-*/
 
 primitive KoreGraphics4
   fun begin_gfx(window_id: I32 = 0) =>
