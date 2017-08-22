@@ -85,72 +85,183 @@ use @Kore_Graphics4_RenderTarget_getIsDepthAttachment[Bool](
   self: Pointer[_KoreGraphics4RenderTargetHandle] tag)
 
 /* FFI to Kore Graphics4 */
-use @Kore_Graphics4_setBool[None]()
-use @Kore_Graphics4_setInt[None]()
-use @Kore_Graphics4_setFloat[None]()
-use @Kore_Graphics4_setFloat2[None]()
-use @Kore_Graphics4_setFloat2Vec[None]()
-use @Kore_Graphics4_setFloat3[None]()
-use @Kore_Graphics4_setFloat3Vec[None]()
-use @Kore_Graphics4_setFloat4[None]()
-use @Kore_Graphics4_setFloat4Vec[None]()
-use @Kore_Graphics4_setFloats[None]()
-use @Kore_Graphics4_setMatrix3[None]()
-use @Kore_Graphics4_setMatrix4[None]()
-use @Kore_Graphics4_setVertexBuffer[None]()
-use @Kore_Graphics4_setVertexBuffers[None]()
-use @Kore_Graphics4_setIndexBuffer[None]()
-use @Kore_Graphics4_setTexture[None]()
-use @Kore_Graphics4_setTextureArray[None]()
-use @Kore_Graphics4_setImageTexture[None]()
-use @Kore_Graphics4_setPipeline[None]()
+use @Kore_Graphics4_setBool[None](
+  location: Pointer[_KoreGraphics4ConstantLocationHandle] tag,
+  value: Bool)
+use @Kore_Graphics4_setInt[None](
+  location: Pointer[_KoreGraphics4ConstantLocationHandle] tag,
+  value: I32)
+use @Kore_Graphics4_setFloat[None](
+  location: Pointer[_KoreGraphics4ConstantLocationHandle] tag,
+  value: F32)
+use @Kore_Graphics4_setFloat2[None](
+  location: Pointer[_KoreGraphics4ConstantLocationHandle] tag,
+  value1: F32,
+  value2: F32)
+// TODO: Vector Type
+// use @Kore_Graphics4_setFloat2Vec[None](
+//   location: Pointer[_KoreGraphics4ConstantLocationHandle] tag,
+//   value: Vec2)
+use @Kore_Graphics4_setFloat3[None](
+  location: Pointer[_KoreGraphics4ConstantLocationHandle] tag,
+  value1: F32,
+  value2: F32,
+  value3: F32)
+// TODO: Vector Type
+// use @Kore_Graphics4_setFloat3Vec[None](
+//   location: Pointer[_KoreGraphics4ConstantLocationHandle] tag,
+//   value: Vec3)
+use @Kore_Graphics4_setFloat4[None](
+  location: Pointer[_KoreGraphics4ConstantLocationHandle] tag,
+  value1: F32,
+  value2: F32,
+  value3: F32,
+  value4: F32)
+// TODO: Vector Type
+// use @Kore_Graphics4_setFloat4Vec[None](
+//   location: Pointer[_KoreGraphics4ConstantLocationHandle] tag,
+//   value: Vec4)
+use @Kore_Graphics4_setFloats[None](
+  location: Pointer[_KoreGraphics4ConstantLocationHandle] tag,
+  floats: Pointer[F32] tag,
+  count: I32)
+// TODO: Matrix Type
+// use @Kore_Graphics4_setMatrix3[None](
+//   location: Pointer[_KoreGraphics4ConstantLocationHandle] tag,
+//   value: Pointer[Mat3] tag)
+// TODO: Matrix Type
+// use @Kore_Graphics4_setMatrix4[None](
+//   location: Pointer[_KoreGraphics4ConstantLocationHandle] tag,
+//   value: Pointer[Mat4] tag)
+use @Kore_Graphics4_setVertexBuffer[None](
+  vertex_buffer: Pointer[_KoreGraphics4VertexBufferHandle] tag)
+// TODO: Verify vertex_buffers type
+use @Kore_Graphics4_setVertexBuffers[None](
+  vertex_buffers: Pointer[Pointer[_KoreGraphics4VertexBufferHandle] tag] tag,
+  count: I32)
+use @Kore_Graphics4_setIndexBuffer[None](
+  index_buffer: Pointer[_KoreGraphics4IndexBufferHandle] tag)
+use @Kore_Graphics4_setTexture[None](
+  unit: Pointer[_KoreGraphics4TextureUnitHandle] tag,
+  texture: Pointer[_KoreGraphics4TextureHandle] tag)
+use @Kore_Graphics4_setTextureArray[None](
+  unit: Pointer[_KoreGraphics4TextureUnitHandle] tag,
+  texture_array: Pointer[_KoreGraphics4TextureArrayHandle] tag)
+use @Kore_Graphics4_setImageTexture[None](
+  unit: Pointer[_KoreGraphics4TextureUnitHandle] tag,
+  texture: Pointer[_KoreGraphics4TextureHandle] tag)
+use @Kore_Graphics4_setPipeline[None](
+  pipeline: Pointer[_KoreGraphics4PipelineStateHandle] tag)
 use @Kore_Graphics4_drawIndexedVertices[None]()
-use @Kore_Graphics4_drawIndexedVerticesSC[None]()
-use @Kore_Graphics4_drawIndexedVerticesInstancedI[None]()
-use @Kore_Graphics4_drawIndexedVerticesInstancedISC[None]()
-use @Kore_Graphics4_changeResolution[None]()
+use @Kore_Graphics4_drawIndexedVerticesSC[None](
+  start: I32,
+  count: I32)
+use @Kore_Graphics4_drawIndexedVerticesInstancedI[None](
+  instance_count: I32)
+use @Kore_Graphics4_drawIndexedVerticesInstancedISC[None](
+  instance_count: I32,
+  start: I32,
+  count: I32)
+use @Kore_Graphics4_changeResolution[None](
+  width: I32,
+  height: I32)
 use @Kore_Graphics4_hasWindow[Bool]()
-use @Kore_Graphics4_setWindow[None]()
+use @Kore_Graphics4_setWindow[None](
+  value: Bool)
 use @Kore_Graphics4_antialiasingSamples[I32]()
-use @Kore_Graphics4_setAntialiasingSamples[None]()
+use @Kore_Graphics4_setAntialiasingSamples[None](
+  samples: I32)
 use @Kore_Graphics4_renderTargetsInvertedY[Bool]()
-use @Kore_Graphics4_setRenderTargets[None]()
-use @Kore_Graphics4_setRenderTarget[None]()
-use @Kore_Graphics4_setRenderTargetFace[None]()
+// TODO: Verify targets type
+use @Kore_Graphics4_setRenderTargets[None](
+  targets: Pointer[Pointer[_KoreGraphics4RenderTargetHandle] tag] tag,
+  count: I32)
+use @Kore_Graphics4_setRenderTarget[None](
+  target: Pointer[_KoreGraphics4RenderTargetHandle] tag)
+use @Kore_Graphics4_setRenderTargetFace[None](
+  texture: Pointer[_KoreGraphics4RenderTargetHandle] tag,
+  face: I32)
 use @Kore_Graphics4_restoreRenderTarget[None]()
 use @Kore_Graphics4_setup[None]()
-use @Kore_Graphics4_swapBuffers[Bool](window_id: I32)
-use @Kore_Graphics4_begin[None](window_id: I32)
-use @Kore_Graphics4_end[None](window_id: I32)
-use @Kore_Graphics4_makeCurrent[None]()
+use @Kore_Graphics4_swapBuffers[Bool](
+  window_id: I32)
+use @Kore_Graphics4_begin[None](
+  window_id: I32)
+use @Kore_Graphics4_end[None](
+  window_id: I32)
+use @Kore_Graphics4_makeCurrent[None](
+  window_id: I32)
 use @Kore_Graphics4_clearCurrent[None]()
-use @Kore_Graphics4_viewport[None]()
-use @Kore_Graphics4_scissor[None]()
+use @Kore_Graphics4_viewport[None](
+  x: I32,
+  y: I32,
+  width: I32,
+  height: I32)
+use @Kore_Graphics4_scissor[None](
+  x: I32,
+  y: I32,
+  width: I32,
+  height: I32)
 use @Kore_Graphics4_disableScissor[None]()
-use @Kore_Graphics4_setTextureAddressing[None]()
-use @Kore_Graphics4_setTextureMagnificationFilter[None]()
-use @Kore_Graphics4_setTextureMinificationFilter[None]()
-use @Kore_Graphics4_setTextureMipmapFilter[None]()
-use @Kore_Graphics4_setTexture3DAddressing[None]()
-use @Kore_Graphics4_setTexture3DMagnificationFilter[None]()
-use @Kore_Graphics4_setTexture3DMinificationFilter[None]()
-use @Kore_Graphics4_setTexture3DMipmapFilter[None]()
-use @Kore_Graphics4_setTextureOperation[None]()
+use @Kore_Graphics4_setTextureAddressing[None](
+  texture_unit: Pointer[_KoreGraphics4TextureUnitHandle] tag,
+  dir: I32,
+  addressing: I32)
+use @Kore_Graphics4_setTextureMagnificationFilter[None](
+  texture_unit: Pointer[_KoreGraphics4TextureUnitHandle] tag,
+  filter: I32)
+use @Kore_Graphics4_setTextureMinificationFilter[None](
+  texture_unit: Pointer[_KoreGraphics4TextureUnitHandle] tag,
+  filter: I32)
+use @Kore_Graphics4_setTextureMipmapFilter[None](
+  texture_unit: Pointer[_KoreGraphics4TextureUnitHandle] tag,
+  filter: I32)
+use @Kore_Graphics4_setTexture3DAddressing[None](
+  texture_unit: Pointer[_KoreGraphics4TextureUnitHandle] tag,
+  dir: I32,
+  addressing: I32)
+use @Kore_Graphics4_setTexture3DMagnificationFilter[None](
+  texture_unit: Pointer[_KoreGraphics4TextureUnitHandle] tag,
+  filter: I32)
+use @Kore_Graphics4_setTexture3DMinificationFilter[None](
+  texture_unit: Pointer[_KoreGraphics4TextureUnitHandle] tag,
+  filter: I32)
+use @Kore_Graphics4_setTexture3DMipmapFilter[None](
+  texture_unit: Pointer[_KoreGraphics4TextureUnitHandle] tag,
+  filter: I32)
+use @Kore_Graphics4_setTextureOperation[None](
+  operation: I32,
+  arg1: I32,
+  arg2: I32)
 use @Kore_Graphics4_vsynced[Bool]()
 use @Kore_Graphics4_refreshRate[U32]()
 use @Kore_Graphics4_nonPow2TexturesSupported[Bool]()
-use @Kore_Graphics4_initOcclusionQuery[Bool]()
-use @Kore_Graphics4_deleteOcclusionQuery[None]()
-use @Kore_Graphics4_renderOcclusionQuery[None]()
-use @Kore_Graphics4_isQueryResultsAvailable[Bool]()
-use @Kore_Graphics4_getQueryResults[None]()
+// NOTE: Kore_Graphics4_initOcclusionQuery out param
+use @Kore_Graphics4_initOcclusionQuery[Bool](
+  occlusion_query: Pointer[U32] tag)
+use @Kore_Graphics4_deleteOcclusionQuery[None](
+  occlusion_query: U32)
+use @Kore_Graphics4_renderOcclusionQuery[None](
+  occlusion_query: U32,
+  triangles: I32)
+use @Kore_Graphics4_isQueryResultsAvailable[Bool](
+  occlusion_query: U32)
+// NOTE: Kore_Graphics4_getQueryResults out param
+use @Kore_Graphics4_getQueryResults[None](
+  occlusion_query: U32,
+  pixel_count: Pointer[U32] tag)
 use @Kore_Graphics4_clear[None](
   flags: U32,
   color: U32,
   depth: F32,
   stencil: I32)
-use @Kore_Graphics4_init[None]()
-use @Kore_Graphics4_destroy[None]()
+use @Kore_Graphics4_init[None](
+  window_id: I32,
+  depth_buffer_bits: I32,
+  stencil_buffer_bits: I32,
+  vsync: I32)
+use @Kore_Graphics4_destroy[None](
+  window_id: I32)
 use @Kore_Graphics4_getFullscreen[Bool]()
 use @Kore_Graphics4_flush[None]()
 
