@@ -957,7 +957,7 @@ primitive KoreGraphics4
     vertex_buffers: Array[KoreGraphics4VertexBuffer],
     count: I32)
   =>
-    let vertex_buffers': Array[Pointer[_KoreGraphics4VertexBufferHandle] tag]
+    var vertex_buffers': Array[Pointer[_KoreGraphics4VertexBufferHandle] tag]
     vertex_buffers' = vertex_buffers'.create(USize.from[I32](count))
     for vb in vertex_buffers.values() do
       vertex_buffers'.push(vb._get_handle())
@@ -991,7 +991,7 @@ primitive KoreGraphics4
       unit._get_handle(), texture._get_handle())
 
   fun set_pipeline(
-    pipeline: KoreGraphics4Pipeline)
+    pipeline: KoreGraphics4PipelineState)
   =>
     @Kore_Graphics4_setPipeline(pipeline._get_handle())
 
@@ -1042,7 +1042,7 @@ primitive KoreGraphics4
     targets: Array[KoreGraphics4RenderTarget],
     count: I32)
   =>
-    let targets': Array[Pointer[_KoreGraphics4RenderTargetHandle] tag]
+    var targets': Array[Pointer[_KoreGraphics4RenderTargetHandle] tag]
     targets' = targets'.create(USize.from[I32](count))
     for rt in targets.values() do
       targets'.push(rt._get_handle())
@@ -1175,37 +1175,43 @@ primitive KoreGraphics4
   fun non_pow2_textures_supported(): Bool =>
     @Kore_Graphics4_nonPow2TexturesSupported()
 
+  // TODO: Verify correct handling of out param
+  // NOTE: Not convinced original alias is updated
   fun init_occlusion_query(
-    occlusion_query: U32 ref)
+    occlusion_query: U32)
     : Bool
   =>
+    var occlusion_query': U32 = occlusion_query
     @Kore_Graphics4_initOcclusionQuery(
-      addressof occlusion_query)
+      addressof occlusion_query')
 
   fun delete_occlusion_query(
-    occlusion_query: U32 ref)
+    occlusion_query: U32)
   =>
     @Kore_Graphics4_deleteOcclusionQuery(occlusion_query)
 
   fun render_occlusion_query(
-    occlusion_query: U32 ref,
+    occlusion_query: U32,
     triangles: I32)
   =>
     @Kore_Graphics4_renderOcclusionQuery(
       occlusion_query, triangles)
 
   fun is_query_results_available(
-    occlusion_query: U32 ref)
+    occlusion_query: U32)
     : Bool
   =>
     @Kore_Graphics4_isQueryResultsAvailable(occlusion_query)
 
+  // TODO: Verify correct handling of out param
+  // NOTE: Not convinced original alias is updated
   fun get_query_results(
-    occlusion_query: U32 ref,
-    pixel_count: U32 ref)
+    occlusion_query: U32,
+    pixel_count: U32)
   =>
+    var pixel_count': U32 = pixel_count
     @Kore_Graphics4_getQueryResults(
-      occlusion_query, addressof pixel_count)
+      occlusion_query, addressof pixel_count')
 
   fun clear_color_flag(): U32 => 1
   fun clear_depth_flag(): U32 => 2
