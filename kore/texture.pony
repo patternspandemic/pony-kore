@@ -148,13 +148,13 @@ class KoreGraphics4Texture
     height: I32,
     depth: I32,
     format: KoreGraphics1ImageFormat,
-    readable: Bool)
+    readable: Bool = false)
   =>
     _handle = @Kore_Graphics4_Texture_createWHFR(
       width, height, depth, format(), readable)
   */
 
-  new from_file(file_name: String val, readable: Bool) =>
+  new from_file(file_name: String val, readable: Bool = false) =>
     _handle = @Kore_Graphics4_Texture_createFR(
       file_name.cstring(), readable)
 
@@ -162,7 +162,7 @@ class KoreGraphics4Texture
   new from_encoded_bytes(
     data: (Array[U8] iso | Array[F32] iso),
     format: String val,
-    readable: Bool)
+    readable: Bool = false)
   =>
     _data = consume data
     _handle = @Kore_Graphics4_Texture_createDSFR(
@@ -175,7 +175,7 @@ class KoreGraphics4Texture
     width: I32,
     height: I32,
     format: KoreGraphics1ImageFormat,
-    readable: Bool)
+    readable: Bool = false)
   =>
     _data = consume data
     _handle = @Kore_Graphics4_Texture_createDWHFR(
@@ -189,11 +189,11 @@ class KoreGraphics4Texture
     height: I32,
     depth: I32,
     format: KoreGraphics1ImageFormat,
-    readable: Bool)
+    readable: Bool = false)
   =>
     _data = consume data
     _handle = @Kore_Graphics4_Texture_createDWHDFR(
-      _data.cpointer(), width, height, depth, format(), readable)
+      _data.cpointer(), width, height, depth, format(), readable = false)
   */
 
   // TODO: Kore_Graphics4_Texture_lock and Kore_Graphics4_Texture_unlock

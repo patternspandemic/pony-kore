@@ -259,7 +259,7 @@ use @Kore_Graphics4_init[None](
   window_id: I32,
   depth_buffer_bits: I32,
   stencil_buffer_bits: I32,
-  vsync: I32)
+  vsync: Bool)
 use @Kore_Graphics4_destroy[None](
   window_id: I32)
 use @Kore_Graphics4_getFullscreen[Bool]()
@@ -794,10 +794,10 @@ class KoreGraphics4RenderTarget
     width: I32,
     height: I32,
     depth_buffer_bits: I32,
-    antialiasing: Bool,
-    format: KoreGraphics4RenderTargetFormat,
-    stencil_buffer_bits: I32,
-    context_id: I32)
+    antialiasing: Bool = false,
+    format: KoreGraphics4RenderTargetFormat = RenderTargetFormatTarget32Bit,
+    stencil_buffer_bits: I32 = -1,
+    context_id: I32 = 0)
   =>
     _handle = @Kore_Graphics4_RenderTarget_createWHDAFSC(
       width, height, depth_buffer_bits, antialiasing,
@@ -806,10 +806,10 @@ class KoreGraphics4RenderTarget
   new cube_map(
     cube_map_size: I32,
     depth_buffer_bits: I32,
-    antialiasing: Bool,
-    format: KoreGraphics4RenderTargetFormat,
-    stencil_buffer_bits: I32,
-    context_id: I32)
+    antialiasing: Bool = false,
+    format: KoreGraphics4RenderTargetFormat = RenderTargetFormatTarget32Bit,
+    stencil_buffer_bits: I32 = -1,
+    context_id: I32 = 0)
   =>
     _handle = @Kore_Graphics4_RenderTarget_createCDAFSC(
       cube_map_size, depth_buffer_bits, antialiasing,
@@ -1056,7 +1056,7 @@ primitive KoreGraphics4
 
   fun set_render_target_face(
     texture: KoreGraphics4RenderTarget,
-    face: I32)
+    face: I32 = 0)
   =>
     @Kore_Graphics4_setRenderTargetFace(texture._get_handle(), face)
 
@@ -1229,7 +1229,7 @@ primitive KoreGraphics4
     window_id: I32,
     depth_buffer_bits: I32,
     stencil_buffer_bits: I32,
-    vsync: I32)
+    vsync: Bool = true)
   =>
     @Kore_Graphics4_init(
       window_id, depth_buffer_bits, stencil_buffer_bits, vsync)
