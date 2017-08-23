@@ -862,8 +862,350 @@ class KoreGraphics4RenderTarget
     @Kore_Graphics4_RenderTarget_destroy(_handle)
 
 primitive KoreGraphics4
+  fun set_bool(
+    location: KoreGraphics4ConstantLocation,
+    value: Bool)
+  =>
+    @Kore_Graphics4_setBool(location._get_handle(), value)
+
+  fun set_int(
+    location: KoreGraphics4ConstantLocation,
+    value: I32)
+  =>
+    @Kore_Graphics4_setInt(location._get_handle(), value)
+
+  fun set_float(
+    location: KoreGraphics4ConstantLocation,
+    value: F32)
+  =>
+    @Kore_Graphics4_setFloat(location._get_handle(), value)
+
+  fun set_float2(
+    location: KoreGraphics4ConstantLocation,
+    value1: F32,
+    value2: F32)
+  =>
+    @Kore_Graphics4_setFloat2(location._get_handle(), value1, value2)
+
+  // TODO: Vector Type
+  // fun set_float2_vec(
+  //   location: KoreGraphics4ConstantLocation,
+  //   value: Vec2)
+  // =>
+  //   @Kore_Graphics4_setFloat2Vec(location._get_handle(), value)
+
+  fun set_float3(
+    location: KoreGraphics4ConstantLocation,
+    value1: F32,
+    value2: F32,
+    value3: F32)
+  =>
+    @Kore_Graphics4_setFloat3(location._get_handle(), value1, value2, value3)
+
+  // TODO: Vector Type
+  // fun set_float3_vec(
+  //   location: KoreGraphics4ConstantLocation,
+  //   value: Vec3)
+  // =>
+  //   @Kore_Graphics4_setFloat3Vec(location._get_handle(), value)
+
+  fun set_float4(
+    location: KoreGraphics4ConstantLocation,
+    value1: F32,
+    value2: F32,
+    value3: F32,
+    value4: F32)
+  =>
+    @Kore_Graphics4_setFloat4(
+      location._get_handle(), value1, value2, value3, value4)
+
+  // TODO: Vector Type
+  // fun set_float4_vec(
+  //   location: KoreGraphics4ConstantLocation,
+  //   value: Vec4)
+  // =>
+  //   @Kore_Graphics4_setFloat4Vec(location._get_handle(), value)
+
+  fun set_floats(
+    location: KoreGraphics4ConstantLocation,
+    floats: Array[F32],
+    count: I32)
+  =>
+    @Kore_Graphics4_setFloats(
+      location._get_handle(), floats.cpointer(), count)
+
+  // TODO: Matrix Type
+  // fun set_matrix3(
+  //   location: KoreGraphics4ConstantLocation,
+  //   value: Mat3)
+  // =>
+  //   @Kore_Graphics4_setMatrix3(location._get_handle(), value._get_handle())
+
+  // TODO: Matrix Type
+  // fun set_matrix4(
+  //   location: KoreGraphics4ConstantLocation,
+  //   value: Mat4)
+  // =>
+  //   @Kore_Graphics4_setMatrix4(location._get_handle(), value._get_handle())
+
+  fun set_vertex_buffer(
+    vertex_buffer: KoreGraphics4VertexBuffer)
+  =>
+    @Kore_Graphics4_setVertexBuffer(vertex_buffer._get_handle())
+
+  fun set_vertex_buffers(
+    vertex_buffers: Array[KoreGraphics4VertexBuffer],
+    count: I32)
+  =>
+    let vertex_buffers': Array[Pointer[_KoreGraphics4VertexBufferHandle] tag]
+    vertex_buffers' = vertex_buffers'.create(USize.from[I32](count))
+    for vb in vertex_buffers.values() do
+      vertex_buffers'.push(vb._get_handle())
+    end
+    @Kore_Graphics4_setVertexBuffers(vertex_buffers'.cpointer(), count)
+
+  fun set_index_buffer(
+    index_buffer: KoreGraphics4IndexBuffer)
+  =>
+    @Kore_Graphics4_setIndexBuffer(index_buffer._get_handle())
+
+  fun set_texture(
+    unit: KoreGraphics4TextureUnit,
+    texture: KoreGraphics4Texture)
+  =>
+    @Kore_Graphics4_setTexture(
+      unit._get_handle(), texture._get_handle())
+
+  fun set_texture_array(
+    unit: KoreGraphics4TextureUnit,
+    texture_array: KoreGraphics4TextureArray)
+  =>
+    @Kore_Graphics4_setTextureArray(
+      unit._get_handle(), texture_array._get_handle())
+
+  fun set_image_texture(
+    unit: KoreGraphics4TextureUnit,
+    texture: KoreGraphics4Texture)
+  =>
+    @Kore_Graphics4_setImageTexture(
+      unit._get_handle(), texture._get_handle())
+
+  fun set_pipeline(
+    pipeline: KoreGraphics4Pipeline)
+  =>
+    @Kore_Graphics4_setPipeline(pipeline._get_handle())
+
+  fun draw_indexed_vertices() =>
+    @Kore_Graphics4_drawIndexedVertices()
+
+  fun draw_indexed_vertices_by_start_count(
+    start: I32,
+    count: I32)
+  =>
+    @Kore_Graphics4_drawIndexedVerticesSC(start, count)
+
+  fun draw_indexed_vertices_instanced(
+    instance_count: I32)
+  =>
+    @Kore_Graphics4_drawIndexedVerticesInstancedI(instance_count)
+
+  fun draw_indexed_vertices_instanced_by_start_count(
+    instance_count: I32,
+    start: I32,
+    count: I32)
+  =>
+    @Kore_Graphics4_drawIndexedVerticesInstancedISC(
+      instance_count, start, count)
+
+  fun change_resolution(
+    width: I32,
+    height: I32)
+  =>
+    @Kore_Graphics4_changeResolution(width, height)
+
+  fun has_window(): Bool =>
+    @Kore_Graphics4_hasWindow()
+
+  fun set_window(value: Bool) =>
+    @Kore_Graphics4_setWindow(value)
+
+  fun antialiasing_samples(): I32 =>
+    @Kore_Graphics4_antialiasingSamples()
+
+  fun set_antialiasing_samples(samples: I32) =>
+    @Kore_Graphics4_setAntialiasingSamples(samples)
+
+  fun render_targets_inverted_y(): Bool =>
+    @Kore_Graphics4_renderTargetsInvertedY()
+
+  fun set_render_targets(
+    targets: Array[KoreGraphics4RenderTarget],
+    count: I32)
+  =>
+    let targets': Array[Pointer[_KoreGraphics4RenderTargetHandle] tag]
+    targets' = targets'.create(USize.from[I32](count))
+    for rt in targets.values() do
+      targets'.push(rt._get_handle())
+    end
+    @Kore_Graphics4_setRenderTargets(targets'.cpointer(), count)
+
+  fun set_render_target(
+    target: KoreGraphics4RenderTarget)
+  =>
+    @Kore_Graphics4_setRenderTarget(target._get_handle())
+
+  fun set_render_target_face(
+    texture: KoreGraphics4RenderTarget,
+    face: I32)
+  =>
+    @Kore_Graphics4_setRenderTargetFace(texture._get_handle(), face)
+
+  fun restore_render_target() =>
+    @Kore_Graphics4_restoreRenderTarget()
+
+  fun setup() =>
+    @Kore_Graphics4_setup()
+
+  fun swap_buffers(window_id: I32 = 0): Bool =>
+    @Kore_Graphics4_swapBuffers(window_id)
+
   fun begin_gfx(window_id: I32 = 0) =>
     @Kore_Graphics4_begin(window_id)
+
+  fun end_gfx(window_id: I32 = 0) =>
+    @Kore_Graphics4_end(window_id)
+
+  fun make_current(window_id: I32) =>
+    @Kore_Graphics4_makeCurrent(window_id)
+
+  fun clear_current() =>
+    @Kore_Graphics4_clearCurrent()
+
+  fun viewport(
+    x: I32,
+    y: I32,
+    width: I32,
+    height: I32)
+  =>
+    @Kore_Graphics4_viewport(x, y, width, height)
+
+  fun scissor(
+    x: I32,
+    y: I32,
+    width: I32,
+    height: I32)
+  =>
+    @Kore_Graphics4_scissor(x, y, width, height)
+
+  fun disable_scissor() =>
+    @Kore_Graphics4_disableScissor()
+
+  fun set_texture_addressing(
+    texture_unit: KoreGraphics4TextureUnit,
+    dir: KoreGraphics4TexDir,
+    addressing: KoreGraphics4TextureAddressing)
+  =>
+    @Kore_Graphics4_setTextureAddressing(
+      texture_unit._get_handle(), dir(), addressing())
+
+  fun set_texture_magnification_filter(
+    texture_unit: KoreGraphics4TextureUnit,
+    filter: KoreGraphics4TextureFilter)
+  =>
+    @Kore_Graphics4_setTextureMagnificationFilter(
+      texture_unit._get_handle(), filter())
+
+  fun set_texture_minification_filter(
+    texture_unit: KoreGraphics4TextureUnit,
+    filter: KoreGraphics4TextureFilter)
+  =>
+    @Kore_Graphics4_setTextureMinificationFilter(
+      texture_unit._get_handle(), filter())
+
+  fun set_texture_mipmap_filter(
+    texture_unit: KoreGraphics4TextureUnit,
+    filter: KoreGraphics4MipmapFilter)
+  =>
+    @Kore_Graphics4_setTextureMipmapFilter(
+      texture_unit._get_handle(), filter())
+
+  fun set_texture_3D_addressing(
+    texture_unit: KoreGraphics4TextureUnit,
+    dir: KoreGraphics4TexDir,
+    addressing: KoreGraphics4TextureAddressing)
+  =>
+    @Kore_Graphics4_setTexture3DAddressing(
+      texture_unit._get_handle(), dir(), addressing())
+
+  fun set_texture_3D_magnification_filter(
+    texture_unit: KoreGraphics4TextureUnit,
+    filter: KoreGraphics4TextureFilter)
+  =>
+    @Kore_Graphics4_setTexture3DMagnificationFilter(
+      texture_unit._get_handle(), filter())
+
+  fun set_texture_3D_minification_filter(
+    texture_unit: KoreGraphics4TextureUnit,
+    filter: KoreGraphics4TextureFilter)
+  =>
+    @Kore_Graphics4_setTexture3DMinificationFilter(
+      texture_unit._get_handle(), filter())
+
+  fun set_texture_3D_mipmap_filter(
+    texture_unit: KoreGraphics4TextureUnit,
+    filter: KoreGraphics4MipmapFilter)
+  =>
+    @Kore_Graphics4_setTexture3DMipmapFilter(
+      texture_unit._get_handle(), filter())
+
+  fun set_texture_operation(
+    operation: KoreGraphics4TextureOperation,
+    arg1: KoreGraphics4TextureArgument,
+    arg2: KoreGraphics4TextureArgument)
+  =>
+    @Kore_Graphics4_setTextureOperation(
+      operation(), arg1(), arg2())
+
+  fun vsynced(): Bool =>
+    @Kore_Graphics4_vsynced()
+
+  fun refresh_rate(): U32 =>
+    @Kore_Graphics4_refreshRate()
+
+  fun non_pow2_textures_supported(): Bool =>
+    @Kore_Graphics4_nonPow2TexturesSupported()
+
+  fun init_occlusion_query(
+    occlusion_query: U32 ref)
+    : Bool
+  =>
+    @Kore_Graphics4_initOcclusionQuery(
+      addressof occlusion_query)
+
+  fun delete_occlusion_query(
+    occlusion_query: U32 ref)
+  =>
+    @Kore_Graphics4_deleteOcclusionQuery(occlusion_query)
+
+  fun render_occlusion_query(
+    occlusion_query: U32 ref,
+    triangles: I32)
+  =>
+    @Kore_Graphics4_renderOcclusionQuery(
+      occlusion_query, triangles)
+
+  fun is_query_results_available(
+    occlusion_query: U32 ref)
+    : Bool
+  =>
+    @Kore_Graphics4_isQueryResultsAvailable(occlusion_query)
+
+  fun get_query_results(
+    occlusion_query: U32 ref,
+    pixel_count: U32 ref)
+  =>
+    @Kore_Graphics4_getQueryResults(
+      occlusion_query, addressof pixel_count)
 
   fun clear_color_flag(): U32 => 1
   fun clear_depth_flag(): U32 => 2
@@ -877,8 +1219,20 @@ primitive KoreGraphics4
   =>
     @Kore_Graphics4_clear(flags, color, depth, stencil)
 
-  fun end_gfx(window_id: I32 = 0) =>
-    @Kore_Graphics4_end(window_id)
+  fun init(
+    window_id: I32,
+    depth_buffer_bits: I32,
+    stencil_buffer_bits: I32,
+    vsync: I32)
+  =>
+    @Kore_Graphics4_init(
+      window_id, depth_buffer_bits, stencil_buffer_bits, vsync)
 
-  fun swap_buffers(window_id: I32 = 0) =>
-    @Kore_Graphics4_swapBuffers(window_id)
+  fun destroy(window_id: I32) =>
+    @Kore_Graphics4_destroy(window_id)
+
+  fun get_fullscreen(): Bool =>
+    @Kore_Graphics4_getFullscreen()
+
+  fun flush() =>
+    @Kore_Graphics4_flush()
