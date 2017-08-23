@@ -155,6 +155,8 @@ class KoreGraphics4PipelineState
   var _geometry_shader: (KoreGraphics4Shader iso | None) = None
   var _tessellation_control_shader: (KoreGraphics4Shader iso | None) = None
   var _tessellation_evaluation_shader: (KoreGraphics4Shader iso | None) = None
+  // TODO: Perhaps expose input_layout similarly to
+  // VertexBufferData/IndexBufferData?
   var input_layout: Array[KoreGraphics4VertexStructure val]
 
   new create() =>
