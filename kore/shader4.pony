@@ -35,12 +35,12 @@ type KoreGraphics4ShaderType is
 
 primitive _KoreGraphics4ShaderHandle
 
-class KoreGraphics4Shader
+class val KoreGraphics4Shader
   let _handle: Pointer[_KoreGraphics4ShaderHandle] tag
   let _data: String val
 
   // TODO: Neccessary to store data as private field to avoid GC?
-  new create(data: String val, shader_type: KoreGraphics4ShaderType) =>
+  new val create(data: String val, shader_type: KoreGraphics4ShaderType) =>
     _data = data
     _handle = @Kore_Graphics4_Shader_createDLT(
       _data.cpointer(),
@@ -55,16 +55,18 @@ class KoreGraphics4Shader
 
 primitive _KoreGraphics4ConstantLocationHandle
 
-class KoreGraphics4ConstantLocation
+class val KoreGraphics4ConstantLocation
   let _handle: Pointer[_KoreGraphics4ConstantLocationHandle] tag
 
   /*
   // Use KoreGraphics4PipelineState.get_constant_location instead
-  new create() =>
+  new val create() =>
     _handle = @Kore_Graphics4_ConstantLocation_create()
   */
 
-  new _from_handle(handle: Pointer[_KoreGraphics4ConstantLocationHandle] tag) =>
+  new val _from_handle(
+    handle: Pointer[_KoreGraphics4ConstantLocationHandle] tag)
+  =>
     _handle = handle
 
   fun _get_handle(): Pointer[_KoreGraphics4ConstantLocationHandle] tag =>

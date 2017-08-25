@@ -203,10 +203,10 @@ class KoreGraphics4VertexElement
 
 primitive _KoreGraphics4VertexStructureHandle
 
-class KoreGraphics4VertexStructure
+class trn KoreGraphics4VertexStructure
   let _handle: Pointer[_KoreGraphics4VertexStructureHandle] tag
 
-  new create() =>
+  new trn create() =>
     _handle = @Kore_Graphics4_VertexStructure_create()
 
   fun add(name: String val, data: KoreGraphics4VertexData) =>

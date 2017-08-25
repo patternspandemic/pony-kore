@@ -8,7 +8,7 @@ actor Main
         width = 640,
         height = 480)
 
-    kore_system({(system: KoreSystem) => BasicExample(system)} val)
+    kore_system({ref() => BasicExample(kore_system)} ref)
 
 class BasicExample
   let clear_color: U32
@@ -18,8 +18,4 @@ class BasicExample
     system.notify_on_render(this~render())
 
   fun render() =>
-    // FIXME: Context handling
-    // KoreGraphics4.begin_gfx()
     KoreGraphics4.clear(KoreGraphics4.clear_color_flag(), clear_color)
-    // KoreGraphics4.end_gfx()
-    // KoreGraphics4.swap_buffers()

@@ -3,7 +3,7 @@ use "collections"
 
 use @Kore_System__updateWithSystemObject[None](
   system: KoreSystem,
-  system_callback: @{(KoreSystem)})
+  system_callback: @{(KoreSystem, I32)})
 
 use @Kore_System_init[None](name: Pointer[U8] tag, width: I32, height: I32)
 
@@ -136,7 +136,7 @@ class KoreSystem
     _render_listeners = _render_listeners.create()
     _render_listeners(0) = Array[{()}].create(1)
 
-  fun ref apply(callback': {(KoreSystem)} val) =>
+  fun ref apply(callback': {ref()} ref) =>
     KoreRandom.init()
     KoreSystemPrimitive.set_name(_options.title)
     KoreSystemPrimitive.setup()
@@ -157,11 +157,11 @@ class KoreSystem
     // See: https://github.com/Kode/Kha/blob/master/Backends/Kore/kha/SystemImpl.hx#L108
     // shaders init?
     // framebuffer init?
-    callback'(this)
+    callback'()
     KoreSystemPrimitive._update_with_system_object(
       this,
-      @{(system: KoreSystem) =>
-        system.frame()
+      @{(system: KoreSystem, context_id: I32) =>
+        system.frame(context_id)
       })
     KoreSystemPrimitive.start()
     // KoreSystemPrimitive.stop()?
@@ -193,13 +193,9 @@ class KoreSystem
 
 primitive KoreSystemPrimitive
 
-  // set_system_object
-  // set_system_object_callback
-  // set_update_callback
-
   fun _update_with_system_object(
     system: KoreSystem,
-    system_callback: @{(KoreSystem)})
+    system_callback: @{(KoreSystem, I32)})
   =>
     @Kore_System__updateWithSystemObject(system, system_callback)
 

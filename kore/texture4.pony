@@ -93,16 +93,16 @@ use @Kore_Graphics4_TextureArray_destroy[None](
 
 primitive _KoreGraphics4TextureUnitHandle
 
-class KoreGraphics4TextureUnit
+class val KoreGraphics4TextureUnit
   let _handle: Pointer[_KoreGraphics4TextureUnitHandle] tag
 
   /*
   // Use KoreGraphics4PipelineState.get_texture_unit instead
-  new create() =>
+  new val create() =>
     _handle = @Kore_Graphics4_TextureUnit_create()
   */
 
-  new _from_handle(handle: Pointer[_KoreGraphics4TextureUnitHandle] tag) =>
+  new val _from_handle(handle: Pointer[_KoreGraphics4TextureUnitHandle] tag) =>
     _handle = handle
 
   fun _get_handle(): Pointer[_KoreGraphics4TextureUnitHandle] tag =>

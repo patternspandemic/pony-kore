@@ -150,11 +150,11 @@ primitive _KoreGraphics4PipelineStateHandle
 
 class KoreGraphics4PipelineState
   let _handle: Pointer[_KoreGraphics4PipelineStateHandle] tag
-  var _vertex_shader: (KoreGraphics4Shader iso | None) = None
-  var _fragment_shader: (KoreGraphics4Shader iso | None) = None
-  var _geometry_shader: (KoreGraphics4Shader iso | None) = None
-  var _tessellation_control_shader: (KoreGraphics4Shader iso | None) = None
-  var _tessellation_evaluation_shader: (KoreGraphics4Shader iso | None) = None
+  var _vertex_shader: (KoreGraphics4Shader val | None) = None
+  var _fragment_shader: (KoreGraphics4Shader val | None) = None
+  var _geometry_shader: (KoreGraphics4Shader val | None) = None
+  var _tessellation_control_shader: (KoreGraphics4Shader val | None) = None
+  var _tessellation_evaluation_shader: (KoreGraphics4Shader val | None) = None
   // TODO: Perhaps expose input_layout similarly to
   // VertexBufferData/IndexBufferData?
   var input_layout: Array[KoreGraphics4VertexStructure val]
@@ -191,7 +191,7 @@ class KoreGraphics4PipelineState
 
   fun ref get_constant_location(
     name: String val)
-    : KoreGraphics4ConstantLocation
+    : KoreGraphics4ConstantLocation val
   =>
     KoreGraphics4ConstantLocation._from_handle(
       @Kore_Graphics4_PipelineState_getConstantLocation(
@@ -199,53 +199,53 @@ class KoreGraphics4PipelineState
 
   fun ref get_texture_unit(
     name: String val)
-    : KoreGraphics4TextureUnit
+    : KoreGraphics4TextureUnit val
   =>
     KoreGraphics4TextureUnit._from_handle(
       @Kore_Graphics4_PipelineState_getTextureUnit(
         _handle, name.cstring()))
 
-  fun ref set_vertex_shader(shader: KoreGraphics4Shader iso) =>
+  fun ref set_vertex_shader(shader: KoreGraphics4Shader val) =>
     @Kore_Graphics4_PipelineState_setVertexShader(
       _handle, shader._get_handle())
-    _vertex_shader = consume shader
+    _vertex_shader = shader
 
-  fun ref unset_vertex_shader(): (KoreGraphics4Shader iso^ | None) =>
+  fun ref unset_vertex_shader(): (KoreGraphics4Shader val^ | None) =>
     _vertex_shader = None
 
-  fun ref set_fragment_shader(shader: KoreGraphics4Shader iso) =>
+  fun ref set_fragment_shader(shader: KoreGraphics4Shader val) =>
     @Kore_Graphics4_PipelineState_setFragmentShader(
       _handle, shader._get_handle())
-    _fragment_shader = consume shader
+    _fragment_shader = shader
 
-  fun ref unset_fragment_shader(): (KoreGraphics4Shader iso^ | None) =>
+  fun ref unset_fragment_shader(): (KoreGraphics4Shader val^ | None) =>
     _fragment_shader = None
 
-  fun ref set_geometry_shader(shader: KoreGraphics4Shader iso) =>
+  fun ref set_geometry_shader(shader: KoreGraphics4Shader val) =>
     @Kore_Graphics4_PipelineState_setGeometryShader(
       _handle, shader._get_handle())
-    _geometry_shader = consume shader
+    _geometry_shader = shader
 
-  fun ref unset_geometry_shader(): (KoreGraphics4Shader iso^ | None) =>
+  fun ref unset_geometry_shader(): (KoreGraphics4Shader val^ | None) =>
     _geometry_shader = None
 
-  fun ref set_tessellation_control_shader(shader: KoreGraphics4Shader iso) =>
+  fun ref set_tessellation_control_shader(shader: KoreGraphics4Shader val) =>
     @Kore_Graphics4_PipelineState_setTessellationControlShader(
       _handle, shader._get_handle())
-    _tessellation_control_shader = consume shader
+    _tessellation_control_shader = shader
 
   fun ref unset_tessellation_control_shader()
-    : (KoreGraphics4Shader iso^ | None)
+    : (KoreGraphics4Shader val^ | None)
   =>
     _tessellation_control_shader = None
 
-  fun ref set_tessellation_evaluation_shader(shader: KoreGraphics4Shader iso) =>
+  fun ref set_tessellation_evaluation_shader(shader: KoreGraphics4Shader val) =>
     @Kore_Graphics4_PipelineState_setTessellationEvaluationShader(
       _handle, shader._get_handle())
-    _tessellation_evaluation_shader = consume shader
+    _tessellation_evaluation_shader = shader
 
   fun ref unset_tessellation_evaluation_shader()
-    : (KoreGraphics4Shader iso^ | None)
+    : (KoreGraphics4Shader val^ | None)
   =>
     _tessellation_evaluation_shader = None
 
