@@ -1,4 +1,9 @@
 use "lib:korec"
+use "collections"
+
+use @Kore_System__updateWithSystemObject[None](
+  system: KoreSystem,
+  system_callback: @{(KoreSystem)})
 
 use @Kore_System_init[None](name: Pointer[U8] tag, width: I32, height: I32)
 
@@ -90,8 +95,114 @@ type KoreOrientation is
   | OrientationUnknown
   )
 
+class _SystemOptions
+  var title: String = "Kore"
+	var width: I32 = 800
+	var height: I32 = 600
+	var samples_per_pixel: I32 = 1
+	var vsync: Bool = true
+	var window_mode: KoreWindowMode = WindowModeWindow
+	var resizable: Bool = false
+	var maximizable: Bool = false
+  var minimizable: Bool = true
+
 // TODO: Convert returns to non-FFI types where it makes sense
-primitive KoreSystem
+
+class KoreSystem
+  let _options: _SystemOptions
+  var _render_listeners: Map[USize, Array[{()}]]
+
+  new create(
+    title: String = "Kore",
+    width: I32 = 800,
+    height: I32 = 600,
+    samples_per_pixel: I32 = 1,
+    vsync: Bool = true,
+    window_mode: KoreWindowMode = WindowModeWindow,
+    resizable: Bool = false,
+    maximizable: Bool = false,
+    minimizable: Bool = true)
+  =>
+    _options = _SystemOptions
+    _options.title = title
+    _options.width = width
+    _options.height = height
+    _options.samples_per_pixel = samples_per_pixel
+    _options.vsync = vsync
+    _options.window_mode = window_mode
+    _options.resizable = resizable
+    _options.maximizable = maximizable
+    _options.minimizable = minimizable
+    _render_listeners = _render_listeners.create()
+    _render_listeners(0) = Array[{()}].create(1)
+
+  fun ref apply(callback': {(KoreSystem)} val) =>
+    KoreRandom.init()
+    KoreSystemPrimitive.set_name(_options.title)
+    KoreSystemPrimitive.setup()
+
+    var window_options = KoreWindowOptions(_options.title)
+    window_options.width = _options.width.min(
+      KoreSystemPrimitive.desktop_width())
+    window_options.height = _options.height.min(
+      KoreSystemPrimitive.desktop_height())
+    window_options.renderer_options.antialiasing = _options.samples_per_pixel
+    window_options.vsync = _options.vsync
+    window_options.mode = _options.window_mode()
+    window_options.resizable = _options.resizable
+    window_options.maximizable = _options.maximizable
+    window_options.minimizable = _options.minimizable
+
+    KoreSystemPrimitive.init_window(window_options)
+    // See: https://github.com/Kode/Kha/blob/master/Backends/Kore/kha/SystemImpl.hx#L108
+    // shaders init?
+    // framebuffer init?
+    callback'(this)
+    KoreSystemPrimitive._update_with_system_object(
+      this,
+      @{(system: KoreSystem) =>
+        system.frame()
+      })
+    KoreSystemPrimitive.start()
+    // KoreSystemPrimitive.stop()?
+
+  fun ref notify_on_render(
+    listener: {()},
+    id: USize = 0)
+  =>
+    if not _render_listeners.contains(id) then
+      _render_listeners(id) = Array[{()}].create(1)
+    end
+    try _render_listeners(id)?.push(listener) end
+
+  // TODO: KoreSystem.remove_render_listener
+
+  fun frame(id: I32 = 0) =>
+    // TODO: At some point send a framebuffer along
+    _render(USize.from[I32](id))
+
+  fun _render(id: USize = 0) =>
+    if _render_listeners.size() > 0 then
+      try
+        for listener in _render_listeners(id)?.values() do
+          listener() // TODO: At some point send a framebuffer along
+        end
+      end
+    end
+
+
+primitive KoreSystemPrimitive
+
+  // set_system_object
+  // set_system_object_callback
+  // set_update_callback
+
+  fun _update_with_system_object(
+    system: KoreSystem,
+    system_callback: @{(KoreSystem)})
+  =>
+    @Kore_System__updateWithSystemObject(system, system_callback)
+
   fun init(name': String val, width: I32, height: I32) =>
     @Kore_System_init(name'.cstring(), width, height)
 

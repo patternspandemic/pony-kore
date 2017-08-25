@@ -949,7 +949,7 @@ primitive KoreGraphics4
   //   @Kore_Graphics4_setMatrix4(location._get_handle(), value._get_handle())
 
   fun set_vertex_buffer(
-    vertex_buffer: KoreGraphics4VertexBuffer)
+    vertex_buffer: KoreGraphics4VertexBuffer box)
   =>
     @Kore_Graphics4_setVertexBuffer(vertex_buffer._get_handle())
 
@@ -965,7 +965,7 @@ primitive KoreGraphics4
     @Kore_Graphics4_setVertexBuffers(vertex_buffers'.cpointer(), count)
 
   fun set_index_buffer(
-    index_buffer: KoreGraphics4IndexBuffer)
+    index_buffer: KoreGraphics4IndexBuffer box)
   =>
     @Kore_Graphics4_setIndexBuffer(index_buffer._get_handle())
 
@@ -991,7 +991,7 @@ primitive KoreGraphics4
       unit._get_handle(), texture._get_handle())
 
   fun set_pipeline(
-    pipeline: KoreGraphics4PipelineState)
+    pipeline: KoreGraphics4PipelineState box)
   =>
     @Kore_Graphics4_setPipeline(pipeline._get_handle())
 

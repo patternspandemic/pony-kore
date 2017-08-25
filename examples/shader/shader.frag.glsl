@@ -1,7 +1,11 @@
-#version 450
+#version 100
 
-out vec4 FragColor;
+#ifdef GL_ES
+precision mediump float;
+#endif
+
+varying vec4 fragmentColor;
 
 void main() {
-	FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+	gl_FragColor = fragmentColor;
 }
