@@ -17,5 +17,6 @@ class BasicExample
     clear_color = 0xffff0000
     system.notify_on_render(this~render())
 
-  fun render() =>
-    KoreGraphics4.clear(KoreGraphics4.clear_color_flag(), clear_color)
+  fun render(framebuffer: Framebuffer) =>
+    let g4 = framebuffer.g4()
+    g4.clear(g4.clear_color_flag(), clear_color)

@@ -861,7 +861,7 @@ class KoreGraphics4RenderTarget
   fun _final() =>
     @Kore_Graphics4_RenderTarget_destroy(_handle)
 
-primitive KoreGraphics4
+primitive KoreGraphics4Primitive
   fun set_bool(
     location: KoreGraphics4ConstantLocation,
     value: Bool)
@@ -1242,3 +1242,11 @@ primitive KoreGraphics4
 
   fun flush() =>
     @Kore_Graphics4_flush()
+
+// TODO: KoreGraphics4 class
+type KoreGraphics4 is KoreGraphics4Primitive
+// class KoreGraphics4
+//   var _target: (Canvas | None)
+
+//   new create(target: Canvas = None) =>
+//     _target = target

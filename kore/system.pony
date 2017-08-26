@@ -110,7 +110,8 @@ class _SystemOptions
 
 class KoreSystem
   let _options: _SystemOptions
-  var _render_listeners: Map[USize, Array[{()}]]
+  var _render_listeners: Map[USize, Array[{(Framebuffer)}]]
+  var _framebuffers: Map[USize, Framebuffer]
 
   new create(
     title: String = "Kore",
@@ -134,7 +135,8 @@ class KoreSystem
     _options.maximizable = maximizable
     _options.minimizable = minimizable
     _render_listeners = _render_listeners.create()
-    _render_listeners(0) = Array[{()}].create(1)
+    _render_listeners(0) = Array[{(Framebuffer)}].create(1)
+    _framebuffers = _framebuffers.create()
 
   fun ref apply(callback': {ref()} ref) =>
     KoreRandom.init()
@@ -156,36 +158,45 @@ class KoreSystem
     KoreSystemPrimitive.init_window(window_options)
     // See: https://github.com/Kode/Kha/blob/master/Backends/Kore/kha/SystemImpl.hx#L108
     // shaders init?
-    // framebuffer init?
+
+    let window_id: I32 = 0
+    let g4 = KoreGraphics4
+    let framebuffer = Framebuffer(window_id where g4' = g4)
+    // TODO: Init framebuffer's g1 and g2 APIs
+    // framebuffer(
+    //   KoreGraphics1(framebuffer),
+    //   KoreGraphics2(framebuffer),
+    //   g4)
+    _framebuffers(0) = framebuffer
+
     callback'()
     KoreSystemPrimitive._update_with_system_object(
       this,
       @{(system: KoreSystem, context_id: I32) =>
-        system.frame(context_id)
+        system.frame(USize.from[I32](context_id))
       })
     KoreSystemPrimitive.start()
     // KoreSystemPrimitive.stop()?
 
   fun ref notify_on_render(
-    listener: {()},
+    listener: {(Framebuffer)},
     id: USize = 0)
   =>
     if not _render_listeners.contains(id) then
-      _render_listeners(id) = Array[{()}].create(1)
+      _render_listeners(id) = Array[{(Framebuffer)}].create(1)
     end
     try _render_listeners(id)?.push(listener) end
 
   // TODO: KoreSystem.remove_render_listener
 
-  fun frame(id: I32 = 0) =>
-    // TODO: At some point send a framebuffer along
-    _render(USize.from[I32](id))
+  fun ref frame(id: USize) =>
+    try _render(id, _framebuffers(id)?) end
 
-  fun _render(id: USize = 0) =>
+  fun _render(id: USize, framebuffer: Framebuffer) =>
     if _render_listeners.size() > 0 then
       try
         for listener in _render_listeners(id)?.values() do
-          listener() // TODO: At some point send a framebuffer along
+          listener(framebuffer)
         end
       end
     end

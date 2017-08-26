@@ -70,3 +70,5 @@ class val KoreGraphics1Color
 primitive _KoreGraphics1ImageHandle
 
 // TODO: KoreGraphics1Image class
+
+class KoreGraphics1

@@ -78,9 +78,10 @@ class ShaderExample
 
     system.notify_on_render(this~render())
 
-  fun render() =>
-    KoreGraphics4.clear(KoreGraphics4.clear_color_flag())
-    KoreGraphics4.set_pipeline(pipeline)
-    KoreGraphics4.set_vertex_buffer(vertex_buffer)
-    KoreGraphics4.set_index_buffer(index_buffer)
-    KoreGraphics4.draw_indexed_vertices()
+  fun render(framebuffer: Framebuffer) =>
+    let g = framebuffer.g4()
+    g.clear(g.clear_color_flag())
+    g.set_pipeline(pipeline)
+    g.set_vertex_buffer(vertex_buffer)
+    g.set_index_buffer(index_buffer)
+    g.draw_indexed_vertices()
