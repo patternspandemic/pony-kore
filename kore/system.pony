@@ -167,7 +167,7 @@ class KoreSystem
     //   KoreGraphics1(framebuffer),
     //   KoreGraphics2(framebuffer),
     //   g4)
-    _framebuffers(0) = framebuffer
+    _framebuffers(window_id) = framebuffer
 
     callback'()
     KoreSystemPrimitive._update_with_system_object(

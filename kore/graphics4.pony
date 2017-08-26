@@ -316,27 +316,27 @@ type KoreGraphics4TextureFilter is
   | TextureFilterAnisotropicFilter
   )
 
-primitive MipmapFilterNoMipFilter
+primitive MipMapFilterNoMipFilter
   fun apply(): I32 => 0
-primitive MipmapFilterPointMipFilter
+primitive MipMapFilterPointMipFilter
   fun apply(): I32 => 1
-primitive MipmapFilterLinearMipFilter
+primitive MipMapFilterLinearMipFilter
   fun apply(): I32 => 2
 
-primitive ToKoreGraphics4MipmapFilter
-  fun from(value: I32): KoreGraphics4MipmapFilter =>
+primitive ToKoreGraphics4MipMapFilter
+  fun from(value: I32): KoreGraphics4MipMapFilter =>
     match value
-    | 0 => MipmapFilterNoMipFilter
+    | 0 => MipMapFilterNoMipFilter
     | 1 => MipmapFilterPointMipFilter
-    | 2 => MipmapFilterLinearMipFilter
+    | 2 => MipMapFilterLinearMipFilter
     else
-      MipmapFilterNoMipFilter
+      MipMapFilterNoMipFilter
     end
 
-type KoreGraphics4MipmapFilter is
-  ( MipmapFilterNoMipFilter
-  | MipmapFilterPointMipFilter
-  | MipmapFilterLinearMipFilter
+type KoreGraphics4MipMapFilter is
+  ( MipMapFilterNoMipFilter
+  | MipMapFilterPointMipFilter
+  | MipMapFilterLinearMipFilter
   )
 
 primitive RenderStateBlendingState
@@ -928,11 +928,10 @@ primitive KoreGraphics4Primitive
 
   fun set_floats(
     location: KoreGraphics4ConstantLocation,
-    floats: Array[F32],
-    count: I32)
+    floats: Array[F32])
   =>
     @Kore_Graphics4_setFloats(
-      location._get_handle(), floats.cpointer(), count)
+      location._get_handle(), floats.cpointer(), floats.size())
 
   // TODO: Matrix Type
   // fun set_matrix3(
@@ -1124,7 +1123,7 @@ primitive KoreGraphics4Primitive
 
   fun set_texture_mipmap_filter(
     texture_unit: KoreGraphics4TextureUnit,
-    filter: KoreGraphics4MipmapFilter)
+    filter: KoreGraphics4MipMapFilter)
   =>
     @Kore_Graphics4_setTextureMipmapFilter(
       texture_unit._get_handle(), filter())
@@ -1153,7 +1152,7 @@ primitive KoreGraphics4Primitive
 
   fun set_texture_3D_mipmap_filter(
     texture_unit: KoreGraphics4TextureUnit,
-    filter: KoreGraphics4MipmapFilter)
+    filter: KoreGraphics4MipMapFilter)
   =>
     @Kore_Graphics4_setTexture3DMipmapFilter(
       texture_unit._get_handle(), filter())
@@ -1244,9 +1243,137 @@ primitive KoreGraphics4Primitive
     @Kore_Graphics4_flush()
 
 // TODO: KoreGraphics4 class
-type KoreGraphics4 is KoreGraphics4Primitive
-// class KoreGraphics4
-//   var _target: (Canvas | None)
+class KoreGraphics4
+  var _target: (Canvas | None)
 
-//   new create(target: Canvas = None) =>
-//     _target = target
+  new create(target: Canvas = None) =>
+    _target = target
+
+  /* ------- */
+
+  fun begin_gfx(
+    additional_render_targets: (Array[KoreGraphics4RenderTarget] | None) = None)
+  =>
+
+  fun begin_face(face: I32) =>
+  fun begin_eye(eye: I32) =>
+  fun end_gfx() =>
+
+  fun vsynced(): Bool =>
+  fun refresh_rate(): I32 =>
+
+  fun clear(
+    color: (U32 | None) = None,
+    depth: (F32 | None) = None,
+    stencil: (I32 | None) = None)
+  =>
+
+  fun viewport(x: I32, y: I32, width: I32, height: I32) =>
+  fun scissor(x: I32, y: I32, width: I32, height: I32) =>
+
+  fun disable_scissor() =>
+  fun set_vertex_buffer(vertex_buffer: KoreGraphics4VertexBuffer) =>
+  fun set_vertex_buffers(vertex_buffers: Array[KoreGraphics4VertexBuffer]) =>
+  fun set_index_buffer(index_buffer: KoreGraphics4IndexBuffer) =>
+
+  fun set_texture(unit: KoreGraphics4TextureUnit, texture: Image) =>
+  fun set_texture_depth(unit: KoreGraphics4TextureUnit, texture: Image) =>
+  fun set_texture_array(unit: KoreGraphics4TextureUnit, texture: Image) =>
+  fun set_video_texture(unit: KoreGraphics4TextureUnit, texture: Video) =>
+  fun set_image_texture(unit: KoreGraphics4TextureUnit, texture: Image) =>
+  fun set_texture_parameters(
+    unit: KoreGraphics4TextureUnit,
+    u_addressing: KoreGraphics4TextureAddressing,
+    v_addressing: KoreGraphics4TextureAddressing,
+    minification_filter: KoreGraphics4TextureFilter,
+    magnification_filter: KoreGraphics4TextureFilter,
+    mipmap_filter: KoreGraphics4MipMapFilter)
+  =>
+
+  fun set_texture_3D_parameters(
+    unit: KoreGraphics4TextureUnit,
+    u_addressing: KoreGraphics4TextureAddressing,
+    v_addressing: KoreGraphics4TextureAddressing,
+    w_addressing: KoreGraphics4TextureAddressing,
+    minification_filter: KoreGraphics4TextureFilter,
+    magnification_filter: KoreGraphics4TextureFilter,
+    mipmap_filter: KoreGraphics4MipMapFilter)
+  =>
+
+  fun set_cube_map(unit: KoreGraphics4TextureUnit, cube_map: CubeMap) =>
+  fun set_cube_map_depth(unit: KoreGraphics4TextureUnit, cube_map: CubeMap) =>
+
+  //fun max_texture_size(): I32
+  //fun supports_non_pow2_textures(): Bool
+
+  fun render_targets_inverted_y(): Bool
+  fun instanced_rendering_available(): Bool
+
+  fun set_pipeline(pipeline: KoreGraphics4PipelineState) =>
+
+  fun set_bool(
+    location: KoreGraphics4ConstantLocation,
+    value: Bool)
+  =>
+  fun set_int(
+    location: KoreGraphics4ConstantLocation,
+    value: I32)
+  =>
+  fun set_float(
+    location: KoreGraphics4ConstantLocation,
+    value: F32)
+  =>
+  fun set_float2(
+    location: KoreGraphics4ConstantLocation,
+    value1: F32,
+    value2: F32)
+  =>
+  fun set_float3(
+    location: KoreGraphics4ConstantLocation,
+    value1: F32,
+    value2: F32,
+    value3: F32)
+  =>
+  fun set_float4(
+    location: KoreGraphics4ConstantLocation,
+    value1: F32,
+    value2: F32,
+    value3: F32,
+    value4: F32)
+  =>
+  fun set_floats(
+    location: KoreGraphics4ConstantLocation,
+    floats: Array[F32])
+  =>
+  // TODO: Vector and Matrix Types
+  /*
+  fun set_vector2(
+    location: KoreGraphics4ConstantLocation,
+    value: Vec2)
+  =>
+  fun set_vector3(
+    location: KoreGraphics4ConstantLocation,
+    value: Vec3)
+  =>
+  fun set_vector4(
+    location: KoreGraphics4ConstantLocation,
+    value: Vec4)
+  =>
+  fun set_matrix(
+    location: KoreGraphics4ConstantLocation,
+    value: Mat4)
+  =>
+  fun set_matrix3(
+    location: KoreGraphics4ConstantLocation,
+    value: Mat3)
+  =>
+  */
+
+  fun draw_indexed_vertices(start: I32 = 0, count: I32 = -1) =>
+  fun draw_indexed_vertices_instanced(
+    instance_count: I32,
+    start: I32 = 0,
+    count: I32 = -1)
+  =>
+
+  fun flush() =>
