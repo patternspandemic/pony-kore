@@ -953,9 +953,9 @@ primitive KoreGraphics4Primitive
     @Kore_Graphics4_setVertexBuffer(vertex_buffer._get_handle())
 
   fun set_vertex_buffers(
-    vertex_buffers: Array[KoreGraphics4VertexBuffer],
-    count: I32)
+    vertex_buffers: Array[KoreGraphics4VertexBuffer box]) // box?
   =>
+    let count: I32 = U32.from[USize](vertex_buffers.size())
     var vertex_buffers': Array[Pointer[_KoreGraphics4VertexBufferHandle] tag]
     vertex_buffers' = vertex_buffers'.create(USize.from[I32](count))
     for vb in vertex_buffers.values() do
@@ -1242,12 +1242,127 @@ primitive KoreGraphics4Primitive
   fun flush() =>
     @Kore_Graphics4_flush()
 
+
 // TODO: KoreGraphics4 class
+// see: https://github.com/Kode/Kha/blob/master/Backends/Kore/kha/kore/graphics4/Graphics.hx
 class KoreGraphics4
+  // Structural type
   var _target: (Canvas | None)
+  // Underlying concrete type
+  var _render_target: (KoreGraphics4RenderTarget | None) = None
 
   new create(target: Canvas = None) =>
     _target = target
+    // TODO
+    // try _target as cube map, assign underlying RT to _render_target
+    // else try _target as image, assign underlying RT to _render_target
+
+  fun vsynced(): Bool =>
+    KoreGraphics4Primitive.vsynced()
+
+  fun refresh_rate(): U32 =>
+    KoreGraphics4Primitive.refresh_rate()
+
+  fun clear(
+    color: (U32 | None) = None,
+    depth: (F32 | None) = None,
+    stencil: (I32 | None) = None)
+  =>
+    var flags: I32 = 0
+    var color': U32 = 0
+    var depth': F32 = 1.0
+    var stencil': I32 = 0
+
+    try
+      color' = color as U32
+      flags = flags or KoreGraphics4Primitive.clear_color_flag()
+    end
+    try
+      depth' = depth as F32
+      flags = flags or KoreGraphics4Primitive.clear_depth_flag()
+    end
+    try
+      stencil' = stencil as I32
+      flags = flags or KoreGraphics4Primitive.clear_stencil_flag()
+    end
+    KoreGraphics4Primitive.clear(flags, color', depth', stencil')
+
+  fun viewport(x: I32, y: I32, width: I32, height: I32) =>
+    KoreGraphics4Primitive.viewport(x, y, width, height)
+
+  fun set_vertex_buffer(vertex_buffer: KoreGraphics4VertexBuffer box) =>
+    KoreGraphics4Primitive.set_vertex_buffer(vertex_buffer)
+
+  fun set_vertex_buffers(
+    vertex_buffers: Array[KoreGraphics4VertexBuffer box])
+  =>
+    KoreGraphics4Primitive.set_vertex_buffers(vertex_buffers)
+
+  fun set_index_buffer(index_buffer: KoreGraphics4IndexBuffer box) =>
+    KoreGraphics4Primitive.set_index_buffer(index_buffer)
+
+  // fun max_texture_size(): I32 =>
+  //   I32(4096)
+
+  // fun supports_non_pow2_textures(): Bool =>
+  //   false
+
+  // TODO: KoreGraphics4.set_cube_map/set_cube_map_depth
+  // fun set_cube_map(unit: KoreGraphics4TextureUnit, cube_map: CubeMap) =>
+  // fun set_cube_map_depth(unit: KoreGraphics4TextureUnit, cube_map: CubeMap) =>
+
+  fun scissor(x: I32, y: I32, width: I32, height: I32) =>
+    KoreGraphics4Primitive.scissor(x, y, width, height)
+
+  fun disable_scissor() =>
+    KoreGraphics4Primitive.disable_scissor()
+
+  fun render_targets_inverted_y(): Bool =>
+    KoreGraphics4Primitive.render_targets_inverted_y()
+
+  // fun instanced_rendering_available(): Bool =>
+  //   true
+
+  fun set_texture_parameters(
+    unit: KoreGraphics4TextureUnit,
+    u_addressing: KoreGraphics4TextureAddressing,
+    v_addressing: KoreGraphics4TextureAddressing,
+    minification_filter: KoreGraphics4TextureFilter,
+    magnification_filter: KoreGraphics4TextureFilter,
+    mipmap_filter: KoreGraphics4MipMapFilter)
+  =>
+    KoreGraphics4Primitive.set_texture_addressing(
+      unit, TexDirU, u_addressing)
+    KoreGraphics4Primitive.set_texture_addressing(
+      unit, TexDirV, v_addressing)
+    KoreGraphics4Primitive.set_texture_minification_filter(
+      unit, minification_filter)
+    KoreGraphics4Primitive.set_texture_magnification_filter(
+      unit, magnification_filter)
+    KoreGraphics4Primitive.set_texture_mipmap_filter(
+      unit, mipmap_filter)
+
+  fun set_texture_3D_parameters(
+    unit: KoreGraphics4TextureUnit,
+    u_addressing: KoreGraphics4TextureAddressing,
+    v_addressing: KoreGraphics4TextureAddressing,
+    w_addressing: KoreGraphics4TextureAddressing,
+    minification_filter: KoreGraphics4TextureFilter,
+    magnification_filter: KoreGraphics4TextureFilter,
+    mipmap_filter: KoreGraphics4MipMapFilter)
+  =>
+    KoreGraphics4Primitive.set_texture_3D_addressing(
+      unit, TexDirU, u_addressing)
+    KoreGraphics4Primitive.set_texture_3D_addressing(
+      unit, TexDirV, v_addressing)
+    KoreGraphics4Primitive.set_texture_3D_addressing(
+      unit, TexDirW, w_addressing)
+    KoreGraphics4Primitive.set_texture_3D_minification_filter(
+      unit, minification_filter)
+    KoreGraphics4Primitive.set_texture_3D_magnification_filter(
+      unit, magnification_filter)
+    KoreGraphics4Primitive.set_texture_3D_mipmap_filter(
+      unit, mipmap_filter)
 
   /* ------- */
 
@@ -1259,55 +1374,15 @@ class KoreGraphics4
   fun begin_eye(eye: I32) =>
   fun end_gfx() =>
 
-  fun vsynced(): Bool =>
-  fun refresh_rate(): I32 =>
-
-  fun clear(
-    color: (U32 | None) = None,
-    depth: (F32 | None) = None,
-    stencil: (I32 | None) = None)
-  =>
-
-  fun viewport(x: I32, y: I32, width: I32, height: I32) =>
-  fun scissor(x: I32, y: I32, width: I32, height: I32) =>
-
-  fun disable_scissor() =>
-  fun set_vertex_buffer(vertex_buffer: KoreGraphics4VertexBuffer) =>
-  fun set_vertex_buffers(vertex_buffers: Array[KoreGraphics4VertexBuffer]) =>
-  fun set_index_buffer(index_buffer: KoreGraphics4IndexBuffer) =>
-
   fun set_texture(unit: KoreGraphics4TextureUnit, texture: Image) =>
   fun set_texture_depth(unit: KoreGraphics4TextureUnit, texture: Image) =>
   fun set_texture_array(unit: KoreGraphics4TextureUnit, texture: Image) =>
   fun set_video_texture(unit: KoreGraphics4TextureUnit, texture: Video) =>
   fun set_image_texture(unit: KoreGraphics4TextureUnit, texture: Image) =>
-  fun set_texture_parameters(
-    unit: KoreGraphics4TextureUnit,
-    u_addressing: KoreGraphics4TextureAddressing,
-    v_addressing: KoreGraphics4TextureAddressing,
-    minification_filter: KoreGraphics4TextureFilter,
-    magnification_filter: KoreGraphics4TextureFilter,
-    mipmap_filter: KoreGraphics4MipMapFilter)
-  =>
+  
+  
 
-  fun set_texture_3D_parameters(
-    unit: KoreGraphics4TextureUnit,
-    u_addressing: KoreGraphics4TextureAddressing,
-    v_addressing: KoreGraphics4TextureAddressing,
-    w_addressing: KoreGraphics4TextureAddressing,
-    minification_filter: KoreGraphics4TextureFilter,
-    magnification_filter: KoreGraphics4TextureFilter,
-    mipmap_filter: KoreGraphics4MipMapFilter)
-  =>
-
-  fun set_cube_map(unit: KoreGraphics4TextureUnit, cube_map: CubeMap) =>
-  fun set_cube_map_depth(unit: KoreGraphics4TextureUnit, cube_map: CubeMap) =>
-
-  //fun max_texture_size(): I32
-  //fun supports_non_pow2_textures(): Bool
-
-  fun render_targets_inverted_y(): Bool
-  fun instanced_rendering_available(): Bool
+  
 
   fun set_pipeline(pipeline: KoreGraphics4PipelineState) =>
 
