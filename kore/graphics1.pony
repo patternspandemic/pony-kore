@@ -15,6 +15,17 @@ primitive ImageCompressionASTC
 primitive ImageCompressionPVRTC
   fun apply(): I32 => 3
 
+primitive ToKoreGraphics1ImageCompression
+  fun from(value: I32): KoreGraphics1ImageCompression =>
+    match value
+    | 0 => ImageCompressionNone
+    | 1 => ImageCompressionDXT5
+    | 2 => ImageCompressionASTC
+    | 3 => ImageCompressionPVRTC
+    else
+      ImageCompressionNone
+    end
+
 type KoreGraphics1ImageCompression is
   ( ImageCompressionNone
   | ImageCompressionDXT5
@@ -38,6 +49,21 @@ primitive FormatBGRA32
   fun apply(): I32 => 6
 primitive FormatA16
   fun apply(): I32 => 7
+
+primitive ToKoreGraphics1ImageFormat
+  fun from(value: I32): KoreGraphics1ImageFormat =>
+    match value
+    | 0 => FormatRGBA32
+    | 1 => FormatGrey8
+    | 2 => FormatRGB24
+    | 3 => FormatRGBA128
+    | 4 => FormatRGBA64
+    | 5 => FormatA32
+    | 6 => FormatBGRA32
+    | 7 => FormatA16
+    else
+      FormatGrey8
+    end
 
 type KoreGraphics1ImageFormat is
   ( FormatRGBA32
@@ -70,5 +96,6 @@ class val KoreGraphics1Color
 primitive _KoreGraphics1ImageHandle
 
 // TODO: KoreGraphics1Image class
+class KoreGraphics1Image
 
 class KoreGraphics1

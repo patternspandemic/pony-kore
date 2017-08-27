@@ -584,6 +584,43 @@ type KoreGraphics4RenderTargetFormat is
   | RenderTargetFormatTarget16BitRedFloat
   )
 
+primitive DepthStencilFormatNoDepthAndStencil
+  fun apply(): I32 => 0
+primitive DepthStencilFormatDepthOnly
+  fun apply(): I32 => 1
+primitive DepthStencilFormatDepthAutoStencilAuto
+  fun apply(): I32 => 2
+// Below is platform specific, use with care!
+primitive DepthStencilFormatDepth24Stencil8
+  fun apply(): I32 => 3
+primitive DepthStencilFormatDepth32Stencil8
+  fun apply(): I32 => 4
+primitive DepthStencilFormatDepth16
+  fun apply(): I32 => 5
+
+primitive ToKoreGraphics4DepthStencilFormat
+  fun from(value: I32): KoreGraphics4DepthStencilFormat =>
+    match value
+    | 0 => DepthStencilFormatNoDepthAndStencil
+    | 1 => DepthStencilFormatDepthOnly
+    | 2 => DepthStencilFormatDepthAutoStencilAuto
+    | 3 => DepthStencilFormatDepth24Stencil8
+    | 4 => DepthStencilFormatDepth32Stencil8
+    | 5 => DepthStencilFormatDepth16
+    else
+      DepthStencilFormatNoDepthAndStencil
+    end
+
+type KoreGraphics4DepthStencilFormat is
+  ( DepthStencilFormatNoDepthAndStencil
+  | DepthStencilFormatDepthOnly
+  | DepthStencilFormatDepthAutoStencilAuto
+  // Below is platform specific, use with care!
+  | DepthStencilFormatDepth24Stencil8
+  | DepthStencilFormatDepth32Stencil8
+  | DepthStencilFormatDepth16
+  )
+
 primitive StencilActionKeep
   fun apply(): I32 => 0
 primitive StencilActionZero

@@ -86,7 +86,9 @@ use @Kore_Graphics4_Texture_getInternalFormat[U32](
 
 /* FFI to WC_Kore_Graphics4_TextureArray */
 use @Kore_Graphics4_TextureArray_create[
-  Pointer[_KoreGraphics4TextureArrayHandle] tag]()
+  Pointer[_KoreGraphics4TextureArrayHandle] tag](
+    textures: Pointer[Pointer[_KoreGraphics4TextureHandle] tag] tag,
+    count: I32)
 use @Kore_Graphics4_TextureArray_destroy[None](
   self: Pointer[_KoreGraphics4TextureArrayHandle] tag)
 
@@ -116,8 +118,14 @@ primitive _KoreGraphics4TextureArrayHandle
 class KoreGraphics4TextureArray
   let _handle: Pointer[_KoreGraphics4TextureArrayHandle] tag
 
-  new create() =>
-    _handle = @Kore_Graphics4_TextureArray_create()
+  new create(textures: Array[KoreGraphics4Texture]) =>
+    let count: I32 = I32.from[USize](textures.size())
+    var textures': Array[Pointer[_KoreGraphics4TextureHandle] tag]
+    textures' = textures'.create(USize.from[I32](count))
+    for texture in textures.values() do
+      textures'.push(texture._get_handle())
+    end
+    _handle = @Kore_Graphics4_TextureArray_create(textures'.cpointer(), count)
 
   fun _get_handle(): Pointer[_KoreGraphics4TextureArrayHandle] tag =>
     _handle
@@ -131,7 +139,6 @@ class KoreGraphics4Texture
   let _handle: Pointer[_KoreGraphics4TextureHandle] tag
   let _data: (Array[U8] iso | Array[F32] iso | None) = None
 
-  /*
   new create(
     width: I32,
     height: I32,
@@ -140,9 +147,7 @@ class KoreGraphics4Texture
   =>
     _handle = @Kore_Graphics4_Texture_createWHFR(
       width, height, format(), readable)
-  */
 
-  /*
   new create_3D(
     width: I32,
     height: I32,
@@ -152,13 +157,13 @@ class KoreGraphics4Texture
   =>
     _handle = @Kore_Graphics4_Texture_createWHFR(
       width, height, depth, format(), readable)
-  */
 
   new from_file(file_name: String val, readable: Bool = false) =>
     _handle = @Kore_Graphics4_Texture_createFR(
       file_name.cstring(), readable)
 
-  /*
+// TODO: Unravel union types below
+
   new from_encoded_bytes(
     data: (Array[U8] iso | Array[F32] iso),
     format: String val,
@@ -167,9 +172,7 @@ class KoreGraphics4Texture
     _data = consume data
     _handle = @Kore_Graphics4_Texture_createDSFR(
       _data.cpointer(), _data.size(), format.cstring(), readable)
-  */
 
-  /*
   new from_bytes(
     data: (Array[U8] iso | Array[F32] iso),
     width: I32,
@@ -180,9 +183,7 @@ class KoreGraphics4Texture
     _data = consume data
     _handle = @Kore_Graphics4_Texture_createDWHFR(
       _data.cpointer(), width, height, format(), readable)
-  */
 
-  /*
   new from_bytes_3D(
     data: (Array[U8] iso | Array[F32] iso),
     width: I32,
@@ -194,11 +195,9 @@ class KoreGraphics4Texture
     _data = consume data
     _handle = @Kore_Graphics4_Texture_createDWHDFR(
       _data.cpointer(), width, height, depth, format(), readable = false)
-  */
 
   // TODO: Kore_Graphics4_Texture_lock and Kore_Graphics4_Texture_unlock
-  // Perhaps abstract behind an iterator, i.e. accept a lambda that
-  // will operate over the data, and perform unlock/lock internally.
+  // See what you did with Vertex/IndexBuffer lock/unlock
   // fun ref _lock() =>
   // fun _unlock() =>
 
