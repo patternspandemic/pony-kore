@@ -327,7 +327,7 @@ primitive ToKoreGraphics4MipMapFilter
   fun from(value: I32): KoreGraphics4MipMapFilter =>
     match value
     | 0 => MipMapFilterNoMipFilter
-    | 1 => MipmapFilterPointMipFilter
+    | 1 => MipMapFilterPointMipFilter
     | 2 => MipMapFilterLinearMipFilter
     else
       MipMapFilterNoMipFilter
@@ -931,7 +931,7 @@ primitive KoreGraphics4Primitive
     floats: Array[F32])
   =>
     @Kore_Graphics4_setFloats(
-      location._get_handle(), floats.cpointer(), floats.size())
+      location._get_handle(), floats.cpointer(), I32.from[USize](floats.size()))
 
   // TODO: Matrix Type
   // fun set_matrix3(
@@ -948,14 +948,14 @@ primitive KoreGraphics4Primitive
   //   @Kore_Graphics4_setMatrix4(location._get_handle(), value._get_handle())
 
   fun set_vertex_buffer(
-    vertex_buffer: KoreGraphics4VertexBuffer box)
+    vertex_buffer: KoreGraphics4VertexBuffer) //box
   =>
     @Kore_Graphics4_setVertexBuffer(vertex_buffer._get_handle())
 
   fun set_vertex_buffers(
-    vertex_buffers: Array[KoreGraphics4VertexBuffer box]) // box?
+    vertex_buffers: Array[KoreGraphics4VertexBuffer]) // box
   =>
-    let count: I32 = U32.from[USize](vertex_buffers.size())
+    let count: I32 = I32.from[USize](vertex_buffers.size())
     var vertex_buffers': Array[Pointer[_KoreGraphics4VertexBufferHandle] tag]
     vertex_buffers' = vertex_buffers'.create(USize.from[I32](count))
     for vb in vertex_buffers.values() do
@@ -964,7 +964,7 @@ primitive KoreGraphics4Primitive
     @Kore_Graphics4_setVertexBuffers(vertex_buffers'.cpointer(), count)
 
   fun set_index_buffer(
-    index_buffer: KoreGraphics4IndexBuffer box)
+    index_buffer: KoreGraphics4IndexBuffer) //box
   =>
     @Kore_Graphics4_setIndexBuffer(index_buffer._get_handle())
 
@@ -990,7 +990,7 @@ primitive KoreGraphics4Primitive
       unit._get_handle(), texture._get_handle())
 
   fun set_pipeline(
-    pipeline: KoreGraphics4PipelineState box)
+    pipeline: KoreGraphics4PipelineState) //box
   =>
     @Kore_Graphics4_setPipeline(pipeline._get_handle())
 
@@ -1038,9 +1038,9 @@ primitive KoreGraphics4Primitive
     @Kore_Graphics4_renderTargetsInvertedY()
 
   fun set_render_targets(
-    targets: Array[KoreGraphics4RenderTarget],
-    count: I32)
+    targets: Array[KoreGraphics4RenderTarget])
   =>
+    let count: I32 = I32.from[USize](targets.size())
     var targets': Array[Pointer[_KoreGraphics4RenderTargetHandle] tag]
     targets' = targets'.create(USize.from[I32](count))
     for rt in targets.values() do
@@ -1243,19 +1243,19 @@ primitive KoreGraphics4Primitive
     @Kore_Graphics4_flush()
 
 
-// TODO: KoreGraphics4 class
 // see: https://github.com/Kode/Kha/blob/master/Backends/Kore/kha/kore/graphics4/Graphics.hx
 class KoreGraphics4
-  // Structural type
   var _target: (Canvas | None)
-  // Underlying concrete type
   var _render_target: (KoreGraphics4RenderTarget | None) = None
 
-  new create(target: Canvas = None) =>
+  new create(target: (Canvas | None) = None) =>
     _target = target
-    // TODO
-    // try _target as cube map, assign underlying RT to _render_target
-    // else try _target as image, assign underlying RT to _render_target
+    match _target
+    | None => None
+    // TODO: Requires implementation of CubeMap, Image
+    // | let cube_map: CubeMap => _render_target = cube_map.get_render_target()
+    // | let image: Image => _render_target = image.get_render_target()
+    end
 
   fun vsynced(): Bool =>
     KoreGraphics4Primitive.vsynced()
@@ -1268,7 +1268,7 @@ class KoreGraphics4
     depth: (F32 | None) = None,
     stencil: (I32 | None) = None)
   =>
-    var flags: I32 = 0
+    var flags: U32 = 0
     var color': U32 = 0
     var depth': F32 = 1.0
     var stencil': I32 = 0
@@ -1290,15 +1290,15 @@ class KoreGraphics4
   fun viewport(x: I32, y: I32, width: I32, height: I32) =>
     KoreGraphics4Primitive.viewport(x, y, width, height)
 
-  fun set_vertex_buffer(vertex_buffer: KoreGraphics4VertexBuffer box) =>
+  fun set_vertex_buffer(vertex_buffer: KoreGraphics4VertexBuffer) => //box
     KoreGraphics4Primitive.set_vertex_buffer(vertex_buffer)
 
   fun set_vertex_buffers(
-    vertex_buffers: Array[KoreGraphics4VertexBuffer box])
+    vertex_buffers: Array[KoreGraphics4VertexBuffer]) //box
   =>
     KoreGraphics4Primitive.set_vertex_buffers(vertex_buffers)
 
-  fun set_index_buffer(index_buffer: KoreGraphics4IndexBuffer box) =>
+  fun set_index_buffer(index_buffer: KoreGraphics4IndexBuffer) => //box
     KoreGraphics4Primitive.set_index_buffer(index_buffer)
 
   // fun max_texture_size(): I32 =>
@@ -1307,9 +1307,18 @@ class KoreGraphics4
   // fun supports_non_pow2_textures(): Bool =>
   //   false
 
-  // TODO: KoreGraphics4.set_cube_map/set_cube_map_depth
-  // fun set_cube_map(unit: KoreGraphics4TextureUnit, cube_map: CubeMap) =>
-  // fun set_cube_map_depth(unit: KoreGraphics4TextureUnit, cube_map: CubeMap) =>
+// TODO: Requires implementation of CubeMap
+/*
+  fun set_cube_map(unit: KoreGraphics4TextureUnit, cube_map: CubeMap) =>
+    if cube_map.is_render_target() then
+      cube_map.get_render_target().use_color_as_texture(unit)
+    else
+      KoreGraphics4Primitive.set_texture(unit, cube_map.get_texture())
+    end
+
+  fun set_cube_map_depth(unit: KoreGraphics4TextureUnit, cube_map: CubeMap) =>
+    cube_map.get_render_target().use_depth_as_texture(unit)
+*/
 
   fun scissor(x: I32, y: I32, width: I32, height: I32) =>
     KoreGraphics4Primitive.scissor(x, y, width, height)
@@ -1364,51 +1373,65 @@ class KoreGraphics4
     KoreGraphics4Primitive.set_texture_3D_mipmap_filter(
       unit, mipmap_filter)
 
-  /* ------- */
+// TODO: Requires implementation of Image, Video
+/*
+  fun set_texture(unit: KoreGraphics4TextureUnit, image: Image) =>
+    if image.is_render_target() then
+      image.get_render_target().use_color_as_texture(unit)
+    else
+      KoreGraphics4Primitive.set_texture(unit, image.get_texture())
+    end
 
-  fun begin_gfx(
-    additional_render_targets: (Array[KoreGraphics4RenderTarget] | None) = None)
-  =>
+  fun set_texture_depth(unit: KoreGraphics4TextureUnit, image: Image) =>
+    image.get_render_target().use_depth_as_texture(unit)
 
-  fun begin_face(face: I32) =>
-  fun begin_eye(eye: I32) =>
-  fun end_gfx() =>
+  fun set_texture_array(unit: KoreGraphics4TextureUnit, image: Image) =>
+    KoreGraphics4Primitive.set_texture_array(unit, image.get_texture_array())
 
-  fun set_texture(unit: KoreGraphics4TextureUnit, texture: Image) =>
-  fun set_texture_depth(unit: KoreGraphics4TextureUnit, texture: Image) =>
-  fun set_texture_array(unit: KoreGraphics4TextureUnit, texture: Image) =>
-  fun set_video_texture(unit: KoreGraphics4TextureUnit, texture: Video) =>
-  fun set_image_texture(unit: KoreGraphics4TextureUnit, texture: Image) =>
-  
-  
+  fun set_video_texture(unit: KoreGraphics4TextureUnit, video: Video) =>
+    let image: Image = image.from_video(video)
+    KoreGraphics4Primitive.set_texture(unit, image.get_texture())
 
-  
+  fun set_image_texture(unit: KoreGraphics4TextureUnit, image: Image) =>
+    KoreGraphics4Primitive.set_image_texture(unit, image.get_texture())
+*/
 
-  fun set_pipeline(pipeline: KoreGraphics4PipelineState) =>
+  fun set_pipeline(pipeline: KoreGraphics4PipelineState) => //box
+    KoreGraphics4Primitive.set_pipeline(pipeline)
 
   fun set_bool(
     location: KoreGraphics4ConstantLocation,
     value: Bool)
   =>
+    KoreGraphics4Primitive.set_bool(location, value)
+
   fun set_int(
     location: KoreGraphics4ConstantLocation,
     value: I32)
   =>
+    KoreGraphics4Primitive.set_int(location, value)
+
   fun set_float(
     location: KoreGraphics4ConstantLocation,
     value: F32)
   =>
+    KoreGraphics4Primitive.set_float(location, value)
+
   fun set_float2(
     location: KoreGraphics4ConstantLocation,
     value1: F32,
     value2: F32)
   =>
+    KoreGraphics4Primitive.set_float2(location, value1, value2)
+
   fun set_float3(
     location: KoreGraphics4ConstantLocation,
     value1: F32,
     value2: F32,
     value3: F32)
   =>
+    KoreGraphics4Primitive.set_float3(location, value1, value2, value3)
+
   fun set_float4(
     location: KoreGraphics4ConstantLocation,
     value1: F32,
@@ -1416,39 +1439,97 @@ class KoreGraphics4
     value3: F32,
     value4: F32)
   =>
+    KoreGraphics4Primitive.set_float4(location, value1, value2, value3, value4)
+
   fun set_floats(
     location: KoreGraphics4ConstantLocation,
     floats: Array[F32])
   =>
+    KoreGraphics4Primitive.set_floats(location, floats)
+
   // TODO: Vector and Matrix Types
-  /*
+/*
   fun set_vector2(
     location: KoreGraphics4ConstantLocation,
     value: Vec2)
   =>
+    KoreGraphics4Primitive.set_float2_vec(location, value)
+
   fun set_vector3(
     location: KoreGraphics4ConstantLocation,
     value: Vec3)
   =>
+    KoreGraphics4Primitive.set_float3_vec(location, value)
+
   fun set_vector4(
     location: KoreGraphics4ConstantLocation,
     value: Vec4)
   =>
+    KoreGraphics4Primitive.set_float4_vec(location, value)
+
   fun set_matrix(
     location: KoreGraphics4ConstantLocation,
     value: Mat4)
   =>
+    KoreGraphics4Primitive.set_matrix4(location, value)
+
   fun set_matrix3(
     location: KoreGraphics4ConstantLocation,
     value: Mat3)
   =>
-  */
+    KoreGraphics4Primitive.set_matrix3(location, value)
+*/
 
   fun draw_indexed_vertices(start: I32 = 0, count: I32 = -1) =>
+    if count < 0 then
+      KoreGraphics4Primitive.draw_indexed_vertices()
+    else
+      KoreGraphics4Primitive.draw_indexed_vertices_by_start_count(start, count)
+    end
+
   fun draw_indexed_vertices_instanced(
     instance_count: I32,
     start: I32 = 0,
     count: I32 = -1)
   =>
+    if count < 0 then
+      KoreGraphics4Primitive.draw_indexed_vertices_instanced(instance_count)
+    else
+      KoreGraphics4Primitive.draw_indexed_vertices_instanced_by_start_count(
+        instance_count,
+        start,
+        count)
+    end
+
+  fun ref begin_gfx(
+    additional_render_targets: (Array[KoreGraphics4RenderTarget] | None) = None)
+  =>
+    if _target is None then
+      KoreGraphics4Primitive.restore_render_target()
+    else
+      try
+        match additional_render_targets
+        | None =>
+          KoreGraphics4Primitive.set_render_target(
+            _render_target as KoreGraphics4RenderTarget)
+        | let art: Array[KoreGraphics4RenderTarget] =>
+          var additional_plus_rt_field = art.clone()
+          additional_plus_rt_field.push(
+            _render_target as KoreGraphics4RenderTarget)
+          KoreGraphics4Primitive.set_render_targets(additional_plus_rt_field)
+        end
+      end
+    end
+
+  fun ref begin_face(face: I32) =>
+    try
+      KoreGraphics4Primitive.set_render_target_face(
+        _render_target as KoreGraphics4RenderTarget, face)
+    end
+
+  // fun begin_eye(eye: I32) => // ?
+
+  fun end_gfx() => None
 
   fun flush() =>
+    KoreGraphics4Primitive.flush()

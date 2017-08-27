@@ -17,6 +17,6 @@ class BasicExample
     clear_color = 0xffff0000
     system.notify_on_render(this~render())
 
-  fun render(framebuffer: Framebuffer) =>
+  fun ref render(framebuffer: Framebuffer) =>
     let g4 = framebuffer.g4()
-    g4.clear(g4.clear_color_flag(), clear_color)
+    g4.clear(clear_color)

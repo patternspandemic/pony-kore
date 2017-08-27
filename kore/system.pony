@@ -110,7 +110,7 @@ class _SystemOptions
 
 class KoreSystem
   let _options: _SystemOptions
-  var _render_listeners: Map[USize, Array[{(Framebuffer)}]]
+  var _render_listeners: Map[USize, Array[{ref(Framebuffer)}]]
   var _framebuffers: Map[USize, Framebuffer]
 
   new create(
@@ -135,7 +135,7 @@ class KoreSystem
     _options.maximizable = maximizable
     _options.minimizable = minimizable
     _render_listeners = _render_listeners.create()
-    _render_listeners(0) = Array[{(Framebuffer)}].create(1)
+    _render_listeners(0) = Array[{ref(Framebuffer)}].create(1)
     _framebuffers = _framebuffers.create()
 
   fun ref apply(callback': {ref()} ref) =>
@@ -167,7 +167,7 @@ class KoreSystem
     //   KoreGraphics1(framebuffer),
     //   KoreGraphics2(framebuffer),
     //   g4)
-    _framebuffers(window_id) = framebuffer
+    _framebuffers(USize.from[I32](window_id)) = framebuffer
 
     callback'()
     KoreSystemPrimitive._update_with_system_object(
@@ -179,11 +179,11 @@ class KoreSystem
     // KoreSystemPrimitive.stop()?
 
   fun ref notify_on_render(
-    listener: {(Framebuffer)},
+    listener: {ref(Framebuffer)},
     id: USize = 0)
   =>
     if not _render_listeners.contains(id) then
-      _render_listeners(id) = Array[{(Framebuffer)}].create(1)
+      _render_listeners(id) = Array[{ref(Framebuffer)}].create(1)
     end
     try _render_listeners(id)?.push(listener) end
 
@@ -192,7 +192,7 @@ class KoreSystem
   fun ref frame(id: USize) =>
     try _render(id, _framebuffers(id)?) end
 
-  fun _render(id: USize, framebuffer: Framebuffer) =>
+  fun ref _render(id: USize, framebuffer: Framebuffer) =>
     if _render_listeners.size() > 0 then
       try
         for listener in _render_listeners(id)?.values() do

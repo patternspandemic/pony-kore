@@ -78,9 +78,9 @@ class ShaderExample
 
     system.notify_on_render(this~render())
 
-  fun render(framebuffer: Framebuffer) =>
+  fun ref render(framebuffer: Framebuffer) =>
     let g = framebuffer.g4()
-    g.clear(g.clear_color_flag())
+    g.clear()
     g.set_pipeline(pipeline)
     g.set_vertex_buffer(vertex_buffer)
     g.set_index_buffer(index_buffer)
