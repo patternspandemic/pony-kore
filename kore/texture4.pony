@@ -162,8 +162,6 @@ class KoreGraphics4Texture
     _handle = @Kore_Graphics4_Texture_createFR(
       file_name.cstring(), readable)
 
-// TODO: Unravel union types below
-
   new from_encoded_bytes(
     data: (Array[U8] iso | Array[F32] iso),
     format: String val,

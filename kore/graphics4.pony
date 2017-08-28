@@ -1290,8 +1290,8 @@ class KoreGraphics4
     match _target
     | None => None
     // TODO: Requires implementation of CubeMap, Image
-    // | let cube_map: CubeMap => _render_target = cube_map.get_render_target()
-    // | let image: Image => _render_target = image.get_render_target()
+    // | let cube_map: CubeMap => _render_target = cube_map._get_render_target()
+    | let image: Image => _render_target = image._get_render_target()
     end
 
   fun vsynced(): Bool =>
@@ -1341,8 +1341,8 @@ class KoreGraphics4
   // fun max_texture_size(): I32 =>
   //   I32(4096)
 
-  // fun supports_non_pow2_textures(): Bool =>
-  //   false
+  fun supports_non_pow2_textures(): Bool =>
+    KoreGraphics4Primitive.non_pow2_textures_supported()
 
 // TODO: Requires implementation of CubeMap
 /*

@@ -1,4 +1,5 @@
 use "lib:korec"
+use "regex"
 
 class Image is Canvas
   var _texture: (KoreGraphics4Texture | None) = None
@@ -107,8 +108,7 @@ class Image is Canvas
     readable: Bool = false)
   =>
     _readable = readable
-    // TODO: Improve this with case insensitive regexp
-    if format.contains("hdr") or format.contains("HDR") then
+    if (format == "HDR") or (format == "hdr") then
       _format = FormatRGBA128
     else
       _format = FormatRGBA32
@@ -120,11 +120,12 @@ class Image is Canvas
     readable: Bool)
   =>
     _readable = readable
-    // TODO: Improve this with case insensitive regexp, and ends with
-    if format.contains(".hdr") then
-      _format = FormatRGBA128
-    else
-      _format = FormatRGBA32
+    _format = FormatRGBA32
+    try
+      let re = Regex("(?i)\\.hdr$")?
+      if re == format then
+        _format = FormatRGBA128
+      end
     end
     _texture = KoreGraphics4Texture.from_file(file_name, _readable)
 
@@ -133,7 +134,92 @@ class Image is Canvas
     _format = FormatRGBA32
     _texture = video.current_image()
 
+  fun ref g1(): KoreGraphics1 =>
+    try
+      _graphics1 as KoreGraphics1
+    else
+      var g1': KoreGraphics1 ref = KoreGraphics1(this)
+      _graphics1 = g1'
+      g1'
+    end
 
+  fun ref g2(): KoreGraphics2 =>
+    try
+      _graphics2 as KoreGraphics2
+    else
+      var g2': KoreGraphics2 ref = KoreGraphics2(this)
+      _graphics2 = g2'
+      g2'
+    end
+  
+  fun ref g4(): KoreGraphics4 =>
+    try
+      _graphics4 as KoreGraphics4
+    else
+      var g4': KoreGraphics4 ref = KoreGraphics4(this)
+      _graphics4 = g4'
+      g4'
+    end
+
+  fun max_size(): I32 => I32(4096)
+
+  fun non_pow2_supported()
+    KoreGraphics4Primitive.non_pow2_textures_supported()
+
+  fun width(): I32 =>
+    match _texture
+    | let t: KoreGraphics4Texture => t.get_width()
+    else
+      match _render_target
+      | let rt: KoreGraphics4RenderTarget => rt.get_width()
+      else
+        I32(0)
+      end
+    end
+
+  fun height(): I32 =>
+    match _texture
+    | let t: KoreGraphics4Texture => t.get_height()
+    else
+      match _render_target
+      | let rt: KoreGraphics4RenderTarget => rt.get_height()
+      else
+        I32(0)
+      end
+    end
+
+  fun depth(): I32 =>
+    match _texture
+    | let t: KoreGraphics4Texture => t.get_depth()
+    else
+      I32(0)
+    end
+
+  fun real_width(): I32 =>
+    match _texture
+    | let t: KoreGraphics4Texture => t.get_texture_width()
+    else
+      match _render_target
+      | let rt: KoreGraphics4RenderTarget => rt.get_texture_width()
+      else
+        I32(0)
+      end
+    end
+
+  fun real_height(): I32 =>
+    match _texture
+    | let t: KoreGraphics4Texture => t.get_texture_height()
+    else
+      match _render_target
+      | let rt: KoreGraphics4RenderTarget => rt.get_texture_height()
+      else
+        I32(0)
+      end
+    end
+
+  // fun is_opaque(x: I32, y: I32): Bool => TODO
+  // https://github.com/Kode/Kha/blob/master/Backends/Kore/kha/Image.hx#L292
+    
 
   fun _get_depth_buffer_bits(
     depth_stencil: KoreGraphics4DepthStencilFormat)
@@ -161,11 +247,4 @@ class Image is Canvas
     | DepthStencilFormatDepth16 => 0
     end
 
-/* --- */
-
-// Canvas interface
-fun width(): I32
-fun height(): I32
-fun ref g1(): KoreGraphics1
-fun ref g2(): KoreGraphics2
-fun ref g4(): KoreGraphics4
+  fun ref _get_render_target(): KoreGraphics4RenderTarget => _render_target
