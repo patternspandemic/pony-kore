@@ -1,16 +1,16 @@
 primitive Colors
   fun black(): U32 => 0xff000000
-	fun white(): U32 => 0xffffffff
-	fun red(): U32 => 0xffff0000
-	fun blue(): U32 => 0xff0000ff
-	fun green(): U32 => 0xff00ff00
-	fun magenta(): U32 => 0xffff00ff
-	fun yellow(): U32 => 0xffffff00
-	fun cyan(): U32 => 0xff00ffff
-	fun purple(): U32 => 0xff800080
-	fun pink(): U32 => 0xffffc0cb
-	fun orange(): U32 => 0xffffa500
-	fun transparent(): U32 => 0x00000000
+  fun white(): U32 => 0xffffffff
+  fun red(): U32 => 0xffff0000
+  fun blue(): U32 => 0xff0000ff
+  fun green(): U32 => 0xff00ff00
+  fun magenta(): U32 => 0xffff00ff
+  fun yellow(): U32 => 0xffffff00
+  fun cyan(): U32 => 0xff00ffff
+  fun purple(): U32 => 0xff800080
+  fun pink(): U32 => 0xffffc0cb
+  fun orange(): U32 => 0xffffa500
+  fun transparent(): U32 => 0x00000000
 
 // https://github.com/Kode/Kha/blob/master/Sources/kha/Color.hx
 class Color

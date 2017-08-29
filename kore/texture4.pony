@@ -170,7 +170,7 @@ class KoreGraphics4Texture
     format: String val,
     readable: Bool = false)
   =>
-    _handle = 
+    _handle =
       @Kore_Graphics4_Texture_createDSFR(
         data.cpointer(),
         I32.from[USize](data.size()),
