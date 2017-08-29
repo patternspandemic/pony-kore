@@ -49,10 +49,12 @@ class Image is Canvas
   =>
     _readable = false
     _format = format
-    let depth_buffer_bits = _get_depth_buffer_bits(depth_stencil)
-    let stencil_buffer_bits = _get_stencil_buffer_bits(depth_stencil)
+    let depth_buffer_bits =
+      _DepthStencilFormatHelper.get_depth_buffer_bits(depth_stencil)
+    let stencil_buffer_bits =
+      _DepthStencilFormatHelper.get_stencil_buffer_bits(depth_stencil)
     let rt_format: KoreGraphics4RenderTargetFormat =
-      _get_render_target_format(_format)
+      _ImageFormatToRenderTargetFormatHelper.get_render_target_format(_format)
     _render_target = KoreGraphics4RenderTarget(
       width', height', depth_buffer_bits, antialiasing,
       rt_format, stencil_buffer_bits, context_id)
@@ -336,52 +338,11 @@ class Image is Canvas
       t.clear(x, y, z, width', height', depth', color())
     end
 
+  fun is_texture(): Bool =>
+    not (_texture is None)
+
   fun is_render_target(): Bool =>
     not (_render_target is None)
-
-  fun _get_depth_buffer_bits(
-    depth_stencil: KoreGraphics4DepthStencilFormat)
-    : I32
-  =>
-    match depth_stencil
-    | DepthStencilFormatNoDepthAndStencil => -1
-    | DepthStencilFormatDepthOnly => 24
-    | DepthStencilFormatDepthAutoStencilAuto => 24
-    | DepthStencilFormatDepth24Stencil8 => 24
-    | DepthStencilFormatDepth32Stencil8 => 32
-    | DepthStencilFormatDepth16 => 16
-    end
-
-  fun _get_stencil_buffer_bits(
-    depth_stencil: KoreGraphics4DepthStencilFormat)
-    : I32
-  =>
-    match depth_stencil
-    | DepthStencilFormatNoDepthAndStencil => -1
-    | DepthStencilFormatDepthOnly => -1
-    | DepthStencilFormatDepthAutoStencilAuto => 8
-    | DepthStencilFormatDepth24Stencil8 => 8
-    | DepthStencilFormatDepth32Stencil8 => 8
-    | DepthStencilFormatDepth16 => 0
-    end
-
-  // TODO: Image._get_render_target_format is likely incomplete/wrong.
-  // There's not a Kha -> Kore correspondance between Image format enums
-  fun _get_render_target_format(
-    format: KoreGraphics1ImageFormat)
-    : KoreGraphics4RenderTargetFormat
-  =>
-    match format
-    | FormatRGBA32 => RenderTargetFormatTarget32Bit
-    | FormatRGBA64 => RenderTargetFormatTarget64BitFloat
-    | FormatA32 => RenderTargetFormatTarget32BitRedFloat
-    | FormatRGBA128 => RenderTargetFormatTarget128BitFloat
-    // DEPTH16 ? => RenderTargetFormatTarget16BitDepth
-    | FormatGrey8 => RenderTargetFormatTarget8BitRed // L8
-    | FormatA16 => RenderTargetFormatTarget16BitRedFloat
-    else
-      RenderTargetFormatTarget32Bit // FormatRGB24, FormatBGRA32
-    end
 
   fun ref _get_texture(): (KoreGraphics4Texture | None) =>
     _texture

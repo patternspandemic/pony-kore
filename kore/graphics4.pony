@@ -584,6 +584,25 @@ type KoreGraphics4RenderTargetFormat is
   | RenderTargetFormatTarget16BitRedFloat
   )
 
+// TODO: Image._get_render_target_format is likely incomplete/wrong.
+// There's not a Kha -> Kore correspondance between Image format enums
+primitive _ImageFormatToRenderTargetFormatHelper
+  fun get_render_target_format(
+    format: KoreGraphics1ImageFormat)
+    : KoreGraphics4RenderTargetFormat
+  =>
+    match format
+    | FormatRGBA32 => RenderTargetFormatTarget32Bit
+    | FormatRGBA64 => RenderTargetFormatTarget64BitFloat
+    | FormatA32 => RenderTargetFormatTarget32BitRedFloat
+    | FormatRGBA128 => RenderTargetFormatTarget128BitFloat
+    // DEPTH16 ? => RenderTargetFormatTarget16BitDepth
+    | FormatGrey8 => RenderTargetFormatTarget8BitRed // L8
+    | FormatA16 => RenderTargetFormatTarget16BitRedFloat
+    else
+      RenderTargetFormatTarget32Bit // FormatRGB24, FormatBGRA32
+    end
+
 primitive DepthStencilFormatNoDepthAndStencil
   fun apply(): I32 => 0
 primitive DepthStencilFormatDepthOnly
@@ -620,6 +639,33 @@ type KoreGraphics4DepthStencilFormat is
   | DepthStencilFormatDepth32Stencil8
   | DepthStencilFormatDepth16
   )
+
+primitive _DepthStencilFormatHelper
+  fun get_depth_buffer_bits(
+    depth_stencil: KoreGraphics4DepthStencilFormat)
+    : I32
+  =>
+    match depth_stencil
+    | DepthStencilFormatNoDepthAndStencil => -1
+    | DepthStencilFormatDepthOnly => 24
+    | DepthStencilFormatDepthAutoStencilAuto => 24
+    | DepthStencilFormatDepth24Stencil8 => 24
+    | DepthStencilFormatDepth32Stencil8 => 32
+    | DepthStencilFormatDepth16 => 16
+    end
+
+  fun get_stencil_buffer_bits(
+    depth_stencil: KoreGraphics4DepthStencilFormat)
+    : I32
+  =>
+    match depth_stencil
+    | DepthStencilFormatNoDepthAndStencil => -1
+    | DepthStencilFormatDepthOnly => -1
+    | DepthStencilFormatDepthAutoStencilAuto => 8
+    | DepthStencilFormatDepth24Stencil8 => 8
+    | DepthStencilFormatDepth32Stencil8 => 8
+    | DepthStencilFormatDepth16 => 0
+    end
 
 primitive StencilActionKeep
   fun apply(): I32 => 0
@@ -1288,9 +1334,8 @@ class KoreGraphics4
   new create(target: (Canvas | None) = None) =>
     _target = target
     match _target
-    | None => None
-    // TODO: Requires implementation of CubeMap, Image
-    // | let cube_map: CubeMap => _render_target = cube_map._get_render_target()
+    // | None => None
+    | let cube_map: CubeMap => _render_target = cube_map._get_render_target()
     | let image: Image => _render_target = image._get_render_target()
     end
 
@@ -1344,18 +1389,20 @@ class KoreGraphics4
   fun supports_non_pow2_textures(): Bool =>
     KoreGraphics4Primitive.non_pow2_textures_supported()
 
-// TODO: Requires implementation of CubeMap
-/*
   fun set_cube_map(unit: KoreGraphics4TextureUnit, cube_map: CubeMap) =>
-    if cube_map.is_render_target() then
-      cube_map._get_render_target().use_color_as_texture(unit)
+    match cube_map._get_render_target()
+    | let rt: KoreGraphics4RenderTarget => rt.use_color_as_texture(unit)
     else
-      KoreGraphics4Primitive.set_texture(unit, cube_map._get_texture())
+      match cube_map._get_texture()
+      | let t: KoreGraphics4Texture =>
+        KoreGraphics4Primitive.set_texture(unit, t)
+      end
     end
 
   fun set_cube_map_depth(unit: KoreGraphics4TextureUnit, cube_map: CubeMap) =>
-    cube_map._get_render_target().use_depth_as_texture(unit)
-*/
+    match cube_map._get_render_target()
+    | let rt: KoreGraphics4RenderTarget => rt.use_depth_as_texture(unit)
+    end
 
   fun scissor(x: I32, y: I32, width: I32, height: I32) =>
     KoreGraphics4Primitive.scissor(x, y, width, height)
