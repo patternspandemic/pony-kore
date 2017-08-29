@@ -80,8 +80,14 @@ class ShaderExample
 
   fun ref render(framebuffer: Framebuffer) =>
     let g = framebuffer.g4()
-    g.clear()
+    let white = Colors.white()
+
+    g.begin_gfx()
+
+    g.clear(white)
     g.set_pipeline(pipeline)
     g.set_vertex_buffer(vertex_buffer)
     g.set_index_buffer(index_buffer)
     g.draw_indexed_vertices()
+
+    g.end_gfx()

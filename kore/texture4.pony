@@ -22,15 +22,17 @@ use @Kore_Graphics4_Texture_createFR[
 // from encoded bytes
 use @Kore_Graphics4_Texture_createDSFR[
   Pointer[_KoreGraphics4TextureHandle] tag](
-    data: Pointer[U8] tag, size: I32, format: Pointer[U8] tag, readable: Bool)
+    data: Pointer[None] tag, size: I32,
+    format: Pointer[U8] tag, readable: Bool)
 // from bytes
 use @Kore_Graphics4_Texture_createDWHFR[
   Pointer[_KoreGraphics4TextureHandle] tag](
-    data: Pointer[U8] tag, width: I32, height: I32, format: I32, readable: Bool)
+    data: Pointer[None] tag, width: I32, height: I32,
+    format: I32, readable: Bool)
 // from bytes 3D
 use @Kore_Graphics4_Texture_createDWHDFR[
   Pointer[_KoreGraphics4TextureHandle] tag](
-    data: Pointer[U8] tag, width: I32, height: I32,
+    data: Pointer[None] tag, width: I32, height: I32,
     depth: I32, format: I32, readable: Bool)
 use @Kore_Graphics4_Texture_destroy[None](
   self: Pointer[_KoreGraphics4TextureHandle] tag)
@@ -137,7 +139,8 @@ primitive _KoreGraphics4TextureHandle
 
 class KoreGraphics4Texture
   let _handle: Pointer[_KoreGraphics4TextureHandle] tag
-  let _data: (Array[U8] iso | Array[F32] iso | None) = None
+  var _data: (Array[U8 val] iso | None) = None
+  var _hdr_data: (Array[F32 val] iso | None) = None
 
   new create(
     width: I32,
@@ -155,7 +158,7 @@ class KoreGraphics4Texture
     format: KoreGraphics1ImageFormat,
     readable: Bool = false)
   =>
-    _handle = @Kore_Graphics4_Texture_createWHFR(
+    _handle = @Kore_Graphics4_Texture_createWHDFR(
       width, height, depth, format(), readable)
 
   new from_file(file_name: String val, readable: Bool = false) =>
@@ -163,36 +166,76 @@ class KoreGraphics4Texture
       file_name.cstring(), readable)
 
   new from_encoded_bytes(
-    data: (Array[U8] iso | Array[F32] iso),
+    data: Array[U8] iso,
     format: String val,
     readable: Bool = false)
   =>
+    _handle = 
+      @Kore_Graphics4_Texture_createDSFR(
+        data.cpointer(),
+        I32.from[USize](data.size()),
+        format.cstring(),
+        readable)
     _data = consume data
-    _handle = @Kore_Graphics4_Texture_createDSFR(
-      _data.cpointer(), _data.size(), format.cstring(), readable)
+
+  new from_encoded_floats(
+    data: Array[F32] iso,
+    format: String val,
+    readable: Bool = false)
+  =>
+    _handle =
+      @Kore_Graphics4_Texture_createDSFR(
+        data.cpointer(),
+        I32.from[USize](data.size()),
+        format.cstring(),
+        readable)
+    _hdr_data = consume data
 
   new from_bytes(
-    data: (Array[U8] iso | Array[F32] iso),
+    data: Array[U8] iso,
     width: I32,
     height: I32,
     format: KoreGraphics1ImageFormat,
     readable: Bool = false)
   =>
-    _data = consume data
     _handle = @Kore_Graphics4_Texture_createDWHFR(
-      _data.cpointer(), width, height, format(), readable)
+      data.cpointer(), width, height, format(), readable)
+    _data = consume data
+
+  new from_floats(
+    data: Array[F32] iso,
+    width: I32,
+    height: I32,
+    format: KoreGraphics1ImageFormat,
+    readable: Bool = false)
+  =>
+    _handle = @Kore_Graphics4_Texture_createDWHFR(
+      data.cpointer(), width, height, format(), readable)
+    _hdr_data = consume data
 
   new from_bytes_3D(
-    data: (Array[U8] iso | Array[F32] iso),
+    data: Array[U8] iso,
     width: I32,
     height: I32,
     depth: I32,
     format: KoreGraphics1ImageFormat,
     readable: Bool = false)
   =>
-    _data = consume data
     _handle = @Kore_Graphics4_Texture_createDWHDFR(
-      _data.cpointer(), width, height, depth, format(), readable = false)
+      data.cpointer(), width, height, depth, format(), readable)
+    _data = consume data
+
+  new from_floats_3D(
+    data: Array[F32] iso,
+    width: I32,
+    height: I32,
+    depth: I32,
+    format: KoreGraphics1ImageFormat,
+    readable: Bool = false)
+  =>
+    _handle = @Kore_Graphics4_Texture_createDWHDFR(
+      data.cpointer(), width, height, depth, format(), readable)
+    _hdr_data = consume data
 
   // TODO: Kore_Graphics4_Texture_lock and Kore_Graphics4_Texture_unlock
   // See what you did with Vertex/IndexBuffer lock/unlock
@@ -219,7 +262,6 @@ class KoreGraphics4Texture
   fun stride(): I32 =>
     @Kore_Graphics4_Texture_stride(_handle)
 
-  // TODO: Return a Color here?
   fun at(x: I32, y: I32): I32 =>
     @Kore_Graphics4_Texture_at(_handle, x, y)
 

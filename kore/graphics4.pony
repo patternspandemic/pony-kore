@@ -1348,13 +1348,13 @@ class KoreGraphics4
 /*
   fun set_cube_map(unit: KoreGraphics4TextureUnit, cube_map: CubeMap) =>
     if cube_map.is_render_target() then
-      cube_map.get_render_target().use_color_as_texture(unit)
+      cube_map._get_render_target().use_color_as_texture(unit)
     else
-      KoreGraphics4Primitive.set_texture(unit, cube_map.get_texture())
+      KoreGraphics4Primitive.set_texture(unit, cube_map._get_texture())
     end
 
   fun set_cube_map_depth(unit: KoreGraphics4TextureUnit, cube_map: CubeMap) =>
-    cube_map.get_render_target().use_depth_as_texture(unit)
+    cube_map._get_render_target().use_depth_as_texture(unit)
 */
 
   fun scissor(x: I32, y: I32, width: I32, height: I32) =>
@@ -1411,27 +1411,49 @@ class KoreGraphics4
       unit, mipmap_filter)
 
 // TODO: Requires implementation of Image, Video
-/*
+
   fun set_texture(unit: KoreGraphics4TextureUnit, image: Image) =>
-    if image.is_render_target() then
-      image.get_render_target().use_color_as_texture(unit)
-    else
-      KoreGraphics4Primitive.set_texture(unit, image.get_texture())
+    try
+      if image.is_render_target() then
+        (image._get_render_target() as KoreGraphics4RenderTarget)
+          .use_color_as_texture(unit)
+      else
+        KoreGraphics4Primitive.set_texture(
+          unit,
+          image._get_texture() as KoreGraphics4Texture)
+      end
     end
 
   fun set_texture_depth(unit: KoreGraphics4TextureUnit, image: Image) =>
-    image.get_render_target().use_depth_as_texture(unit)
+    try
+      (image._get_render_target() as KoreGraphics4RenderTarget)
+        .use_depth_as_texture(unit)
+    end
 
   fun set_texture_array(unit: KoreGraphics4TextureUnit, image: Image) =>
-    KoreGraphics4Primitive.set_texture_array(unit, image.get_texture_array())
+    try
+      KoreGraphics4Primitive.set_texture_array(
+        unit,
+        image._get_texture_array() as KoreGraphics4TextureArray)
+    end
 
+// TODO: KoreGraphics4.set_video_texture
+/*
   fun set_video_texture(unit: KoreGraphics4TextureUnit, video: Video) =>
-    let image: Image = image.from_video(video)
-    KoreGraphics4Primitive.set_texture(unit, image.get_texture())
+    try
+      let image: Image = image.from_video(video)
+      KoreGraphics4Primitive.set_texture(
+        unit,
+        image._get_texture() as KoreGraphics4Texture)
+    end
+*/
 
   fun set_image_texture(unit: KoreGraphics4TextureUnit, image: Image) =>
-    KoreGraphics4Primitive.set_image_texture(unit, image.get_texture())
-*/
+    try
+      KoreGraphics4Primitive.set_image_texture(
+        unit,
+        image._get_texture() as KoreGraphics4Texture)
+    end
 
   fun set_pipeline(pipeline: KoreGraphics4PipelineState) => //box
     KoreGraphics4Primitive.set_pipeline(pipeline)

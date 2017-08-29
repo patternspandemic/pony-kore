@@ -14,9 +14,14 @@ class BasicExample
   let clear_color: U32
 
   new create(system: KoreSystem) =>
-    clear_color = 0xffff0000
+    clear_color = Colors.green()
     system.notify_on_render(this~render())
 
   fun ref render(framebuffer: Framebuffer) =>
-    let g4 = framebuffer.g4()
-    g4.clear(clear_color)
+    let g = framebuffer.g4()
+
+    g.begin_gfx()
+
+    g.clear(clear_color)
+
+    g.end_gfx()
