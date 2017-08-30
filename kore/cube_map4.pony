@@ -13,7 +13,11 @@ class CubeMap is Canvas
 
   /*
 
-  TODO: Non render target constructors for CubeMap. Kha's Kore backend is missing any other that createRenderTarget.
+  TODO: Non render target constructors for CubeMap. Kha's Kore backend is missing any other than createRenderTarget.
+
+  As is now, CubeMaps are built from an array of Images for each face, always
+  backed by a rendertarget. This way, other material properties can be rendered
+  as part of the map during construction.
 
   */
 
@@ -47,22 +51,22 @@ class CubeMap is Canvas
   */
 
   fun ref width(): I32 =>
-    match _texture
-    | let t: KoreGraphics4Texture => t.get_width()
+    match _render_target
+    | let rt: KoreGraphics4RenderTarget => rt.get_width()
     else
-      match _render_target
-      | let rt: KoreGraphics4RenderTarget => rt.get_width()
+      match _texture
+      | let t: KoreGraphics4Texture => t.get_width()
       else
         I32(0)
       end
     end
 
   fun ref height(): I32 =>
-    match _texture
-    | let t: KoreGraphics4Texture => t.get_height()
+    match _render_target
+    | let rt: KoreGraphics4RenderTarget => rt.get_height()
     else
-      match _render_target
-      | let rt: KoreGraphics4RenderTarget => rt.get_height()
+      match _texture
+      | let t: KoreGraphics4Texture => t.get_height()
       else
         I32(0)
       end
