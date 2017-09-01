@@ -1,10 +1,12 @@
 use "../../kore"
+use "logger"
 
 actor Main
   new create(env: Env) =>
     let kore_system = KoreSystem(
-      env,
       where
+        env = env,
+        log_level = Info,
         title = "Basic Example",
         width = 640,
         height = 480)

@@ -115,7 +115,7 @@ class KoreSystem
   let _render_listeners: Map[USize, Array[{ref(Framebuffer)}]]
   let _framebuffers: Map[USize, Framebuffer]
 
-  let logger: StringLogger
+  let logger: Logger[String]
   let shaders: Shaders
   // var assets: Assets // TODO: Assets
 
@@ -146,18 +146,27 @@ class KoreSystem
     _render_listeners(0) = Array[{ref(Framebuffer)}].create(1)
     _framebuffers = _framebuffers.create()
 
-    logger = StringLogger(log_level, env.out)
+    logger = Logger[String](
+      log_level,
+      env.out,
+      {(s: String): String => s },
+      {(msg: String val, loc: SourceLoc val): String val => msg})
 
     shaders = Shaders
     try
       let caps = recover val
         FileCaps.>set(FileRead).>set(FileStat).>set(FileLookup)
       end
-      let shaders_path = 
-        FilePath(env.root as AmbientAuth, "./Shaders", caps)?
-      shaders.init(logger, shaders_path)
+      let bin_dir =
+        Directory(FilePath(env.root as AmbientAuth, Path.cwd(), caps)?)?
+      try
+        let shaders_path = bin_dir.infoat("Shaders")?.filepath
+        shaders.init(logger, shaders_path)
+      else
+        logger(Warn) and logger.log("[Warning] ./Shaders not found")
+      end
     else
-      logger(Warn) and logger.log("./Shaders not found.")
+      logger(Error) and logger.log("[Error] Problem accessing ./Shaders")
     end
 
     // assets = Assets // TODO: Assets

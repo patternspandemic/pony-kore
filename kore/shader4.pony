@@ -31,6 +31,7 @@ type KoreGraphics4ShaderType is
   | ShaderTypeGeometryShader
   | ShaderTypeTessellationControlShader
   | ShaderTypeTessellationEvaluationShader
+  // | ShaderTypeComputeShader
   )
 
 primitive _KoreGraphics4ShaderHandle

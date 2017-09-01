@@ -6,7 +6,7 @@ actor Main
     let kore_system = KoreSystem(
       where
         env = env,
-        log_level = Warn,
+        log_level = Info,
         title = "Shader Example",
         width = 640,
         height = 480)
@@ -48,7 +48,8 @@ class ShaderExample
 
       system.notify_on_render(this~render())
     else
-      system.logger(Error) and system.logger.log("Error setting up Shader Example.")
+      system.logger(Error) and system.logger.log(
+        "[Error] Failed to setup ShaderExample.")
     end
 
   fun ref render(framebuffer: Framebuffer) =>
