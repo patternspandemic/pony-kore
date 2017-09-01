@@ -1,5 +1,7 @@
 use "lib:korec"
+use "logger"
 use "collections"
+use "files"
 
 use @Kore_System__updateWithSystemObject[None](
   system: KoreSystem,
@@ -110,10 +112,16 @@ class _SystemOptions
 
 class KoreSystem
   let _options: _SystemOptions
-  var _render_listeners: Map[USize, Array[{ref(Framebuffer)}]]
-  var _framebuffers: Map[USize, Framebuffer]
+  let _render_listeners: Map[USize, Array[{ref(Framebuffer)}]]
+  let _framebuffers: Map[USize, Framebuffer]
+
+  let logger: StringLogger
+  let shaders: Shaders
+  // var assets: Assets // TODO: Assets
 
   new create(
+    env: Env,
+    log_level: LogLevel,
     title: String = "Kore",
     width: I32 = 800,
     height: I32 = 600,
@@ -137,6 +145,22 @@ class KoreSystem
     _render_listeners = _render_listeners.create()
     _render_listeners(0) = Array[{ref(Framebuffer)}].create(1)
     _framebuffers = _framebuffers.create()
+
+    logger = StringLogger(log_level, env.out)
+
+    shaders = Shaders
+    try
+      let caps = recover val
+        FileCaps.>set(FileRead).>set(FileStat).>set(FileLookup)
+      end
+      let shaders_path = 
+        FilePath(env.root as AmbientAuth, "./Shaders", caps)?
+      shaders.init(logger, shaders_path)
+    else
+      logger(Warn) and logger.log("./Shaders not found.")
+    end
+
+    // assets = Assets // TODO: Assets
 
   fun ref apply(callback': {ref()} ref) =>
     KoreRandom.init()
@@ -168,6 +192,9 @@ class KoreSystem
     //   KoreGraphics2(framebuffer),
     //   g4)
     _framebuffers(USize.from[I32](window_id)) = framebuffer
+
+    // Other post init stuff, see:
+    // https://github.com/Kode/Kha/blob/master/Backends/Kore/kha/SystemImpl.hx#L155
 
     callback'()
     KoreSystemPrimitive._update_with_system_object(

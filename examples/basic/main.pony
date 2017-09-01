@@ -3,6 +3,7 @@ use "../../kore"
 actor Main
   new create(env: Env) =>
     let kore_system = KoreSystem(
+      env,
       where
         title = "Basic Example",
         width = 640,
