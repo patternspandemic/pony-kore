@@ -4,12 +4,12 @@ use "logger"
 actor Main
   new create(env: Env) =>
     let kore_system = KoreSystem(
-      where
-        env = env,
-        log_level = Info,
-        title = "Basic Example",
-        width = 640,
-        height = 480)
+      env,
+      Info
+    where
+      title = "Basic Example",
+      width = 640,
+      height = 480)
 
     kore_system({ref() => BasicExample(kore_system)} ref)
 
