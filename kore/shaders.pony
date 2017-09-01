@@ -56,7 +56,7 @@ class Shaders
                         shaders_path.path,
                         Path.join(Path.dir(file_path.path), short_name))?
                     _shaders(shader_rel) = shader
-                    logger(Info) and logger.log("[Info] Loaded " + short_name)
+                    logger(Info) and logger.log("[Info] Loaded " + shader_rel)
                   end
                 else
                   logger(Error) and logger.log(

@@ -35,13 +35,13 @@ class ShaderExample
       pipeline.set_fragment_shader(system.shaders("shader.frag")?)
       pipeline.input_layout.push(structure')
       pipeline.compile()
-      
+
       with v = vertex_buffer.lock() do
         v(0)? = -1; v(1)? = -1; v(2)? = 0.5
         v(3)? =  1; v(4)? = -1; v(5)? = 0.5
         v(6)? =  0; v(7)? =  1; v(8)? = 0.5
       end
-      
+
       with i = index_buffer.lock() do
         i(0)? = 0; i(1)? = 1; i(2)? = 2
       end
