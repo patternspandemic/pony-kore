@@ -3,17 +3,18 @@ use "files"
 use "logger"
 use "regex"
 
-// TODO: Load shaders in concurrently?
+// TODO: Load shaders concurrently?
 class Shaders
+  let _logger: Logger[String]
   let _shaders: Map[String val, KoreGraphics4Shader val]
 
-  new create() =>
+  new create(logger: Logger[String]) =>
+    _logger = logger
     _shaders = _shaders.create()
 
-  fun ref init(logger: Logger[String], dir_path: FilePath) =>
+  fun ref _load(dir_path: FilePath) =>
     dir_path.walk(
       object ref is WalkHandler
-        let lgr: Logger[String] = logger
         let shaders_path: FilePath = dir_path
         fun ref apply(
           dir_path': FilePath val,
@@ -56,22 +57,22 @@ class Shaders
                         shaders_path.path,
                         Path.join(Path.dir(file_path.path), short_name))?
                     _shaders(shader_rel) = shader
-                    logger(Info) and logger.log("[Info] Loaded " + shader_rel)
+                    _logger(Info) and _logger.log("[Info] Loaded " + shader_rel)
                   end
                 else
-                  logger(Error) and logger.log(
+                  _logger(Error) and _logger.log(
                     "[Error] Failed to load " + file_path.path)
                 end
               end
             end
           else
-            logger(Error) and logger.log(
+            _logger(Error) and _logger.log(
               "[Error] Problem loading shaders")
           end
       end)
 
     if _shaders.size() == 0 then
-      logger(Warn) and logger.log("[Warning] No shaders found in ./Shaders")
+      _logger(Warn) and _logger.log("[Warning] No shaders found in ./Shaders")
     end
 
   fun apply(name: String): KoreGraphics4Shader val ? =>

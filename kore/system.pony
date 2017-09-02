@@ -117,7 +117,7 @@ class KoreSystem
 
   let logger: Logger[String]
   let shaders: Shaders
-  // var assets: Assets // TODO: Assets
+  var assets: Assets
 
   new create(
     env: Env,
@@ -152,16 +152,17 @@ class KoreSystem
       {(s: String): String => s },
       {(msg: String val, loc: SourceLoc val): String val => msg})
 
-    shaders = Shaders
+    let caps = recover val
+      FileCaps.>set(FileRead).>set(FileStat).>set(FileLookup)
+    end
+
+    shaders = Shaders(logger)
     try
-      let caps = recover val
-        FileCaps.>set(FileRead).>set(FileStat).>set(FileLookup)
-      end
       let bin_dir =
         Directory(FilePath(env.root as AmbientAuth, Path.cwd(), caps)?)?
       try
         let shaders_path = bin_dir.infoat("Shaders")?.filepath
-        shaders.init(logger, shaders_path)
+        shaders._load(shaders_path)
       else
         logger(Warn) and logger.log("[Warning] ./Shaders not found")
       end
@@ -169,7 +170,19 @@ class KoreSystem
       logger(Error) and logger.log("[Error] Problem accessing ./Shaders")
     end
 
-    // assets = Assets // TODO: Assets
+    assets = Assets(logger)
+    try
+      let bin_dir =
+        Directory(FilePath(env.root as AmbientAuth, Path.cwd(), caps)?)?
+      try
+        let assets_path = bin_dir.infoat("Assets")?.filepath
+        assets._init(assets_path)
+      else
+        logger(Warn) and logger.log("[Warning] ./Assets not found")
+      end
+    else
+      logger(Error) and logger.log("[Error] Problem accessing ./Assets")
+    end
 
   fun ref apply(callback': {ref()} ref) =>
     KoreRandom.init()
