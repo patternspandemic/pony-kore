@@ -216,70 +216,70 @@ class Image is Canvas
   fun non_pow2_supported() =>
     KoreGraphics4Primitive.non_pow2_textures_supported()
 
-  fun ref width(): I32 =>
+  fun width(): I32 =>
     match _texture
-    | let t: KoreGraphics4Texture => t.get_width()
+    | let t: KoreGraphics4Texture box => t.get_width()
     else
       match _render_target
-      | let rt: KoreGraphics4RenderTarget => rt.get_width()
+      | let rt: KoreGraphics4RenderTarget box => rt.get_width()
       else
         I32(0)
       end
     end
 
-  fun ref height(): I32 =>
+  fun height(): I32 =>
     match _texture
-    | let t: KoreGraphics4Texture => t.get_height()
+    | let t: KoreGraphics4Texture box => t.get_height()
     else
       match _render_target
-      | let rt: KoreGraphics4RenderTarget => rt.get_height()
+      | let rt: KoreGraphics4RenderTarget box => rt.get_height()
       else
         I32(0)
       end
     end
 
-  fun ref depth(): I32 =>
+  fun depth(): I32 =>
     match _texture
-    | let t: KoreGraphics4Texture => t.get_depth()
+    | let t: KoreGraphics4Texture box => t.get_depth()
     else
       I32(0)
     end
 
-  fun ref real_width(): I32 =>
+  fun real_width(): I32 =>
     match _texture
-    | let t: KoreGraphics4Texture => t.get_texture_width()
+    | let t: KoreGraphics4Texture box => t.get_texture_width()
     else
       match _render_target
-      | let rt: KoreGraphics4RenderTarget => rt.get_texture_width()
+      | let rt: KoreGraphics4RenderTarget box => rt.get_texture_width()
       else
         I32(0)
       end
     end
 
-  fun ref real_height(): I32 =>
+  fun real_height(): I32 =>
     match _texture
-    | let t: KoreGraphics4Texture => t.get_texture_height()
+    | let t: KoreGraphics4Texture box => t.get_texture_height()
     else
       match _render_target
-      | let rt: KoreGraphics4RenderTarget => rt.get_texture_height()
+      | let rt: KoreGraphics4RenderTarget box => rt.get_texture_height()
       else
         I32(0)
       end
     end
 
-  fun ref is_opaque(x: I32, y: I32): Bool =>
+  fun is_opaque(x: I32, y: I32): Bool =>
     match _texture
     | None => false  // What Kha does, error instead?
-    | let t: KoreGraphics4Texture =>
+    | let t: KoreGraphics4Texture box =>
       let color: U32 = U32.from[I32](t.at(x, y))
       let alpha: U32 = (color and 0xff000000) >> 24
       (alpha and 0xff) != 0
     end
 
-  fun ref at(x: I32, y: I32): Color =>
+  fun at(x: I32, y: I32): Color =>
     match _texture
     | None => Color(Colors.black()) // What Kha does, error instead?
-    | let t: KoreGraphics4Texture =>
+    | let t: KoreGraphics4Texture box =>
       let color_value: U32 = U32.from[I32](t.at(x, y))
       Color(color_value)
     end

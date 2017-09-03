@@ -50,23 +50,23 @@ class CubeMap is Canvas
   https://github.com/Kode/Kha/blob/master/Backends/Kore/kha/graphics4/CubeMap.hx#L90
   */
 
-  fun ref width(): I32 =>
+  fun width(): I32 =>
     match _render_target
-    | let rt: KoreGraphics4RenderTarget => rt.get_width()
+    | let rt: KoreGraphics4RenderTarget box => rt.get_width()
     else
       match _texture
-      | let t: KoreGraphics4Texture => t.get_width()
+      | let t: KoreGraphics4Texture box => t.get_width()
       else
         I32(0)
       end
     end
 
-  fun ref height(): I32 =>
+  fun height(): I32 =>
     match _render_target
-    | let rt: KoreGraphics4RenderTarget => rt.get_height()
+    | let rt: KoreGraphics4RenderTarget box => rt.get_height()
     else
       match _texture
-      | let t: KoreGraphics4Texture => t.get_height()
+      | let t: KoreGraphics4Texture box => t.get_height()
       else
         I32(0)
       end

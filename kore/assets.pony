@@ -8,7 +8,7 @@ class Assets
   let _logger: Logger[String]
   var _dir_path: (FilePath | None) = None
 
-  let images: Map[String val, Image ref]
+  let images: Map[String val, Image val]
   // TODO: Other Asset Types
   // let sounds: Map[String val, Sound ref]
   // let blobs: Map[String val, Blob ref]
@@ -60,8 +60,8 @@ class Assets
                     match extention
                     | "hdr" | "jpg" | "k" | "kng" | "png" | "pvr" =>
                       // handle image
-                      let image: Image ref =
-                        Image.from_file(file_path.path, true)
+                      let image: Image val =
+                        recover Image.from_file(file_path.path, true) end
                         images(asset_rel) = image
                         loaded_type = "image"
 
