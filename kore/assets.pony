@@ -1,6 +1,7 @@
 use "collections"
 use "files"
 use "logger"
+use "promises"
 use "regex"
 
 // TODO: Load assets concurrently?
@@ -28,13 +29,12 @@ class Assets
     _dir_path = dir_path
 
 
-  fun ref load_everything(done: {ref()}) =>
+  fun ref load_everything(done: Promise[None]) =>
     """Load everything into this Assets' collections."""
     match _dir_path
     | let assets_path: FilePath =>
       assets_path.walk(
         object ref is WalkHandler
-        // let shaders_path: FilePath = dir_path
         fun ref apply(
           dir_path': FilePath val,
           dir_entries: Array[String val] ref)
@@ -51,7 +51,7 @@ class Assets
 
               if file_info.file then
                 try
-                  with asset_file = OpenFile(file_path) as File do
+                  // with asset_file = OpenFile(file_path) as File do
                     let asset_rel =
                       Path.rel(
                         assets_path.path,
@@ -83,40 +83,77 @@ class Assets
                     _logger(Info) and _logger.log(
                       "[Info] Loaded " + loaded_type +
                       " asset at: " + asset_rel)
-                  end
+                  // end // end of with
                 else
                   _logger(Error) and _logger.log(
                     "[Error] Failed to load asset: " + file_path.path)
+                  done.reject()
                 end
               end
             end
-
-            done()
+            // Fulfill promise to attempt load of everything.
+            done(None)
           else
             _logger(Error) and _logger.log(
               "[Error] Problem loading assets")
+            done.reject()
           end
         end)
     | None =>
       _logger(Error) and _logger.log(
-        "[Error] Cannot load assets, path not provided.")
+        "[Error] Cannot load assets. Assets path not provided.")
+      done.reject()
     end
 
-  /*
+  // TODO: Make load_* into a generic load[T] method?
+  // But requires different asset constructor arity.
 
-  Load individual assets, adding them into this Assets' corresponding
-  collection under the relative path name including extention. Then
-  return the asset in the done callback.
+  fun ref load_image(
+    rel_path: String val,
+    done: Promise[Image val],
+    readable: Bool = true)
+  =>
+    match _dir_path
+    | let assets_path: FilePath =>
+      try
+        let image_path = assets_path.join(rel_path)?
+        let image_info = FileInfo(image_path)?
+        let extention = Path.ext(image_path.path)
 
-  */
-
-  // fun load_image(
-  //   rel_path: String val,
-  //   done: {(Image)},
-  //   readable: Bool = true)
-  // =>
-  //   // TODO
-
+        if image_info.file and get_image_formats().contains(extention) then
+          try
+            let image_rel = // possibly cleaned rel path
+              Path.rel(
+                assets_path.path,
+                image_path.path)?
+            let image: Image val =
+              recover Image.from_file(image_path.path, readable) end
+            images(image_rel) = image
+            _logger(Info) and _logger.log(
+              "[Info] Loaded image asset at: " + image_rel)
+            done(image)
+          else
+            _logger(Error) and _logger.log(
+              "[Error] Failed to load image asset: " + image_path.path)
+            done.reject()
+          end
+        else
+          done.reject()
+          _logger(Error) and _logger.log(
+            "[Error] Image asset not a file or is unsupported format: " +
+            image_path.path)
+        end
+      else
+        done.reject()
+        _logger(Error) and _logger.log(
+          "[Error] Image asset (" + rel_path +
+          ") not found in assets path of " + assets_path.path)
+      end
+    | None =>
+      done.reject()
+      _logger(Error) and _logger.log(
+        "[Error] Cannot load image asset. Assets path not provided.")
+    end
 
   // fun load_blob(rel_path: String val, done: {(Blob)}) =>
   // fun load_sound(rel_path: String val, done: {(Sound)}) =>
