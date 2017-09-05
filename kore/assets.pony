@@ -147,7 +147,7 @@ class Assets
         done.reject()
         _logger(Error) and _logger.log(
           "[Error] Image asset (" + rel_path +
-          ") not found in assets path of " + assets_path.path)
+          ") not found in assets path of: " + assets_path.path)
       end
     | None =>
       done.reject()
