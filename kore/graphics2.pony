@@ -69,7 +69,7 @@ use @Kore_Graphics2_Graphics2_fillTriangle[None](
   y3: F32)
 use @Kore_Graphics2_Graphics2_setPipeline[None](
   self: Pointer[_KoreGraphics2Handle] tag,
-  pipeline: Pointer[_KoreGraphics4PipelineState] tag)
+  pipeline: Pointer[_KoreGraphics4PipelineStateHandle] tag)
 use @Kore_Graphics2_Graphics2_scissor[None](
   self: Pointer[_KoreGraphics2Handle] tag,
   x: I32,
@@ -156,9 +156,9 @@ class KoreGraphics2
 
   new create(target: (Canvas | None) = None) =>
     _target = target
-    let width': I32
-    let height': I32
-    let target_is_rt': Bool = false
+    var width': I32
+    var height': I32
+    var target_is_rt': Bool = false
 
     match _target
     | let fb: Framebuffer =>
@@ -185,7 +185,26 @@ class KoreGraphics2
 
     _handle = @Kore_Graphics2_Graphics2_create(width', height', target_is_rt')
 
+  fun begin_gfx(
+    render_targets: Bool = false,
+    width: I32 = -1,
+    height: I32 = -1,
+    clear: Bool = true,
+    clear_color: U32 = Colors.black()) // 0xff000000
+  =>
+    @Kore_Graphics2_Graphics2_begin(
+      _handle, render_targets, width, height, clear, clear_color)
 
+  fun end_gfx() =>
+    @Kore_Graphics2_Graphics2_end(_handle)
+
+  fun fill_rect(
+    x: F32,
+    y: F32,
+    width: F32,
+    height: F32)
+  =>
+    @Kore_Graphics2_Graphics2_fillRect(_handle, x, y, width, height)
 
 /*
 

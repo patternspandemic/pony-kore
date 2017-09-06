@@ -6,9 +6,9 @@ class Framebuffer
 
   new create(
     window_id: I32,
-    g1': KoreGraphics1 = None,
-    g2': KoreGraphics2 = None,
-    g4': KoreGraphics4 = None)
+    g1': (KoreGraphics1 | None) = None,
+    g2': (KoreGraphics2 | None) = None,
+    g4': (KoreGraphics4 | None) = None)
   =>
     _window_id = window_id
     _graphics1 = g1'
@@ -16,9 +16,9 @@ class Framebuffer
     _graphics4 = g4'
 
   fun ref apply(
-    g1': KoreGraphics1 = None,
-    g2': KoreGraphics2 = None,
-    g4': KoreGraphics4 = None)
+    g1': (KoreGraphics1 | None) = None,
+    g2': (KoreGraphics2 | None) = None,
+    g4': (KoreGraphics4 | None) = None)
   =>
     _graphics1 = g1'
     _graphics2 = g2'
