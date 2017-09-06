@@ -208,11 +208,10 @@ class KoreSystem
     let window_id: I32 = 0
     let g4 = KoreGraphics4
     let framebuffer = Framebuffer(window_id where g4' = g4)
-    // TODO: Init framebuffer's g1 and g2 APIs
-    // framebuffer(
-    //   KoreGraphics1(framebuffer),
-    //   KoreGraphics2(framebuffer),
-    //   g4)
+    framebuffer(
+      KoreGraphics1(framebuffer),
+      KoreGraphics2(framebuffer),
+      g4)
     _framebuffers(USize.from[I32](window_id)) = framebuffer
 
     // Other post init stuff, see:

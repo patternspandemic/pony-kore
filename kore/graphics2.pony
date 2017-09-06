@@ -151,15 +151,96 @@ primitive _KoreGraphics2Handle
 class KoreGraphics2
   let _handle: Pointer[_KoreGraphics2Handle] tag
   var _target: (Canvas | None)
-  // var _render_target: (KoreGraphics4RenderTarget | None) = None
+  var _render_target: (KoreGraphics4RenderTarget | None) = None
+  var _g4: (KoreGraphics4 | None) = None
 
   new create(target: (Canvas | None) = None) =>
     _target = target
-    /*
+    let width': I32
+    let height': I32
+    let target_is_rt': Bool = false
+
     match _target
-    | None => None
-    // TODO: Requires implementation of CubeMap, Image
-    // | let cube_map: CubeMap => _render_target = cube_map._get_render_target()
-    | let image: Image => _render_target = image._get_render_target()
+    | let fb: Framebuffer =>
+      target_is_rt' = false
+      width' = KoreSystemPrimitive.window_width()
+      height' = KoreSystemPrimitive.window_height()
+      _g4 = fb.g4()
+    | let cube_map: CubeMap =>
+      _render_target = cube_map._get_render_target()
+      target_is_rt' = true
+      width' = cube_map.width()
+      height' = cube_map.height()
+      _g4 = cube_map.g4()
+    | let image: Image =>
+      _render_target = image._get_render_target()
+      target_is_rt' = true
+      width' = image.width()
+      height' = image.height()
+      _g4 = image.g4()
+    else
+      width' = KoreSystemPrimitive.window_width()
+      height' = KoreSystemPrimitive.window_height()
     end
-    */
+
+    _handle = @Kore_Graphics2_Graphics2_create(width', height', target_is_rt')
+
+
+
+/*
+
+draw_image
+draw_scaled_sub_image
+draw_rect
+fill_rect
+draw_string
+draw_sub_string? (draw_characters in Kha?)
+draw_line
+fill_triangle
+set_pipeline
+scissor
+disable_scissor
+begin // Add 2 versions, one that includes g4.begin, the other not
+clear
+flush
+end  // Add 2 versions, one that includes g4.end, the other not
+draw_video_internal
+draw_video
+get_color
+set_color
+get_opacity
+set_opacity
+get_font
+set_font
+get_font_size
+set_font_size
+get_font_color
+set_font_color
+
+get_transformation
+set_transformation
+
+// Kha Graphics2 extras
+// https://github.com/Kode/Kha/blob/master/Sources/kha/graphics2/Graphics.hx
+
+draw_sub_image
+draw_scaled_image
+get_font_glyphs
+set_font_glyphs
+push_transformation
+pop_transformation
+translate
+push_translation
+rotate
+push_rotation
+push_opacity
+pop_opacity
+get_pipeline? may not be accessible
+
+*/
+
+  fun _get_handle(): Pointer[_KoreGraphics2Handle] tag =>
+    _handle
+
+  fun _final() =>
+    @Kore_Graphics2_Graphics2_destroy(_handle)

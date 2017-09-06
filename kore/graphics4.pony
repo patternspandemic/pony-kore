@@ -1334,7 +1334,6 @@ class KoreGraphics4
   new create(target: (Canvas | None) = None) =>
     _target = target
     match _target
-    // | None => None
     | let cube_map: CubeMap => _render_target = cube_map._get_render_target()
     | let image: Image => _render_target = image._get_render_target()
     end
