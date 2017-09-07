@@ -150,50 +150,38 @@ primitive _KoreGraphics2Handle
 
 class KoreGraphics2
   let _handle: Pointer[_KoreGraphics2Handle] tag
-  var _target: (Canvas | None)
+  let _target: Canvas
+  let _render_targets: Bool
   var _render_target: (KoreGraphics4RenderTarget | None) = None
-  var _g4: (KoreGraphics4 | None) = None
+  var _g4: KoreGraphics4
 
-  new create(target: (Canvas | None) = None) =>
+  new create(target: Canvas) =>
     _target = target
-    var width': I32
-    var height': I32
-    var target_is_rt': Bool = false
+    _g4 = _target.g4()
 
     match _target
     | let fb: Framebuffer =>
-      target_is_rt' = false
-      width' = KoreSystemPrimitive.window_width()
-      height' = KoreSystemPrimitive.window_height()
-      _g4 = fb.g4()
+      _render_targets = false
     | let cube_map: CubeMap =>
       _render_target = cube_map._get_render_target()
-      target_is_rt' = true
-      width' = cube_map.width()
-      height' = cube_map.height()
-      _g4 = cube_map.g4()
+      _render_targets = true
     | let image: Image =>
       _render_target = image._get_render_target()
-      target_is_rt' = true
-      width' = image.width()
-      height' = image.height()
-      _g4 = image.g4()
+      _render_targets = true
     else
-      width' = KoreSystemPrimitive.window_width()
-      height' = KoreSystemPrimitive.window_height()
+      _render_targets = false
     end
 
-    _handle = @Kore_Graphics2_Graphics2_create(width', height', target_is_rt')
+    _handle = @Kore_Graphics2_Graphics2_create(
+      _target.width(), _target.height(), _render_targets)
 
-  fun begin_gfx(
-    render_targets: Bool = false,
-    width: I32 = -1,
-    height: I32 = -1,
+  fun ref begin_gfx(
     clear: Bool = true,
-    clear_color: U32 = Colors.black()) // 0xff000000
+    clear_color: U32 = Colors.black())
   =>
+    _g4.begin_gfx()
     @Kore_Graphics2_Graphics2_begin(
-      _handle, render_targets, width, height, clear, clear_color)
+      _handle, _render_targets, -1, -1, clear, clear_color)
 
   fun end_gfx() =>
     @Kore_Graphics2_Graphics2_end(_handle)

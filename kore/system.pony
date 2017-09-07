@@ -202,8 +202,8 @@ class KoreSystem
     window_options.minimizable = _options.minimizable
 
     KoreSystemPrimitive.init_window(window_options)
+
     // See: https://github.com/Kode/Kha/blob/master/Backends/Kore/kha/SystemImpl.hx#L108
-    // shaders init?
 
     let window_id: I32 = 0
     let g4 = KoreGraphics4
