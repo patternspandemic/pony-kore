@@ -176,15 +176,33 @@ class KoreGraphics2
       _target.width(), _target.height(), _render_targets)
 
   fun ref begin_gfx(
-    clear: Bool = true,
+    clear': Bool = true,
     clear_color: U32 = Colors.black())
   =>
     _g4.begin_gfx()
     @Kore_Graphics2_Graphics2_begin(
-      _handle, _render_targets, -1, -1, clear, clear_color)
+      _handle, _render_targets, -1, -1, clear', clear_color)
+
+  fun clear(
+    color: U32 = Colors.black())
+  =>
+    @Kore_Graphics2_Graphics2_clear(_handle, color)
+
+  fun flush() =>
+    @Kore_Graphics2_Graphics2_flush(_handle)
 
   fun end_gfx() =>
     @Kore_Graphics2_Graphics2_end(_handle)
+    _g4.end_gfx()
+
+  fun draw_rect(
+    x: F32,
+    y: F32,
+    width: F32,
+    height: F32,
+    strength: F32 = 1.0)
+  =>
+    @Kore_Graphics2_Graphics2_drawRect(_handle, x, y, width, height, strength)
 
   fun fill_rect(
     x: F32,
@@ -194,29 +212,51 @@ class KoreGraphics2
   =>
     @Kore_Graphics2_Graphics2_fillRect(_handle, x, y, width, height)
 
+  fun draw_line(
+    x1: F32,
+    y1: F32,
+    x2: F32,
+    y2: F32,
+    strength: F32 = 1.0)
+  =>
+    @Kore_Graphics2_Graphics2_drawLine(_handle ,x1, y1, x2, y2, strength)
+
+  fun fill_triangle(
+    x1: F32,
+    y1: F32,
+    x2: F32,
+    y2: F32,
+    x3: F32,
+    y3: F32)
+  =>
+    @Kore_Graphics2_Graphics2_fillTriangle(_handle, x1, y1, x2, y2, x3, y3)
+
+  fun get_color(): U32 =>
+    @Kore_Graphics2_Graphics2_getColor(_handle)
+
+  fun set_color(color: U32) =>
+    @Kore_Graphics2_Graphics2_setColor(_handle, color)
+
+  fun get_opacity(): F32 =>
+    @Kore_Graphics2_Graphics2_getOpacity(_handle)
+
+  fun set_opacity(opacity: F32) =>
+    @Kore_Graphics2_Graphics2_setOpacity(_handle, opacity)
+
+
 /*
 
 draw_image
 draw_scaled_sub_image
-draw_rect
-fill_rect
 draw_string
 draw_sub_string? (draw_characters in Kha?)
-draw_line
-fill_triangle
 set_pipeline
 scissor
 disable_scissor
-begin // Add 2 versions, one that includes g4.begin, the other not
-clear
-flush
-end  // Add 2 versions, one that includes g4.end, the other not
+begin // sans g4, what to call?
+end  // sans g4, what to call?
 draw_video_internal
 draw_video
-get_color
-set_color
-get_opacity
-set_opacity
 get_font
 set_font
 get_font_size
