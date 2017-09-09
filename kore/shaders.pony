@@ -1,10 +1,12 @@
 use "collections"
 use "files"
 use "logger"
+use "promises"
 use "regex"
 
 // TODO: Load shaders concurrently?
-class Shaders
+// class Shaders
+actor Shaders
   let _logger: Logger[String]
   let _shaders: Map[String val, KoreGraphics4Shader val]
 
@@ -12,7 +14,9 @@ class Shaders
     _logger = logger
     _shaders = _shaders.create()
 
-  fun ref _load(dir_path: FilePath) =>
+  // fun ref _load(dir_path: FilePath) =>
+  // fun tag _load(dir_path: FilePath) =>
+  be _load(dir_path: FilePath) =>
     dir_path.walk(
       object ref is WalkHandler
         let shaders_path: FilePath = dir_path
@@ -76,6 +80,19 @@ class Shaders
       _logger(Warn) and _logger.log("[Warning] No shaders found in ./Shaders")
     end
 
-  fun apply(name: String): KoreGraphics4Shader val ? =>
+  fun tag apply(name: String): Promise[KoreGraphics4Shader val] tag =>
     """Where name is the relative path the the shader from ./Shaders"""
-    _shaders(name)?
+    let shader_promise = Promise[KoreGraphics4Shader val]
+    _apply(name, shader_promise)
+    shader_promise
+
+  be _apply(
+    name: String,
+    shader_promise: Promise[KoreGraphics4Shader val] tag)
+  =>
+    try
+      let shader: KoreGraphics4Shader val = _shaders(name)?
+      shader_promise(shader)
+    else
+      shader_promise.reject()
+    end

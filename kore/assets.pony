@@ -5,7 +5,8 @@ use "promises"
 use "regex"
 
 // TODO: Load assets concurrently?
-class Assets
+// class Assets
+actor Assets
   let _logger: Logger[String]
   var _dir_path: (FilePath | None) = None
 
@@ -25,11 +26,17 @@ class Assets
     // fonts = fonts.create()
     // videos = videos.create()
 
-  fun ref _init(dir_path: FilePath) =>
+  // fun ref _init(dir_path: FilePath) =>
+  be _init(dir_path: FilePath) =>
     _dir_path = dir_path
 
+  fun tag load_everything(): Promise[None] tag =>
+    let loaded_promise = Promise[None]
+    _load_everything(loaded_promise)
+    loaded_promise
 
-  fun ref load_everything(done: Promise[None]) =>
+  // fun ref load_everything(loaded_promise: Promise[None]) =>
+  be _load_everything(loaded_promise: Promise[None]) =>
     """Load everything into this Assets' collections."""
     match _dir_path
     | let assets_path: FilePath =>
@@ -87,31 +94,42 @@ class Assets
                 else
                   _logger(Error) and _logger.log(
                     "[Error] Failed to load asset: " + file_path.path)
-                  done.reject()
+                  loaded_promise.reject()
                 end
               end
             end
             // Fulfill promise to attempt load of everything.
-            done(None)
+            loaded_promise(None)
           else
             _logger(Error) and _logger.log(
               "[Error] Problem loading assets")
-            done.reject()
+            loaded_promise.reject()
           end
         end)
     | None =>
       _logger(Error) and _logger.log(
         "[Error] Cannot load assets. Assets path not provided.")
-      done.reject()
+      loaded_promise.reject()
     end
 
   // TODO: Make load_* into a generic load[T] method?
   // But requires different asset constructor arity.
 
-  fun ref load_image(
+  fun tag load_image(
     rel_path: String val,
-    done: Promise[Image val],
     readable: Bool = true)
+    : Promise[Image val] tag
+  =>
+    let image_promise = Promise[Image val]
+    _load_image(rel_path, readable, image_promise)
+    image_promise
+
+  // fun ref load_image(
+  be _load_image(
+    rel_path: String val,
+    // image_promise: Promise[Image val],
+    readable: Bool = true,
+    image_promise: Promise[Image val])
   =>
     match _dir_path
     | let assets_path: FilePath =>
@@ -131,26 +149,26 @@ class Assets
             images(image_rel) = image
             _logger(Info) and _logger.log(
               "[Info] Loaded image asset at: " + image_rel)
-            done(image)
+            image_promise(image)
           else
             _logger(Error) and _logger.log(
               "[Error] Failed to load image asset: " + image_path.path)
-            done.reject()
+            image_promise.reject()
           end
         else
-          done.reject()
+          image_promise.reject()
           _logger(Error) and _logger.log(
             "[Error] Image asset not a file or is unsupported format: " +
             image_path.path)
         end
       else
-        done.reject()
+        image_promise.reject()
         _logger(Error) and _logger.log(
           "[Error] Image asset (" + rel_path +
           ") not found in assets path of: " + assets_path.path)
       end
     | None =>
-      done.reject()
+      image_promise.reject()
       _logger(Error) and _logger.log(
         "[Error] Cannot load image asset. Assets path not provided.")
     end

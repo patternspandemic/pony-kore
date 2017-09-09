@@ -117,7 +117,7 @@ class KoreSystem
 
   let logger: Logger[String]
   let shaders: Shaders
-  var assets: Assets
+  let assets: Assets
 
   new create(
     env: Env,
@@ -218,6 +218,7 @@ class KoreSystem
     // https://github.com/Kode/Kha/blob/master/Backends/Kore/kha/SystemImpl.hx#L155
 
     callback'()
+
     KoreSystemPrimitive._update_with_system_object(
       this,
       @{(system: KoreSystem, context_id: I32) =>
