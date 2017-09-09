@@ -6,8 +6,8 @@ actor Main
   var vs: (KoreGraphics4Shader val | None) = None
   var fs: (KoreGraphics4Shader val | None) = None
   var mascot: (Image val | None) = None
-  var logo: (Image val | None) = None
-  var k: (Image val | None) = None
+  // var logo: (Image val | None) = None
+  // var k: (Image val | None) = None
 
   new create(env: Env) =>
     system = KoreSystem(
@@ -24,12 +24,14 @@ actor Main
     system.shaders("shader.frag")
       .next[None](recover this~receive_shader("frag") end)
     // Require needed images
-    system.assets.load_image("pony-mascot.png")
+    system.assets.load_image("pony-mascot2.png")
       .next[None](recover this~receive_image("mascot") end)
+/*
     system.assets.load_image("pony-logo.png")
       .next[None](recover this~receive_image("logo") end)
     system.assets.load_image("kode-k.png")
       .next[None](recover this~receive_image("k") end)
+*/
 
   be receive_shader(
     name: String,
@@ -47,8 +49,8 @@ actor Main
   =>
     match name
     | "mascot" => mascot = image
-    | "logo" => logo = image
-    | "k" => k = image
+    // | "logo" => logo = image
+    // | "k" => k = image
     end
     try_complete()
 
@@ -56,9 +58,9 @@ actor Main
     if
       not (vs is None) and
       not (fs is None) and
-      not (mascot is None) and
+      not (mascot is None) /* and
       not (logo is None) and
-      not (k is None)
+      not (k is None) */
     then
       // All needed resources exist and are loaded.
       system({ref() =>
@@ -67,20 +69,18 @@ actor Main
             system,
             vs as KoreGraphics4Shader val,
             fs as KoreGraphics4Shader val,
-            mascot as Image val,
+            mascot as Image val/*,
             logo as Image val,
-            k as Image val)
+            k as Image val*/)
         end
       } ref)
     end
 
-  // kore_system({ref() => TextureExample(kore_system)} ref)
-
 class TextureExample
   let system: KoreSystem
   let mascot: Image val
-  let logo: Image val
-  let k: Image val
+  // let logo: Image val
+  // let k: Image val
   var pipeline: KoreGraphics4PipelineState
   var vertex_buffer: KoreGraphics4VertexBuffer
   var index_buffer: KoreGraphics4IndexBuffer
@@ -89,14 +89,14 @@ class TextureExample
     system': KoreSystem,
     vertex_shader: KoreGraphics4Shader val,
     fragment_shader: KoreGraphics4Shader val,
-    mascot': Image val,
+    mascot': Image val/*,
     logo': Image val,
-    k': Image val)
+    k': Image val*/)
   =>
-    system = consume system'
+    system = system'
     mascot = mascot'
-    logo = logo'
-    k = k'
+    // logo = logo'
+    // k = k'
 
     var structure = KoreGraphics4VertexStructure
     structure.add("pos", VertexDataFloat3VertexData)

@@ -2,8 +2,12 @@ use "../../kore"
 use "logger"
 
 actor Main
+  var system: KoreSystem
+  var vs: (KoreGraphics4Shader val | None) = None
+  var fs: (KoreGraphics4Shader val | None) = None
+
   new create(env: Env) =>
-    let kore_system = KoreSystem(
+    system = KoreSystem(
       env,
       Info
     where
@@ -11,17 +15,51 @@ actor Main
       width = 640,
       height = 480)
 
-    kore_system({ref() => ShaderExample(kore_system)} ref)
+    // Require needed shaders
+    system.shaders("shader.vert")
+      .next[None](recover this~receive_shader("vert") end)
+    system.shaders("shader.frag")
+      .next[None](recover this~receive_shader("frag") end)
 
+  be receive_shader(
+    name: String,
+    shader: KoreGraphics4Shader val)
+  =>
+    match name
+    | "vert" => vs = shader
+    | "frag" => fs = shader
+    end
+    try_complete()
+
+  fun ref try_complete() =>
+    if
+      not (vs is None) and
+      not (fs is None)
+    then
+      // All needed resources exist and are loaded.
+      system({ref() =>
+        try
+          ShaderExample(
+            system,
+            vs as KoreGraphics4Shader val,
+            fs as KoreGraphics4Shader val)
+        end
+      } ref)
+    end
 
 class ShaderExample
-  var pipeline: KoreGraphics4PipelineState
-  var vertex_buffer: KoreGraphics4VertexBuffer
-  var index_buffer: KoreGraphics4IndexBuffer
+  let system: KoreSystem
+  let pipeline: KoreGraphics4PipelineState
+  let vertex_buffer: KoreGraphics4VertexBuffer
+  let index_buffer: KoreGraphics4IndexBuffer
 
   new create(
-    system: KoreSystem)
+    system': KoreSystem,
+    vertex_shader: KoreGraphics4Shader val,
+    fragment_shader: KoreGraphics4Shader val)
   =>
+    system = system'
+
     var structure = KoreGraphics4VertexStructure
     structure.add("pos", VertexDataFloat3VertexData)
     let structure': KoreGraphics4VertexStructure val = consume structure
@@ -30,27 +68,22 @@ class ShaderExample
     vertex_buffer = KoreGraphics4VertexBuffer(3, structure')
     index_buffer = KoreGraphics4IndexBuffer(3)
 
-    try
-      pipeline.set_vertex_shader(system.shaders("shader.vert")?)
-      pipeline.set_fragment_shader(system.shaders("shader.frag")?)
-      pipeline.input_layout.push(structure')
-      pipeline.compile()
+    pipeline.set_vertex_shader(vertex_shader)
+    pipeline.set_fragment_shader(fragment_shader)
+    pipeline.input_layout.push(structure')
+    pipeline.compile()
 
-      with v = vertex_buffer.lock() do
-        v(0)? = -1; v(1)? = -1; v(2)? = 0.5
-        v(3)? =  1; v(4)? = -1; v(5)? = 0.5
-        v(6)? =  0; v(7)? =  1; v(8)? = 0.5
-      end
-
-      with i = index_buffer.lock() do
-        i(0)? = 0; i(1)? = 1; i(2)? = 2
-      end
-
-      system.notify_on_render(this~render())
-    else
-      system.logger(Error) and system.logger.log(
-        "[Error] Failed to setup ShaderExample.")
+    with v = vertex_buffer.lock() do
+      v(0)? = -1; v(1)? = -1; v(2)? = 0.5
+      v(3)? =  1; v(4)? = -1; v(5)? = 0.5
+      v(6)? =  0; v(7)? =  1; v(8)? = 0.5
     end
+
+    with i = index_buffer.lock() do
+      i(0)? = 0; i(1)? = 1; i(2)? = 2
+    end
+
+    system.notify_on_render(this~render())
 
   fun ref render(framebuffer: Framebuffer) =>
     let g = framebuffer.g4()
