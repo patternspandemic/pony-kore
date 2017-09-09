@@ -1,4 +1,7 @@
 libkorec
 libkorec/
-examples/basic/basic
-examples/shader/shader
+shaders/
+examples/deployed/painter-*
+examples/deployed/basic
+examples/deployed/shader
+examples/deployed/texture
