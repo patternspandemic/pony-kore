@@ -138,7 +138,11 @@ actor Assets
         let image_info = FileInfo(image_path)?
         let extention = Path.ext(image_path.path)
 
-        if image_info.file and get_image_formats().contains(extention) then
+        if image_info.file and
+           get_image_formats().contains(
+             extention,
+             {(s1: String val, s2: String val): Bool => s1 == s2})
+        then
           try
             let image_rel = // possibly cleaned rel path
               Path.rel(

@@ -20,11 +20,11 @@ actor Main
 
     // Require needed shaders
     system.shaders("shader.vert")
-      .next[None](recover this~receive_shader("vert") end)
+      .next[None](recover this~receive_shader("vs") end)
     system.shaders("shader.frag")
-      .next[None](recover this~receive_shader("frag") end)
+      .next[None](recover this~receive_shader("fs") end)
     // Require needed images
-    system.assets.load_image("pony-mascot2.png")
+    system.assets.load_image("pony-mascot.png")
       .next[None](recover this~receive_image("mascot") end)
 /*
     system.assets.load_image("pony-logo.png")
@@ -38,8 +38,8 @@ actor Main
     shader: KoreGraphics4Shader val)
   =>
     match name
-    | "vert" => vs = shader
-    | "frag" => fs = shader
+    | "vs" => vs = shader
+    | "fs" => fs = shader
     end
     try_complete()
 
