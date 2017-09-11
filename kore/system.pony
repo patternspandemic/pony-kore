@@ -2,6 +2,7 @@ use "lib:korec"
 use "logger"
 use "collections"
 use "files"
+use "debug"
 
 use @Kore_System__updateWithSystemObject[None](
   system: KoreSystem,
@@ -224,6 +225,7 @@ class KoreSystem
       @{(system: KoreSystem, context_id: I32) =>
         system.frame(USize.from[I32](context_id))
       })
+
     KoreSystemPrimitive.start()
     // KoreSystemPrimitive.stop()?
 
@@ -232,9 +234,13 @@ class KoreSystem
     id: USize = 0)
   =>
     if not _render_listeners.contains(id) then
+      Debug.out("Setting up render listener array for id: " + id.string())
       _render_listeners(id) = Array[{ref(Framebuffer)}].create(1)
     end
-    try _render_listeners(id)?.push(listener) end
+    try
+      _render_listeners(id)?.push(listener)
+      Debug.out("Pushed render listener for context: " + id.string())
+    end
 
   // TODO: KoreSystem.remove_render_listener
 
@@ -245,6 +251,7 @@ class KoreSystem
     if _render_listeners.size() > 0 then
       try
         for listener in _render_listeners(id)?.values() do
+Debug.out("RENDER LISTENER")
           listener(framebuffer)
         end
       end
