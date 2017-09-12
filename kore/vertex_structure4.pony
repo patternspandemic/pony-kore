@@ -205,11 +205,14 @@ primitive _KoreGraphics4VertexStructureHandle
 
 class trn KoreGraphics4VertexStructure
   let _handle: Pointer[_KoreGraphics4VertexStructureHandle] tag
+  let _element_names: Array[String val]
 
   new trn create() =>
     _handle = @Kore_Graphics4_VertexStructure_create()
+    _element_names = _element_names.create()
 
-  fun add(name: String val, data: KoreGraphics4VertexData) =>
+  fun ref add(name: String val, data: KoreGraphics4VertexData) =>
+    _element_names.push(name)
     @Kore_Graphics4_VertexStructure_addND(
       _handle,
       name.cstring(),

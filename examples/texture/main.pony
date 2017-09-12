@@ -81,6 +81,7 @@ class TextureExample
   let mascot: Image val
   let logo: Image val
   let k: Image val
+  let structure: KoreGraphics4VertexStructure val
   var pipeline: KoreGraphics4PipelineState
   var vertex_buffer: KoreGraphics4VertexBuffer
   var index_buffer: KoreGraphics4IndexBuffer
@@ -98,18 +99,18 @@ class TextureExample
     logo = logo'
     k = k'
 
-    var structure = KoreGraphics4VertexStructure
-    structure.add("pos", VertexDataFloat3VertexData)
-    // structure.add(pos, VertexDataFloat3VertexData)
-    let structure': KoreGraphics4VertexStructure val = consume structure
+    var structure' = KoreGraphics4VertexStructure
+    structure'.add("pos", VertexDataFloat3VertexData)
+    // structure'.add(pos, VertexDataFloat3VertexData)
+    structure = consume structure'
 
     let pipeline' = KoreGraphics4PipelineState
-    let vertex_buffer' = KoreGraphics4VertexBuffer(3, structure')
+    let vertex_buffer' = KoreGraphics4VertexBuffer(3, structure)
     let index_buffer' = KoreGraphics4IndexBuffer(3)
 
     pipeline'.set_vertex_shader(vertex_shader)
     pipeline'.set_fragment_shader(fragment_shader)
-    pipeline'.input_layout.push(structure')
+    pipeline'.input_layout.push(structure)
     pipeline'.compile()
 
     with v = vertex_buffer'.lock() do
@@ -142,6 +143,7 @@ class TextureExample
     g4.set_index_buffer(index_buffer)
     g4.draw_indexed_vertices()
     g4.end_gfx()
+
 
     g2.begin_gfx(false)
     g2.set_color(Colors.white())
