@@ -1,6 +1,5 @@
 use "../../kore"
 use "logger"
-use "debug"
 
 actor Main
   var system: KoreSystem
@@ -130,8 +129,6 @@ class TextureExample
     system.notify_on_render(this~render())
 
   fun ref render(framebuffer: Framebuffer) =>
-  Debug.out("IN RENDER CALLBACK")
-
     let g4 = framebuffer.g4()
     let g2 = framebuffer.g2()
     let grey: U32 = 0xff666666
