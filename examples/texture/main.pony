@@ -5,9 +5,9 @@ actor Main
   var system: KoreSystem
   var vs: (KoreGraphics4Shader val | None) = None
   var fs: (KoreGraphics4Shader val | None) = None
-  var mascot: (Image val | None) = None
-  var logo: (Image val | None) = None
-  var k: (Image val | None) = None
+  var mascot: (Image iso | None) = None
+  var logo: (Image iso | None) = None
+  var k: (Image iso | None) = None
 
   new create(env: Env) =>
     system = KoreSystem(
@@ -23,6 +23,7 @@ actor Main
       .next[None](recover this~receive_shader("vs") end)
     system.shaders("shader.frag")
       .next[None](recover this~receive_shader("fs") end)
+
     // Require needed images
     system.assets.load_image("pony-mascot.k")
       .next[None](recover this~receive_image("mascot") end)
@@ -43,13 +44,12 @@ actor Main
 
   be receive_image(
     name: String,
-    image: Image val)
+    image: Image iso)
   =>
     match name
-    // | "NOOP" => None
-    | "mascot" => mascot = image
-    | "logo" => logo = image
-    | "k" => k = image
+    | "mascot" => mascot = consume image
+    | "logo" => logo = consume image
+    | "k" => k = consume image
     end
     try_complete()
 
@@ -61,25 +61,48 @@ actor Main
       not (logo is None) and
       not (k is None)
     then
+      try
+        let vs' = vs as KoreGraphics4Shader val
+        let fs' = fs as KoreGraphics4Shader val
+        //let mascot': Image iso = (mascot = None) as Image iso^
+        //let logo': Image iso = (logo = None) as Image iso^
+        //let k': Image iso = (k = None) as Image iso^
+
+        let entry_point = {ref(m: Image iso, l: Image iso, k: Image iso) =>
+          TextureExample(
+            system, vs', fs',
+            consume m, consume l, consume k)} ref
+        
+        system(entry_point~apply(
+          (mascot = None) as Image iso^, // consume mascot',
+          (logo = None) as Image iso^, // consume logo',
+          (k = None) as Image iso^)) // consume k'))
+      else
+        system.logger(Error) and system.logger.log(
+          "[Error] Could not create TextureExample")
+      end
+    end
+/*
       // All needed resources exist and are loaded.
-      system({ref() =>
+      system({ref()(mascot'' = consume mascot', logo'' = logo', k'' = k') =>
         try
           TextureExample(
             system,
             vs as KoreGraphics4Shader val,
             fs as KoreGraphics4Shader val,
-            mascot as Image val,
-            logo as Image val,
-            k as Image val)
+            consume mascot'',
+            consume logo'',
+            consume k'')
         end
       } ref)
     end
+*/
 
 class TextureExample
   let system: KoreSystem
-  let mascot: Image val
-  let logo: Image val
-  let k: Image val
+  let mascot: Image ref
+  let logo: Image ref
+  let k: Image ref
   let structure: KoreGraphics4VertexStructure val
   var pipeline: KoreGraphics4PipelineState
   var vertex_buffer: KoreGraphics4VertexBuffer
@@ -89,18 +112,17 @@ class TextureExample
     system': KoreSystem,
     vertex_shader: KoreGraphics4Shader val,
     fragment_shader: KoreGraphics4Shader val,
-    mascot': Image val,
-    logo': Image val,
-    k': Image val)
+    mascot': Image iso,
+    logo': Image iso,
+    k': Image iso)
   =>
     system = system'
-    mascot = mascot'
-    logo = logo'
-    k = k'
+    mascot = consume mascot'
+    logo = consume logo'
+    k = consume k'
 
     var structure' = KoreGraphics4VertexStructure
     structure'.add("pos", VertexDataFloat3VertexData)
-    // structure'.add(pos, VertexDataFloat3VertexData)
     structure = consume structure'
 
     let pipeline' = KoreGraphics4PipelineState
@@ -141,7 +163,6 @@ class TextureExample
     g4.draw_indexed_vertices()
     g4.end_gfx()
 
-
     g2.begin_gfx(false)
     g2.set_color(Colors.white())
     g2.fill_rect(100, 100, 100, 100)
@@ -153,4 +174,5 @@ class TextureExample
     g2.set_color(Colors.blue())
     // g2.set_opacity(0.3)
     g2.fill_triangle(400, 100, 400, 200, 500, 100)
+    g2.draw_image(mascot, 100, 150)
     g2.end_gfx()

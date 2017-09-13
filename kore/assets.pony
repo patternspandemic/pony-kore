@@ -4,6 +4,15 @@ use "logger"
 use "promises"
 use "regex"
 
+// Not sure how useful Assets will be as a holder of various collections, as
+// the asset needs to be sendable from this actor back to the requester. This
+// has the consequence of all collected items being val from a load_everything.
+// This is not so useful for Images, for example, as their underlying texture
+// will not be accessible for drawing for instance. For other asset types it
+// may still be useful to store a collection. Regardless, the Assets actor can
+// provide async loading of an asset and return it iso through the various
+// load_<asset-type> methods.
+
 // TODO: Load assets concurrently?
 // class Assets
 actor Assets
@@ -112,24 +121,24 @@ actor Assets
       loaded_promise.reject()
     end
 
-  // TODO: Make load_* into a generic load[T] method?
-  // But requires different asset constructor arity.
+// TODO: LOL, forgot Promises are not for iso types. :(
+// Will need to replace with behavior interaction, have
+// load_* behaviors accept a AssetReceiver traited tag,
+// and will then be able to send back loaded assets iso.
 
   fun tag load_image(
     rel_path: String val,
     readable: Bool = true)
-    : Promise[Image val] tag
+    : Promise[Image iso] tag
   =>
-    let image_promise = Promise[Image val]
+    let image_promise = Promise[Image iso]
     _load_image(rel_path, readable, image_promise)
     image_promise
 
-  // fun ref load_image(
   be _load_image(
     rel_path: String val,
-    // image_promise: Promise[Image val],
     readable: Bool = true,
-    image_promise: Promise[Image val])
+    image_promise: Promise[Image iso])
   =>
     match _dir_path
     | let assets_path: FilePath =>
@@ -148,12 +157,12 @@ actor Assets
               Path.rel(
                 assets_path.path,
                 image_path.path)?
-            let image: Image val =
+            let image: Image iso =
               recover Image.from_file(image_path.path, readable) end
             images(image_rel) = image
             _logger(Info) and _logger.log(
               "[Info] Loaded image asset at: " + image_rel)
-            image_promise(image)
+            image_promise(consume image)
           else
             _logger(Error) and _logger.log(
               "[Error] Failed to load image asset: " + image_path.path)

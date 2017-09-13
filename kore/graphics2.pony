@@ -175,6 +175,26 @@ class KoreGraphics2
     _handle = @Kore_Graphics2_Graphics2_create(
       _target.width(), _target.height(), _render_targets)
 
+  fun draw_image(img: Image, x: F32, y: F32) =>
+    match img._get_texture()
+    | let texture: KoreGraphics4Texture =>
+      @Kore_Graphics2_Graphics2_drawTexture(
+        _handle, texture._get_handle(), x, y)
+    else
+      match img._get_render_target()
+      | let rt: KoreGraphics4RenderTarget =>
+        @Kore_Graphics2_Graphics2_drawRenderTarget(
+        _handle, rt._get_handle(), x, y)
+      end
+    end
+    // if img.is_texture() then
+    //   @Kore_Graphics2_Graphics2_drawTexture(
+    //     _handle, img._get_texture()._get_handle(), x, y)
+    // elseif img.is_render_target() then
+    //   @Kore_Graphics2_Graphics2_drawRenderTarget(
+    //     _handle, img._get_render_target()._get_handle(), x, y)
+    // end
+
   fun ref begin_gfx(
     clear': Bool = true,
     clear_color: U32 = Colors.black())
