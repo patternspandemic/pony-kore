@@ -4,6 +4,10 @@ use "logger"
 use "promises"
 use "regex"
 
+trait AssetReceiver
+  be receive_image(name: String val, image: Image iso) => None
+  // TODO: Other receiver_*
+
 // Not sure how useful Assets will be as a holder of various collections, as
 // the asset needs to be sendable from this actor back to the requester. This
 // has the consequence of all collected items being val from a load_everything.
@@ -19,7 +23,7 @@ actor Assets
   let _logger: Logger[String]
   var _dir_path: (FilePath | None) = None
 
-  let images: Map[String val, Image val]
+  // let images: Map[String val, Image val]
   // TODO: Other Asset Types
   // let sounds: Map[String val, Sound ref]
   // let blobs: Map[String val, Blob ref]
@@ -28,7 +32,7 @@ actor Assets
 
   new create(logger: Logger[String]) =>
     _logger = logger
-    images = images.create()
+    // images = images.create()
     // TODO: Other Asset Types
     // sounds = sounds.create()
     // blobs = blobs.create()
@@ -39,6 +43,7 @@ actor Assets
   be _init(dir_path: FilePath) =>
     _dir_path = dir_path
 
+/*
   fun tag load_everything(): Promise[None] tag =>
     let loaded_promise = Promise[None]
     _load_everything(loaded_promise)
@@ -120,12 +125,14 @@ actor Assets
         "[Error] Cannot load assets. Assets path not provided.")
       loaded_promise.reject()
     end
+*/
 
 // TODO: LOL, forgot Promises are not for iso types. :(
 // Will need to replace with behavior interaction, have
 // load_* behaviors accept a AssetReceiver traited tag,
 // and will then be able to send back loaded assets iso.
 
+/*
   fun tag load_image(
     rel_path: String val,
     readable: Bool = true)
@@ -134,11 +141,12 @@ actor Assets
     let image_promise = Promise[Image iso]
     _load_image(rel_path, readable, image_promise)
     image_promise
+*/
 
-  be _load_image(
+  be load_image(
+    requester: AssetReceiver tag,
     rel_path: String val,
-    readable: Bool = true,
-    image_promise: Promise[Image iso])
+    readable: Bool = true)
   =>
     match _dir_path
     | let assets_path: FilePath =>
@@ -159,29 +167,24 @@ actor Assets
                 image_path.path)?
             let image: Image iso =
               recover Image.from_file(image_path.path, readable) end
-            images(image_rel) = image
             _logger(Info) and _logger.log(
               "[Info] Loaded image asset at: " + image_rel)
-            image_promise(consume image)
+            requester.receive_image(rel_path, consume image)
           else
             _logger(Error) and _logger.log(
               "[Error] Failed to load image asset: " + image_path.path)
-            image_promise.reject()
           end
         else
-          image_promise.reject()
           _logger(Error) and _logger.log(
             "[Error] Image asset not a file or is unsupported format: " +
             image_path.path)
         end
       else
-        image_promise.reject()
         _logger(Error) and _logger.log(
           "[Error] Image asset (" + rel_path +
           ") not found in assets path of: " + assets_path.path)
       end
     | None =>
-      image_promise.reject()
       _logger(Error) and _logger.log(
         "[Error] Cannot load image asset. Assets path not provided.")
     end

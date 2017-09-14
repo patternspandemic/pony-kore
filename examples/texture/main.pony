@@ -1,12 +1,16 @@
 use "../../kore"
 use "logger"
 
-actor Main
+actor Main is AssetReceiver
   var system: KoreSystem
   var vs: (KoreGraphics4Shader val | None) = None
   var fs: (KoreGraphics4Shader val | None) = None
+
+  let mascot_path: String val = "pony-mascot.k"
   var mascot: (Image iso | None) = None
+  let logo_path: String val = "pony-logo.png"
   var logo: (Image iso | None) = None
+  let k_path: String val = "kode-k.png"
   var k: (Image iso | None) = None
 
   new create(env: Env) =>
@@ -25,12 +29,9 @@ actor Main
       .next[None](recover this~receive_shader("fs") end)
 
     // Require needed images
-    system.assets.load_image("pony-mascot.k")
-      .next[None](recover this~receive_image("mascot") end)
-    system.assets.load_image("pony-logo.png")
-      .next[None](recover this~receive_image("logo") end)
-    system.assets.load_image("kode-k.png")
-      .next[None](recover this~receive_image("k") end)
+    system.assets.load_image(this, mascot_path)
+    system.assets.load_image(this, logo_path)
+    system.assets.load_image(this, k_path)
 
   be receive_shader(
     name: String,
@@ -43,13 +44,13 @@ actor Main
     try_complete()
 
   be receive_image(
-    name: String,
+    path: String,
     image: Image iso)
   =>
-    match name
-    | "mascot" => mascot = consume image
-    | "logo" => logo = consume image
-    | "k" => k = consume image
+    match path
+    | mascot_path => mascot = consume image
+    | logo_path => logo = consume image
+    | k_path => k = consume image
     end
     try_complete()
 
@@ -61,42 +62,28 @@ actor Main
       not (logo is None) and
       not (k is None)
     then
-      try
-        let vs' = vs as KoreGraphics4Shader val
-        let fs' = fs as KoreGraphics4Shader val
-        //let mascot': Image iso = (mascot = None) as Image iso^
-        //let logo': Image iso = (logo = None) as Image iso^
-        //let k': Image iso = (k = None) as Image iso^
+      let entry_point =
+        object
+          var vs': (KoreGraphics4Shader val | None) = (vs = None)
+          var fs': (KoreGraphics4Shader val | None) = (fs = None)
+          var mascot': (Image iso | None) = (mascot = None)
+          var logo': (Image iso | None) = (logo = None)
+          var k': (Image iso | None) = (k = None)
 
-        let entry_point = {ref(m: Image iso, l: Image iso, k: Image iso) =>
-          TextureExample(
-            system, vs', fs',
-            consume m, consume l, consume k)} ref
-        
-        system(entry_point~apply(
-          (mascot = None) as Image iso^, // consume mascot',
-          (logo = None) as Image iso^, // consume logo',
-          (k = None) as Image iso^)) // consume k'))
-      else
-        system.logger(Error) and system.logger.log(
-          "[Error] Could not create TextureExample")
-      end
-    end
-/*
-      // All needed resources exist and are loaded.
-      system({ref()(mascot'' = consume mascot', logo'' = logo', k'' = k') =>
-        try
-          TextureExample(
-            system,
-            vs as KoreGraphics4Shader val,
-            fs as KoreGraphics4Shader val,
-            consume mascot'',
-            consume logo'',
-            consume k'')
+          fun ref apply() =>
+            try
+              TextureExample(
+                system,
+                (vs' = None) as KoreGraphics4Shader val,
+                (fs' = None) as KoreGraphics4Shader val,
+                (mascot' = None) as Image iso^,
+                (logo' = None) as Image iso^,
+                (k' = None) as Image iso^)
+            end
         end
-      } ref)
+
+      system(entry_point)
     end
-*/
 
 class TextureExample
   let system: KoreSystem
@@ -174,5 +161,5 @@ class TextureExample
     g2.set_color(Colors.blue())
     // g2.set_opacity(0.3)
     g2.fill_triangle(400, 100, 400, 200, 500, 100)
-    g2.draw_image(mascot, 100, 150)
+    g2.draw_image(logo, 100, 150)
     g2.end_gfx()
