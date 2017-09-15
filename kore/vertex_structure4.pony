@@ -162,20 +162,24 @@ primitive _KoreGraphics4VertexElementHandle
 
 class KoreGraphics4VertexElement
   let _handle: Pointer[_KoreGraphics4VertexElementHandle] tag
+  var _name: String val
 
   new create(name: String val, data: KoreGraphics4VertexData) =>
+    _name = name
     _handle =
-      @Kore_Graphics4_VertexElement_createND(name.cstring(), data())
+      @Kore_Graphics4_VertexElement_createND(_name.cstring(), data())
 
   fun get_name(): String val =>
-    recover val String.from_cstring(
-      @Kore_Graphics4_VertexElement_getName(_handle))
-    end
+    _name
+    // recover val String.from_cstring(
+    //   @Kore_Graphics4_VertexElement_getName(_handle))
+    // end
 
   fun ref set_name(name: String val) =>
+    _name = name
     @Kore_Graphics4_VertexElement_setName(
       _handle,
-      name.cstring())
+      _name.cstring())
 
   /* Forget about Fixed-function vertex attributes
   fun get_attribute(): KoreGraphics4VertexAttribute =>

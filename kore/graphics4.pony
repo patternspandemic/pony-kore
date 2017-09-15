@@ -1009,6 +1009,7 @@ primitive KoreGraphics4Primitive
   // =>
   //   @Kore_Graphics4_setFloat4Vec(location._get_handle(), value._get_handle())
 
+  // Be careful to keep references to the array of floats.
   fun set_floats(
     location: KoreGraphics4ConstantLocation,
     floats: Array[F32])
@@ -1035,6 +1036,7 @@ primitive KoreGraphics4Primitive
   =>
     @Kore_Graphics4_setVertexBuffer(vertex_buffer._get_handle())
 
+  // Be careful to keep references to the array of buffers.
   fun set_vertex_buffers(
     vertex_buffers: Array[KoreGraphics4VertexBuffer]) // box
   =>
@@ -1120,6 +1122,7 @@ primitive KoreGraphics4Primitive
   fun render_targets_inverted_y(): Bool =>
     @Kore_Graphics4_renderTargetsInvertedY()
 
+  // Be careful to keep references to the array of targets.
   fun set_render_targets(
     targets: Array[KoreGraphics4RenderTarget])
   =>
@@ -1546,6 +1549,7 @@ class KoreGraphics4
   =>
     KoreGraphics4Primitive.set_float4(location, value1, value2, value3, value4)
 
+  // Be careful to keep references to the array of floats.
   fun set_floats(
     location: KoreGraphics4ConstantLocation,
     floats: Array[F32])

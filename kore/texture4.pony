@@ -119,15 +119,17 @@ primitive _KoreGraphics4TextureArrayHandle
 
 class KoreGraphics4TextureArray
   let _handle: Pointer[_KoreGraphics4TextureArrayHandle] tag
+  let _texture_array_handles: Array[Pointer[_KoreGraphics4TextureHandle] tag]
 
   new create(textures: Array[KoreGraphics4Texture]) =>
     let count: I32 = I32.from[USize](textures.size())
-    var textures': Array[Pointer[_KoreGraphics4TextureHandle] tag]
-    textures' = textures'.create(USize.from[I32](count))
+    _texture_array_handles =
+      _texture_array_handles.create(USize.from[I32](count))
     for texture in textures.values() do
-      textures'.push(texture._get_handle())
+      _texture_array_handles.push(texture._get_handle())
     end
-    _handle = @Kore_Graphics4_TextureArray_create(textures'.cpointer(), count)
+    _handle = @Kore_Graphics4_TextureArray_create(
+      _texture_array_handles.cpointer(), count)
 
   fun _get_handle(): Pointer[_KoreGraphics4TextureArrayHandle] tag =>
     _handle
@@ -139,6 +141,8 @@ primitive _KoreGraphics4TextureHandle
 
 class KoreGraphics4Texture
   let _handle: Pointer[_KoreGraphics4TextureHandle] tag
+  var _file_name: (String val | None) = None
+  var _format: (String val | None) = None
   var _data: (Array[U8 val] iso | None) = None
   var _hdr_data: (Array[F32 val] iso | None) = None
 
@@ -162,6 +166,7 @@ class KoreGraphics4Texture
       width, height, depth, format(), readable)
 
   new from_file(file_name: String val, readable: Bool = false) =>
+    _file_name = file_name
     _handle = @Kore_Graphics4_Texture_createFR(
       file_name.cstring(), readable)
 
@@ -170,6 +175,7 @@ class KoreGraphics4Texture
     format: String val,
     readable: Bool = false)
   =>
+    _format = format
     _handle =
       @Kore_Graphics4_Texture_createDSFR(
         data.cpointer(),
@@ -183,6 +189,7 @@ class KoreGraphics4Texture
     format: String val,
     readable: Bool = false)
   =>
+    _format = format
     _handle =
       @Kore_Graphics4_Texture_createDSFR(
         data.cpointer(),

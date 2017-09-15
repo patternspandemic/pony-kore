@@ -258,6 +258,7 @@ class KoreSystem
     end
 
 
+// TODO: Make most or all privite?
 primitive KoreSystemPrimitive
 
   fun _update_with_system_object(
@@ -266,8 +267,9 @@ primitive KoreSystemPrimitive
   =>
     @Kore_System__updateWithSystemObject(system, system_callback)
 
-  fun init(name': String val, width: I32, height: I32) =>
-    @Kore_System_init(name'.cstring(), width, height)
+  /* Handled by KoreSystem */
+  // fun init(name': String val, width: I32, height: I32) =>
+  //   @Kore_System_init(name'.cstring(), width, height)
 
   fun current_device(): I32 =>
     @Kore_System_currentDevice()
@@ -305,8 +307,9 @@ primitive KoreSystemPrimitive
   fun hide_keyboard() =>
     @Kore_System_hideKeyboard()
 
-  fun load_url(url: String val) =>
-    @Kore_System_loadURL(url.cstring())
+  /* Nothing useful ATM */
+  // fun load_url(url: String val) =>
+  //   @Kore_System_loadURL(url.cstring())
 
   fun desktop_width(): I32 =>
     @Kore_System_desktopWidth()
@@ -317,8 +320,9 @@ primitive KoreSystemPrimitive
   fun system_id(): Pointer[U8] => // TODO: Check return
     @Kore_System_systemId()
 
-  fun set_title(title: String val) =>
-    @Kore_System_setTitle(title.cstring())
+  /* Handled by KoreSystem */
+  // fun set_title(title: String val) =>
+  //   @Kore_System_setTitle(title.cstring())
 
   fun save_path(): Pointer[U8] => // TODO: Check return
     @Kore_System_savePath()

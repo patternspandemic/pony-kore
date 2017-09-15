@@ -155,7 +155,6 @@ class TextureExample
 
   fun ref render(framebuffer: Framebuffer) =>
     let g4 = framebuffer.g4()
-    // let g2 = framebuffer.g2()
     let grey: U32 = 0xff666666
 
     g4.begin_gfx()
@@ -167,6 +166,7 @@ class TextureExample
     g4.draw_indexed_vertices()
     g4.end_gfx()
 
+    // let g2 = framebuffer.g2()
     // g2.begin_gfx(true, grey)
     // g2.begin_gfx(false)
     // g2.set_color(Colors.white())
@@ -181,11 +181,3 @@ class TextureExample
     // g2.set_color(Colors.red())
     // g2.draw_image(parrot, 50, 50)
     // g2.end_gfx()
-
-    // g2.begin_gfx(false)
-    // g2.set_color(Colors.orange())
-    // g2.set_opacity(0.5)
-    // g2.draw_image(mascot, 100, 210)
-    // g2.end_gfx()
-
-    // g4.end_gfx()
