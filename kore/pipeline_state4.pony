@@ -155,12 +155,15 @@ class KoreGraphics4PipelineState
   var _geometry_shader: (KoreGraphics4Shader val | None) = None
   var _tessellation_control_shader: (KoreGraphics4Shader val | None) = None
   var _tessellation_evaluation_shader: (KoreGraphics4Shader val | None) = None
+  let _constant_location_and_texture_unit_names: Array[String val]
   // TODO: Perhaps expose input_layout similarly to
   // VertexBufferData/IndexBufferData?
   var input_layout: Array[KoreGraphics4VertexStructure val]
 
   new create() =>
     _handle = @Kore_Graphics4_PipelineState_create()
+    _constant_location_and_texture_unit_names =
+      _constant_location_and_texture_unit_names.create()
     input_layout = input_layout.create(16)
 
   fun _assign_input_layout() =>
@@ -193,6 +196,7 @@ class KoreGraphics4PipelineState
     name: String val)
     : KoreGraphics4ConstantLocation val
   =>
+    _constant_location_and_texture_unit_names.push(name)
     KoreGraphics4ConstantLocation._from_handle(
       @Kore_Graphics4_PipelineState_getConstantLocation(
         _handle, name.cstring()))
@@ -201,6 +205,7 @@ class KoreGraphics4PipelineState
     name: String val)
     : KoreGraphics4TextureUnit val
   =>
+    _constant_location_and_texture_unit_names.push(name)
     KoreGraphics4TextureUnit._from_handle(
       @Kore_Graphics4_PipelineState_getTextureUnit(
         _handle, name.cstring()))
