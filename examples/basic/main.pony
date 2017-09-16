@@ -2,8 +2,10 @@ use "../../kore"
 use "logger"
 
 actor Main
+  var system: KoreSystem
+
   new create(env: Env) =>
-    let kore_system = KoreSystem(
+    system = KoreSystem(
       env,
       Info
     where
@@ -11,7 +13,13 @@ actor Main
       width = 640,
       height = 480)
 
-    kore_system({ref() => BasicExample(kore_system)} ref)
+    let entry_point =
+      object ref
+        fun ref apply() =>
+            BasicExample(system)
+      end
+
+    system(entry_point)
 
 class BasicExample
   let clear_color: U32
@@ -22,9 +30,6 @@ class BasicExample
 
   fun ref render(framebuffer: Framebuffer) =>
     let g = framebuffer.g4()
-
     g.begin_gfx()
-
     g.clear(clear_color)
-
     g.end_gfx()

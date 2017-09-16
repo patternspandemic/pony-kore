@@ -1,10 +1,15 @@
 use "../../kore"
 use "logger"
 
-actor Main is AssetReceiver
+actor Main
   var system: KoreSystem
+
+  let vertex_shader_path: String val = "texture.vert"
   var vertex_shader: (KoreGraphics4Shader val | None) = None
+
+  let fragment_shader_path: String val = "texture.frag"
   var fragment_shader: (KoreGraphics4Shader val | None) = None
+
   let parrot_path: String val = "parrot.png"
   var parrot: (Image iso | None) = None
 
@@ -17,27 +22,25 @@ actor Main is AssetReceiver
       width = 640,
       height = 480)
 
-    // Require needed shaders
-    system.shaders("texture.vert")
-      .next[None](recover this~receive_shader("vs") end)
-    system.shaders("texture.frag")
-      .next[None](recover this~receive_shader("fs") end)
+    // Request shaders
+    system.shaders.load_shader(this, vertex_shader_path)
+    system.shaders.load_shader(this, fragment_shader_path)
 
-    // Require needed images
+    // Request image
     system.assets.load_image(this, parrot_path)
 
   be receive_shader(
-    name: String,
+    path: String val,
     shader: KoreGraphics4Shader val)
   =>
-    match name
-    | "vs" => vertex_shader = shader
-    | "fs" => fragment_shader = shader
+    match path
+    | vertex_shader_path => vertex_shader = shader
+    | fragment_shader_path => fragment_shader = shader
     end
     try_proceed()
 
   be receive_image(
-    path: String,
+    path: String val,
     image: Image iso)
   =>
     match path
@@ -74,11 +77,13 @@ actor Main is AssetReceiver
 
 class TextureExample
   let system: KoreSystem
-  let parrot: Image ref
+
   let structure: KoreGraphics4VertexStructure val
   var pipeline: KoreGraphics4PipelineState
   var vertex_buffer: KoreGraphics4VertexBuffer
   var index_buffer: KoreGraphics4IndexBuffer
+
+  let parrot: Image ref
   let texunit: KoreGraphics4TextureUnit val
 
   new create(
@@ -122,10 +127,12 @@ class TextureExample
     let grey: U32 = 0xff666666
 
     g4.begin_gfx()
+
     g4.clear(grey)
     g4.set_pipeline(pipeline)
     g4.set_vertex_buffer(vertex_buffer)
     g4.set_index_buffer(index_buffer)
     g4.set_texture(texunit, parrot)
     g4.draw_indexed_vertices()
+
     g4.end_gfx()

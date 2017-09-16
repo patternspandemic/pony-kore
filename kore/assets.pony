@@ -4,9 +4,9 @@ use "logger"
 use "promises"
 use "regex"
 
-trait AssetReceiver
+interface AssetReceiver
   be receive_image(name: String val, image: Image iso) => None
-  // TODO: Other receiver_*
+  // TODO: Other receive_*
 
 // Not sure how useful Assets will be as a holder of various collections, as
 // the asset needs to be sendable from this actor back to the requester. This

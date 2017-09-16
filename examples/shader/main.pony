@@ -3,8 +3,12 @@ use "logger"
 
 actor Main
   var system: KoreSystem
-  var vs: (KoreGraphics4Shader val | None) = None
-  var fs: (KoreGraphics4Shader val | None) = None
+
+  let vertex_shader_path: String val = "shader.vert"
+  var vertex_shader: (KoreGraphics4Shader val | None) = None
+
+  let fragment_shader_path: String val = "shader.frag"
+  var fragment_shader: (KoreGraphics4Shader val | None) = None
 
   new create(env: Env) =>
     system = KoreSystem(
@@ -15,43 +19,51 @@ actor Main
       width = 640,
       height = 480)
 
-    // Require needed shaders
-    system.shaders("shader.vert")
-      .next[None](recover this~receive_shader("vert") end)
-    system.shaders("shader.frag")
-      .next[None](recover this~receive_shader("frag") end)
+    // Request shaders
+    system.shaders.load_shader(this, vertex_shader_path)
+    system.shaders.load_shader(this, fragment_shader_path)
 
   be receive_shader(
-    name: String,
+    path: String val,
     shader: KoreGraphics4Shader val)
   =>
-    match name
-    | "vert" => vs = shader
-    | "frag" => fs = shader
+    match path
+    | vertex_shader_path => vertex_shader = shader
+    | fragment_shader_path => fragment_shader = shader
     end
-    try_complete()
+    try_proceed()
 
-  fun ref try_complete() =>
+  fun ref try_proceed() =>
     if
-      not (vs is None) and
-      not (fs is None)
+      not (vertex_shader is None) and
+      not (fragment_shader is None)
     then
-      // All needed resources exist and are loaded.
-      system({ref() =>
-        try
-          ShaderExample(
-            system,
-            vs as KoreGraphics4Shader val,
-            fs as KoreGraphics4Shader val)
+      let entry_point =
+        object
+          var vertex_shader': (KoreGraphics4Shader val | None) =
+            (vertex_shader = None)
+          var fragment_shader': (KoreGraphics4Shader val | None) =
+            (fragment_shader = None)
+
+          fun ref apply() =>
+            try
+              ShaderExample(
+                system,
+                (vertex_shader' = None) as KoreGraphics4Shader val,
+                (fragment_shader' = None) as KoreGraphics4Shader val)
+            end
         end
-      } ref)
+
+      system(entry_point)
     end
 
 class ShaderExample
   let system: KoreSystem
-  let pipeline: KoreGraphics4PipelineState
-  let vertex_buffer: KoreGraphics4VertexBuffer
-  let index_buffer: KoreGraphics4IndexBuffer
+
+  let structure: KoreGraphics4VertexStructure val
+  var pipeline: KoreGraphics4PipelineState
+  var vertex_buffer: KoreGraphics4VertexBuffer
+  var index_buffer: KoreGraphics4IndexBuffer
 
   new create(
     system': KoreSystem,
@@ -60,25 +72,24 @@ class ShaderExample
   =>
     system = system'
 
-    var structure = KoreGraphics4VertexStructure
-    structure.add("pos", VertexDataFloat3VertexData)
-    let structure': KoreGraphics4VertexStructure val = consume structure
+    var structure' = KoreGraphics4VertexStructure
+    structure'.add("pos", VertexDataFloat3VertexData)
+    structure = consume structure'
 
     pipeline = KoreGraphics4PipelineState
-    vertex_buffer = KoreGraphics4VertexBuffer(3, structure')
-    index_buffer = KoreGraphics4IndexBuffer(3)
-
+    pipeline.input_layout.push(structure)
     pipeline.set_vertex_shader(vertex_shader)
     pipeline.set_fragment_shader(fragment_shader)
-    pipeline.input_layout.push(structure')
     pipeline.compile()
 
+    vertex_buffer = KoreGraphics4VertexBuffer(3, structure)
     with v = vertex_buffer.lock() do
       v(0)? = -1; v(1)? = -1; v(2)? = 0.5
       v(3)? =  1; v(4)? = -1; v(5)? = 0.5
       v(6)? =  0; v(7)? =  1; v(8)? = 0.5
     end
 
+    index_buffer = KoreGraphics4IndexBuffer(3)
     with i = index_buffer.lock() do
       i(0)? = 0; i(1)? = 1; i(2)? = 2
     end

@@ -4,6 +4,9 @@ use "logger"
 use "promises"
 use "regex"
 
+interface ShaderReceiver
+  be receive_shader(path: String val, shader: KoreGraphics4Shader val) => None
+
 // TODO: Load shaders concurrently?
 // class Shaders
 actor Shaders
@@ -80,6 +83,7 @@ actor Shaders
       _logger(Warn) and _logger.log("[Warning] No shaders found in ./Shaders")
     end
 
+/*
   fun tag apply(name: String): Promise[KoreGraphics4Shader val] tag =>
     """Where name is the relative path the the shader from ./Shaders"""
     let shader_promise = Promise[KoreGraphics4Shader val]
@@ -95,4 +99,17 @@ actor Shaders
       shader_promise(shader)
     else
       shader_promise.reject()
+    end
+*/
+
+  be load_shader(
+    requester: ShaderReceiver tag,
+    rel_path: String val)
+  =>
+    try
+      let shader: KoreGraphics4Shader val = _shaders(rel_path)?
+      requester.receive_shader(rel_path, shader)
+    else
+      _logger(Error) and _logger.log(
+        "[Warning] Shader cache didn't contain requested shader: " + rel_path)
     end
