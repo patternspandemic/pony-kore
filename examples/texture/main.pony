@@ -84,6 +84,7 @@ class TextureExample
   var index_buffer: KoreGraphics4IndexBuffer
 
   let parrot: Image ref
+  let x: Image ref
   let texunit: KoreGraphics4TextureUnit val
 
   new create(
@@ -120,19 +121,34 @@ class TextureExample
       i(0)? = 0; i(1)? = 1; i(2)? = 2
     end
 
+    x = Image.create_render_target(640, 480)
+    let x_g2 = x.g2()
+    x_g2.begin_gfx(true, Colors.blue())
+      x_g2.set_color(Colors.red())
+      // x_g2.draw_rect(310, 230, 20, 20, 3.0)
+      x_g2.draw_line(0.0, 0.0, 640.0, 480.0, 5.0)
+    x_g2.end_gfx()
+
     system.notify_on_render(this~render())
 
   fun ref render(framebuffer: Framebuffer) =>
     let g4 = framebuffer.g4()
+    let g2 = framebuffer.g2()
+    
     let grey: U32 = 0xff666666
 
     g4.begin_gfx()
-
-    g4.clear(grey)
-    g4.set_pipeline(pipeline)
-    g4.set_vertex_buffer(vertex_buffer)
-    g4.set_index_buffer(index_buffer)
-    g4.set_texture(texunit, parrot)
-    g4.draw_indexed_vertices()
-
+      g4.clear(grey)
+      g4.set_pipeline(pipeline)
+      g4.set_vertex_buffer(vertex_buffer)
+      g4.set_index_buffer(index_buffer)
+      // g4.set_texture(texunit, parrot)
+      g4.set_texture(texunit, x)
+      g4.draw_indexed_vertices()
     g4.end_gfx()
+
+
+    g2.begin_gfx(false)
+      g2.set_color(Colors.green())
+      g2.draw_line(0.0, 480.0, 640.0, 0.0, 5.0)
+    g2.end_gfx()
