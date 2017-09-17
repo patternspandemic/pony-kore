@@ -124,9 +124,11 @@ class TextureExample
     x = Image.create_render_target(640, 480)
     let x_g2 = x.g2()
     x_g2.begin_gfx(true, Colors.blue())
+      x_g2.fill_rect(315, 235, 10, 10)
       x_g2.set_color(Colors.red())
       // x_g2.draw_rect(310, 230, 20, 20, 3.0)
       x_g2.draw_line(0.0, 0.0, 640.0, 480.0, 5.0)
+      x_g2.draw_line(0.0, 480.0, 640.0, 0.0, 5.0)
     x_g2.end_gfx()
 
     system.notify_on_render(this~render())
@@ -137,8 +139,16 @@ class TextureExample
     
     let grey: U32 = 0xff666666
 
+    g2.begin_gfx(true, grey)
+      g2.set_color(Colors.green())
+      g2.fill_rect(0, 0, 10, 10)
+      // g2.fill_triangle(20, 20, 40, 20, 30, 55)
+      g2.draw_line(0.0, 0.0, 640.0, 480.0, 5.0)
+      g2.draw_line(0.0, 480.0, 640.0, 0.0, 5.0)
+    g2.end_gfx()
+
     g4.begin_gfx()
-      g4.clear(grey)
+      // g4.clear(grey)
       g4.set_pipeline(pipeline)
       g4.set_vertex_buffer(vertex_buffer)
       g4.set_index_buffer(index_buffer)
@@ -146,9 +156,3 @@ class TextureExample
       g4.set_texture(texunit, x)
       g4.draw_indexed_vertices()
     g4.end_gfx()
-
-
-    g2.begin_gfx(false)
-      g2.set_color(Colors.green())
-      g2.draw_line(0.0, 480.0, 640.0, 0.0, 5.0)
-    g2.end_gfx()
