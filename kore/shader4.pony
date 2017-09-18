@@ -7,11 +7,13 @@ use @Kore_Graphics4_Shader_createDLT[
 use @Kore_Graphics4_Shader_destroy[None](
   self: Pointer[_KoreGraphics4ShaderHandle] tag)
 
+/*
 /* FFI to WC_Kore_Graphics4_ConstantLocation */
 use @Kore_Graphics4_ConstantLocation_create[
   Pointer[_KoreGraphics4ConstantLocationHandle] tag]()
 use @Kore_Graphics4_ConstantLocation_destroy[None](
   self: Pointer[_KoreGraphics4ConstantLocationHandle] tag)
+*/
 
 
 primitive ShaderTypeFragmentShader
@@ -73,5 +75,5 @@ class val KoreGraphics4ConstantLocation
   fun _get_handle(): Pointer[_KoreGraphics4ConstantLocationHandle] tag =>
     _handle
 
-  fun _final() =>
-    @Kore_Graphics4_ConstantLocation_destroy(_handle)
+  // fun _final() =>
+  //   @Kore_Graphics4_ConstantLocation_destroy(_handle)
