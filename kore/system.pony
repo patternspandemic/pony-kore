@@ -118,7 +118,7 @@ class KoreSystem
   let logger: Logger[String]
   let shaders: Shaders
   let assets: Assets
-  let sync_assets: SyncAssets
+  // let sync_assets: SyncAssets
 
   new create(
     env: Env,
@@ -174,14 +174,14 @@ class KoreSystem
     end
 
     assets = Assets(logger)
-    sync_assets = SyncAssets(logger)
+    // sync_assets = SyncAssets(logger)
     try
       let bin_dir =
         Directory(FilePath(env.root as AmbientAuth, Path.cwd(), caps)?)?
       try
         let assets_path = bin_dir.infoat("Assets")?.filepath
         assets._init(assets_path)
-        sync_assets.init(assets_path)
+        // sync_assets.init(assets_path)
       else
         logger(Warn) and logger.log("[Warning] ./Assets not found")
       end

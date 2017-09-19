@@ -4,8 +4,11 @@ use "logger"
 use "promises"
 use "regex"
 
+type ImageAsset is {(): Image iso^} val
+// TODO: Other asset types
+
 interface AssetReceiver
-  be receive_image(name: String val, image: Image iso) => None
+  be receive_image(name: String val, image_asset: ImageAsset val) => None
   // TODO: Other receive_*
 
 // Not sure how useful Assets will be as a holder of various collections, as
@@ -165,11 +168,12 @@ actor Assets
               Path.rel(
                 assets_path.path,
                 image_path.path)?
-            let image: Image iso =
-              recover Image.from_file(image_path.path, readable) end
+            let img_asset: ImageAsset val =
+              {(): Image iso^ =>
+                recover Image.from_file(image_path.path, readable) end} val
             _logger(Info) and _logger.log(
-              "[Info] Loaded image asset at: " + image_rel)
-            requester.receive_image(rel_path, consume image)
+              "[Info] Found image asset at: " + image_rel)
+            requester.receive_image(rel_path, img_asset)
           else
             _logger(Error) and _logger.log(
               "[Error] Failed to load image asset: " + image_path.path)
@@ -200,6 +204,7 @@ actor Assets
   // fun get_font_formats(): Array[String val] =>
   // fun get_video_formats(): Array[String val] => // Kore_System_videoFormats
 
+/*
 class SyncAssets
   let _logger: Logger[String]
   var _dir_path: (FilePath | None) = None
@@ -268,3 +273,4 @@ class SyncAssets
 
 fun get_image_formats(): Array[String val] =>
     ["hdr"; "jpg"; "k"; "kng"; "png"; "pvr"]
+*/

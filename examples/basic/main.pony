@@ -14,7 +14,7 @@ actor Main
       height = 480)
 
     let entry_point =
-      object ref
+      object
         fun ref apply() =>
             BasicExample(system)
       end

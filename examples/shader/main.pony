@@ -38,23 +38,23 @@ actor Main
       not (vertex_shader is None) and
       not (fragment_shader is None)
     then
-      let entry_point =
-        object
-          var vertex_shader': (KoreGraphics4Shader val | None) =
-            (vertex_shader = None)
-          var fragment_shader': (KoreGraphics4Shader val | None) =
-            (fragment_shader = None)
+      try
+        let entry_point =
+          object
+            var vertex_shader': KoreGraphics4Shader val =
+              vertex_shader as KoreGraphics4Shader val
+            var fragment_shader': KoreGraphics4Shader val =
+              fragment_shader as KoreGraphics4Shader val
 
-          fun ref apply() =>
-            try
+            fun ref apply() =>
               ShaderExample(
                 system,
-                (vertex_shader' = None) as KoreGraphics4Shader val,
-                (fragment_shader' = None) as KoreGraphics4Shader val)
-            end
-        end
+                vertex_shader',
+                fragment_shader')
+          end
 
-      system(entry_point)
+        system(entry_point)
+      end
     end
 
 class ShaderExample

@@ -11,7 +11,7 @@ actor Main
   var fragment_shader: (KoreGraphics4Shader val | None) = None
 
   let parrot_path: String val = "parrot.png"
-  var parrot: (Image iso | None) = None
+  var parrot: (ImageAsset val | None) = None
 
   new create(env: Env) =>
     system = KoreSystem(
@@ -26,14 +26,8 @@ actor Main
     system.shaders.load_shader(this, vertex_shader_path)
     system.shaders.load_shader(this, fragment_shader_path)
 
-    // Request image
-    // system.assets.load_image(this, parrot_path)
-    // try parrot = system.sync_assets.load_image(parrot_path)? end
-
-    /*
-        TODO: Try an async Image load where the receive_image receives a lambda
-        that produces the Image when applied. That way its creation can be defered to being in the same thread where needed.
-    */
+    // Request assets
+    system.assets.load_image(this, parrot_path)
 
   be receive_shader(
     path: String val,
@@ -47,10 +41,10 @@ actor Main
 
   be receive_image(
     path: String val,
-    image: Image iso)
+    image_asset: ImageAsset val)
   =>
     match path
-    | parrot_path => parrot = consume image
+    | parrot_path => parrot = image_asset
     end
     try_proceed()
 
@@ -60,25 +54,26 @@ actor Main
       not (fragment_shader is None) and
       not (parrot is None)
     then
-      let entry_point =
-        object
-          var vertex_shader': (KoreGraphics4Shader val | None) =
-            (vertex_shader = None)
-          var fragment_shader': (KoreGraphics4Shader val | None) =
-            (fragment_shader = None)
-          var parrot': (Image iso | None) = (parrot = None)
+      try
+        let entry_point =
+          object
+            var vertex_shader': KoreGraphics4Shader val =
+              vertex_shader as KoreGraphics4Shader val
+            var fragment_shader': KoreGraphics4Shader val =
+              fragment_shader as KoreGraphics4Shader val
+            var parrot': ImageAsset val =
+              parrot as ImageAsset val
 
-          fun ref apply() =>
-            try
+            fun ref apply() =>
               TextureExample(
                 system,
-                (vertex_shader' = None) as KoreGraphics4Shader val,
-                (fragment_shader' = None) as KoreGraphics4Shader val,
-                (parrot' = None) as Image iso^)
-            end
-        end
+                vertex_shader',
+                fragment_shader',
+                parrot')
+          end
 
-      system(entry_point)
+        system(entry_point)
+      end
     end
 
 class TextureExample
@@ -96,14 +91,10 @@ class TextureExample
     system': KoreSystem,
     vertex_shader: KoreGraphics4Shader val,
     fragment_shader: KoreGraphics4Shader val,
-    parrot': Image iso)
+    parrot': ImageAsset)
   =>
     system = system'
-    parrot = consume parrot'
-    // parrot =
-    //   try system.sync_assets.load_image("parrot.png")?
-    //   else Image.create_render_target(100, 100)
-    //   end
+    parrot = parrot'() // Apply asset to receive it.
 
     var structure' = KoreGraphics4VertexStructure
     structure'.add("pos", VertexDataFloat3VertexData)
@@ -134,9 +125,7 @@ class TextureExample
 
   fun ref render(framebuffer: Framebuffer) =>
     let grey: U32 = 0xff666666
-
     let g4 = framebuffer.g4()
-    let g2 = framebuffer.g2()
 
     g4.begin_gfx()
       g4.clear(grey)
@@ -146,7 +135,3 @@ class TextureExample
       g4.set_texture(texunit, parrot)
       g4.draw_indexed_vertices()
     g4.end_gfx()
-
-    g2.begin_gfx(false)
-      g2.draw_image(parrot, 300, 300)
-    g2.end_gfx()
