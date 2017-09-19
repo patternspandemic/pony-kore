@@ -27,7 +27,13 @@ actor Main
     system.shaders.load_shader(this, fragment_shader_path)
 
     // Request image
-    system.assets.load_image(this, parrot_path)
+    // system.assets.load_image(this, parrot_path)
+    // try parrot = system.sync_assets.load_image(parrot_path)? end
+
+    /*
+        TODO: Try an async Image load where the receive_image receives a lambda
+        that produces the Image when applied. That way its creation can be defered to being in the same thread where needed.
+    */
 
   be receive_shader(
     path: String val,
@@ -84,7 +90,6 @@ class TextureExample
   var index_buffer: KoreGraphics4IndexBuffer
 
   let parrot: Image ref
-  // let x: Image ref
   let texunit: KoreGraphics4TextureUnit val
 
   new create(
@@ -95,6 +100,10 @@ class TextureExample
   =>
     system = system'
     parrot = consume parrot'
+    // parrot =
+    //   try system.sync_assets.load_image("parrot.png")?
+    //   else Image.create_render_target(100, 100)
+    //   end
 
     var structure' = KoreGraphics4VertexStructure
     structure'.add("pos", VertexDataFloat3VertexData)
@@ -121,46 +130,23 @@ class TextureExample
       i(0)? = 0; i(1)? = 1; i(2)? = 2
     end
 
-/*
-    x = Image.create_render_target(640, 480)
-    let x_g2 = x.g2()
-    x_g2.begin_gfx(true, Colors.blue())
-      x_g2.fill_rect(315, 235, 10, 10)
-      x_g2.set_color(Colors.red())
-      // x_g2.draw_rect(310, 230, 20, 20, 3.0)
-      x_g2.draw_line(0.0, 0.0, 640.0, 480.0, 5.0)
-      x_g2.draw_line(0.0, 480.0, 640.0, 0.0, 5.0)
-    x_g2.end_gfx()
-*/
-
     system.notify_on_render(this~render())
 
   fun ref render(framebuffer: Framebuffer) =>
-    let g4 = framebuffer.g4()
-    // let g2 = framebuffer.g2()
-    
     let grey: U32 = 0xff666666
 
-/*
-    g2.begin_gfx(true, grey)
-      g2.set_color(parrot.at(160, 240).apply())
-      g2.fill_rect(160, 240, 20, 20)
-      g2.set_color(parrot.at(320, 240).apply())
-      g2.fill_rect(320, 240, 20, 20)
-      g2.set_color(parrot.at(480, 240).apply())
-      g2.fill_rect(480, 240, 20, 20)
-      // g2.draw_image(parrot, 50, 50)
-    g2.end_gfx()
-*/
+    let g4 = framebuffer.g4()
+    let g2 = framebuffer.g2()
 
     g4.begin_gfx()
       g4.clear(grey)
       g4.set_pipeline(pipeline)
       g4.set_vertex_buffer(vertex_buffer)
       g4.set_index_buffer(index_buffer)
-
-      g4.set_image_texture(texunit, parrot)
-      // g4.set_texture(texunit, x)
-
+      g4.set_texture(texunit, parrot)
       g4.draw_indexed_vertices()
     g4.end_gfx()
+
+    g2.begin_gfx(false)
+      g2.draw_image(parrot, 300, 300)
+    g2.end_gfx()

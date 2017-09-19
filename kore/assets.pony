@@ -199,3 +199,72 @@ actor Assets
   // fun get_sound_formats(): Array[String val] => ["wav"; "ogg"]
   // fun get_font_formats(): Array[String val] =>
   // fun get_video_formats(): Array[String val] => // Kore_System_videoFormats
+
+class SyncAssets
+  let _logger: Logger[String]
+  var _dir_path: (FilePath | None) = None
+
+  new create(
+    logger: Logger[String])
+    // dir_path: FilePath)
+  =>
+    _logger = logger
+    // _dir_path = dir_path
+
+  fun ref init(dir_path: FilePath) =>
+    _dir_path = dir_path
+
+  fun load_image(
+    rel_path: String val,
+    readable: Bool = true)
+    : Image iso^ ?
+  =>
+    match _dir_path
+    | let assets_path: FilePath =>
+      try
+        let image_path = assets_path.join(rel_path)?
+        let image_info = FileInfo(image_path)?
+        let extention = Path.ext(image_path.path)
+
+        if image_info.file and
+           get_image_formats().contains(
+             extention,
+             {(s1: String val, s2: String val): Bool => s1 == s2})
+        then
+          try
+            let image_rel = // possibly cleaned rel path
+              Path.rel(
+                assets_path.path,
+                image_path.path)?
+            let image: Image iso =
+              recover Image.from_file(image_path.path, readable) end
+            _logger(Info) and _logger.log(
+              "[Info] Loaded image asset at: " + image_rel)
+            return consume image
+          else
+            _logger(Error) and _logger.log(
+              "[Error] Failed to load image asset: " + image_path.path)
+            error
+          end
+        else
+          _logger(Error) and _logger.log(
+            "[Error] Image asset not a file or is unsupported format: " +
+            image_path.path)
+          error
+        end
+      else
+        _logger(Error) and _logger.log(
+          "[Error] Image asset (" + rel_path +
+          ") not found in assets path of: " + assets_path.path)
+        error
+      end
+    | None =>
+      _logger(Error) and _logger.log(
+        "[Error] Cannot load image asset. Assets path not provided.")
+      error
+    else
+      error
+    end
+
+fun get_image_formats(): Array[String val] =>
+    ["hdr"; "jpg"; "k"; "kng"; "png"; "pvr"]

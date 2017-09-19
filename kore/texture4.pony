@@ -1,12 +1,10 @@
 use "lib:korec"
 
-/*
 /* FFI to WC_Kore_Graphics4_TextureUnit */
 use @Kore_Graphics4_TextureUnit_create[
   Pointer[_KoreGraphics4TextureUnitHandle] tag]()
 use @Kore_Graphics4_TextureUnit_destroy[None](
   self: Pointer[_KoreGraphics4TextureUnitHandle] tag)
-*/
 
 /* FFI to WC_Kore_Graphics4_Texture */
 // create
@@ -114,8 +112,8 @@ class val KoreGraphics4TextureUnit
   fun _get_handle(): Pointer[_KoreGraphics4TextureUnitHandle] tag =>
     _handle
 
-  // fun _final() =>
-  //   @Kore_Graphics4_TextureUnit_destroy(_handle)
+  fun _final() =>
+    @Kore_Graphics4_TextureUnit_destroy(_handle)
 
 primitive _KoreGraphics4TextureArrayHandle
 
