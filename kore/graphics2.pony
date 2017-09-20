@@ -187,13 +187,40 @@ class KoreGraphics2
         _handle, rt._get_handle(), x, y)
       end
     end
-    // if img.is_texture() then
-    //   @Kore_Graphics2_Graphics2_drawTexture(
-    //     _handle, img._get_texture()._get_handle(), x, y)
-    // elseif img.is_render_target() then
-    //   @Kore_Graphics2_Graphics2_drawRenderTarget(
-    //     _handle, img._get_render_target()._get_handle(), x, y)
-    // end
+
+  fun draw_sub_image(
+    img: Image,
+    x: F32, y: F32,
+    sx: F32, sy: F32,
+    sw: F32, sh: F32)
+  =>
+    draw_scaled_sub_image(img, sx, sy, sw, sh, x, y, sw, sh)
+
+  fun draw_scaled_image(
+    img: Image,
+    dx: F32, dy: F32,
+    dw: F32, dh: F32)
+  =>
+    draw_scaled_sub_image(
+      img, 0, 0, F32.from[I32](img.width()), F32.from[I32](img.height()),
+      dx, dy, dw, dh)
+
+  fun draw_scaled_sub_image(
+    img: Image,
+    sx: F32, sy: F32, sw: F32, sh: F32,
+    dx: F32, dy: F32, dw: F32, dh: F32)
+  =>
+    match img._get_texture()
+    | let texture: KoreGraphics4Texture =>
+      @Kore_Graphics2_Graphics2_drawScaledSubTexture(
+        _handle, texture._get_handle(), sx, sy, sw, sh, dx, dy, dw, dh)
+    else
+      match img._get_render_target()
+      | let rt: KoreGraphics4RenderTarget =>
+        @Kore_Graphics2_Graphics2_drawScaledSubRenderTarget(
+        _handle, rt._get_handle(), sx, sy, sw, sh, dx, dy, dw, dh)
+      end
+    end
 
   fun ref begin_gfx(
     clear': Bool = true,
@@ -266,8 +293,6 @@ class KoreGraphics2
 
 /*
 
-draw_image
-draw_scaled_sub_image
 draw_string
 draw_sub_string? (draw_characters in Kha?)
 set_pipeline
@@ -290,8 +315,6 @@ set_transformation
 // Kha Graphics2 extras
 // https://github.com/Kode/Kha/blob/master/Sources/kha/graphics2/Graphics.hx
 
-draw_sub_image
-draw_scaled_image
 get_font_glyphs
 set_font_glyphs
 push_transformation
