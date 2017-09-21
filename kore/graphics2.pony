@@ -178,6 +178,15 @@ type KoreGraphics2ImageScaleQuality is
 
 primitive _KoreGraphics2Handle
 
+/*
+
+Kha Graphics2 extras
+https://github.com/Kode/Kha/blob/master/Sources/kha/graphics2/Graphics.hx
+
+Kha Graphics2 Extensions
+https://github.com/Kode/Kha/blob/master/Sources/kha/graphics2/GraphicsExtension.hx
+
+*/
 class KoreGraphics2
   let _handle: Pointer[_KoreGraphics2Handle] tag
   let _target: Canvas
@@ -255,26 +264,6 @@ class KoreGraphics2
       end
     end
 
-  fun ref begin_gfx(
-    clear': Bool = true,
-    clear_color: U32 = Colors.black())
-  =>
-    _g4.begin_gfx()
-    @Kore_Graphics2_Graphics2_begin(
-      _handle, _render_targets, -1, -1, clear', clear_color)
-
-  fun clear(
-    color: U32 = Colors.black())
-  =>
-    @Kore_Graphics2_Graphics2_clear(_handle, color)
-
-  fun flush() =>
-    @Kore_Graphics2_Graphics2_flush(_handle)
-
-  fun end_gfx() =>
-    @Kore_Graphics2_Graphics2_end(_handle)
-    _g4.end_gfx()
-
   fun draw_rect(
     x: F32,
     y: F32,
@@ -310,6 +299,51 @@ class KoreGraphics2
     y3: F32)
   =>
     @Kore_Graphics2_Graphics2_fillTriangle(_handle, x1, y1, x2, y2, x3, y3)
+
+// draw_circle ++
+// fill_circle ++
+// draw_polygon ++
+// fill_polygon ++
+// drawCubicBezier ++
+// drawCubicBezierPath ++
+
+  fun ref set_pipeline(pipeline: KoreGraphics4PipelineState) =>
+    @Kore_Graphics2_Graphics2_setPipeline(
+      _handle, pipeline._get_handle())
+
+  fun ref revert_pipeline() =>
+    """Revert pipeline back to the builtin."""
+    @Kore_Graphics2_Graphics2_setPipeline(
+      _handle, Pointer[_KoreGraphics4PipelineStateHandle].create())
+
+  fun scissor(x: I32, y: I32, width: I32, height: I32) =>
+    @Kore_Graphics2_Graphics2_scissor(_handle, x, y, width, height)
+
+  fun disable_scissor() =>
+    @Kore_Graphics2_Graphics2_disableScissor(_handle)
+
+  fun ref begin_gfx(
+    clear': Bool = true,
+    clear_color: U32 = Colors.black())
+  =>
+    _g4.begin_gfx()
+    @Kore_Graphics2_Graphics2_begin(
+      _handle, _render_targets, -1, -1, clear', clear_color)
+
+  fun clear(
+    color: U32 = Colors.black())
+  =>
+    @Kore_Graphics2_Graphics2_clear(_handle, color)
+
+  fun flush() =>
+    @Kore_Graphics2_Graphics2_flush(_handle)
+
+  fun end_gfx() =>
+    @Kore_Graphics2_Graphics2_end(_handle)
+    _g4.end_gfx()
+
+// draw_video_internal
+// draw_video
 
   fun get_color(): U32 =>
     @Kore_Graphics2_Graphics2_getColor(_handle)
@@ -367,37 +401,10 @@ class KoreGraphics2
   fun ref set_mipmap_scale_quality(value: KoreGraphics2ImageScaleQuality) =>
     @Kore_Graphics2_Graphics2_setMipmapScaleQuality(_handle, value())
 
-/*
-
-draw_string
-draw_sub_string? (draw_characters in Kha?)
-set_pipeline-
-scissor-
-disable_scissor-
-begin // sans g4, what to call?
-end  // sans g4, what to call?
-draw_video_internal
-draw_video
-get_font
-set_font
-
-get_transformation
-set_transformation
-
-// Kha Graphics2 extras
-// https://github.com/Kode/Kha/blob/master/Sources/kha/graphics2/Graphics.hx
-
-get_font_glyphs
-set_font_glyphs
-push_transformation
-pop_transformation
-translate
-push_translation
-rotate
-push_rotation
-get_pipeline? may not be accessible-
-
-*/
+// get_font
+// set_font
+// get_font_glyphs +
+// set_font_glyphs +
 
   fun get_font_size(): I32 =>
     @Kore_Graphics2_Graphics2_getFontSize(_handle)
@@ -410,6 +417,18 @@ get_pipeline? may not be accessible-
 
   fun ref set_font_color(color: U32) =>
     @Kore_Graphics2_Graphics2_setFontColor(_handle, color)
+
+// draw_string
+// draw_sub_string? (draw_characters in Kha?)
+
+// get_transformation
+// set_transformation
+// push_transformation +
+// pop_transformation +
+// translate +
+// push_translation +
+// rotate +
+// push_rotation +
 
   fun _get_handle(): Pointer[_KoreGraphics2Handle] tag =>
     _handle
