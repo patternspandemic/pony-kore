@@ -117,6 +117,16 @@ use @Kore_Graphics2_Graphics2_getOpacity[F32](
 use @Kore_Graphics2_Graphics2_setOpacity[None](
   self: Pointer[_KoreGraphics2Handle] tag,
   opacity: F32)
+use @Kore_Graphics2_Graphics2_getImageScaleQuality[I32](
+  self: Pointer[_KoreGraphics2Handle] tag)
+use @Kore_Graphics2_Graphics2_setImageScaleQuality[None](
+  self: Pointer[_KoreGraphics2Handle] tag,
+  value: I32)
+use @Kore_Graphics2_Graphics2_getMipmapScaleQuality[I32](
+  self: Pointer[_KoreGraphics2Handle] tag)
+use @Kore_Graphics2_Graphics2_setMipmapScaleQuality[None](
+  self: Pointer[_KoreGraphics2Handle] tag,
+  value: I32)
 // TODO: Kravur type
 // use @Kore_Graphics2_Graphics2_getFont[
 //   Pointer[_KoreKravurHandle] tag](
@@ -142,6 +152,26 @@ use @Kore_Graphics2_Graphics2_setFontColor[None](
 // use @Kore_Graphics2_Graphics2_setTransformation[None](
 //   self: Pointer[_KoreGraphics2Handle] tag,
 //   transformation: Pointer[_KoreMat3Handle] tag)
+
+
+primitive ImageScaleQualityLow
+  fun apply(): I32 => 0
+primitive ImageScaleQualityHigh
+  fun apply(): I32 => 1
+
+primitive ToKoreGraphics2ImageScaleQuality
+  fun from(value: I32): KoreGraphics2ImageScaleQuality =>
+    match value
+    | 0 => ImageScaleQualityLow
+    | 1 => ImageScaleQualityHigh
+    else
+      ImageScaleQualityLow
+    end
+
+type KoreGraphics2ImageScaleQuality is
+  ( ImageScaleQualityLow
+  | ImageScaleQualityHigh
+  )
 
 
 // TODO: Parameter defaults
@@ -290,6 +320,19 @@ class KoreGraphics2
   fun set_opacity(opacity: F32) =>
     @Kore_Graphics2_Graphics2_setOpacity(_handle, opacity)
 
+  fun get_image_scale_quality(): KoreGraphics2ImageScaleQuality =>
+    ToKoreGraphics2ImageScaleQuality.from(
+      @Kore_Graphics2_Graphics2_getImageScaleQuality(_handle))
+
+  fun set_image_scale_quality(value: KoreGraphics2ImageScaleQuality) =>
+    @Kore_Graphics2_Graphics2_setImageScaleQuality(_handle, value())
+
+  fun get_mipmap_scale_quality(): KoreGraphics2ImageScaleQuality =>
+    ToKoreGraphics2ImageScaleQuality.from(
+      @Kore_Graphics2_Graphics2_getMipmapScaleQuality(_handle))
+
+  fun set_mipmap_scale_quality(value: KoreGraphics2ImageScaleQuality) =>
+    @Kore_Graphics2_Graphics2_setMipmapScaleQuality(_handle, value())
 
 /*
 
