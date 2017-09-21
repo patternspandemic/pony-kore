@@ -184,10 +184,13 @@ class KoreGraphics2
   let _render_targets: Bool
   var _render_target: (KoreGraphics4RenderTarget | None) = None
   var _g4: KoreGraphics4
+  let _opacities: Array[F32]
 
   new create(target: Canvas) =>
     _target = target
     _g4 = _target.g4()
+    _opacities = _opacities.create()
+    _opacities.push(1.0)
 
     match _target
     | let fb: Framebuffer =>
@@ -311,46 +314,72 @@ class KoreGraphics2
   fun get_color(): U32 =>
     @Kore_Graphics2_Graphics2_getColor(_handle)
 
-  fun set_color(color: U32) =>
+  fun ref set_color(color: U32) =>
     @Kore_Graphics2_Graphics2_setColor(_handle, color)
 
   fun get_opacity(): F32 =>
     @Kore_Graphics2_Graphics2_getOpacity(_handle)
 
-  fun set_opacity(opacity: F32) =>
+  fun ref set_opacity(opacity: F32): F32 =>
     @Kore_Graphics2_Graphics2_setOpacity(_handle, opacity)
+    try
+      _opacities(_opacities.size() - 1)? = opacity
+    else
+      F32(1.0)
+    end
+
+  fun ref push_opacity(opacity: F32) =>
+    @Kore_Graphics2_Graphics2_setOpacity(_handle, opacity)
+    _opacities.push(opacity)
+
+  fun ref pop_opacity(): F32 =>
+    let popped =
+      try
+        let popped' = _opacities.pop()?
+        if _opacities.size() == 0 then
+          _opacities.push(1.0)
+        end
+        popped'
+      else
+        _opacities.push(1.0)
+        F32(1.0)
+      end
+    let next =
+      try
+        _opacities(_opacities.size() - 1)?
+      else
+        F32(1.0)
+      end
+    @Kore_Graphics2_Graphics2_setOpacity(_handle, next)
+    popped
 
   fun get_image_scale_quality(): KoreGraphics2ImageScaleQuality =>
     ToKoreGraphics2ImageScaleQuality.from(
       @Kore_Graphics2_Graphics2_getImageScaleQuality(_handle))
 
-  fun set_image_scale_quality(value: KoreGraphics2ImageScaleQuality) =>
+  fun ref set_image_scale_quality(value: KoreGraphics2ImageScaleQuality) =>
     @Kore_Graphics2_Graphics2_setImageScaleQuality(_handle, value())
 
   fun get_mipmap_scale_quality(): KoreGraphics2ImageScaleQuality =>
     ToKoreGraphics2ImageScaleQuality.from(
       @Kore_Graphics2_Graphics2_getMipmapScaleQuality(_handle))
 
-  fun set_mipmap_scale_quality(value: KoreGraphics2ImageScaleQuality) =>
+  fun ref set_mipmap_scale_quality(value: KoreGraphics2ImageScaleQuality) =>
     @Kore_Graphics2_Graphics2_setMipmapScaleQuality(_handle, value())
 
 /*
 
 draw_string
 draw_sub_string? (draw_characters in Kha?)
-set_pipeline
-scissor
-disable_scissor
+set_pipeline-
+scissor-
+disable_scissor-
 begin // sans g4, what to call?
 end  // sans g4, what to call?
 draw_video_internal
 draw_video
 get_font
 set_font
-get_font_size
-set_font_size
-get_font_color
-set_font_color
 
 get_transformation
 set_transformation
@@ -366,11 +395,21 @@ translate
 push_translation
 rotate
 push_rotation
-push_opacity
-pop_opacity
-get_pipeline? may not be accessible
+get_pipeline? may not be accessible-
 
 */
+
+  fun get_font_size(): I32 =>
+    @Kore_Graphics2_Graphics2_getFontSize(_handle)
+
+  fun ref set_font_size(size: I32) =>
+    @Kore_Graphics2_Graphics2_setFontSize(_handle, size)
+
+  fun get_font_color(): U32 =>
+    @Kore_Graphics2_Graphics2_getFontColor(_handle)
+
+  fun ref set_font_color(color: U32) =>
+    @Kore_Graphics2_Graphics2_setFontColor(_handle, color)
 
   fun _get_handle(): Pointer[_KoreGraphics2Handle] tag =>
     _handle
