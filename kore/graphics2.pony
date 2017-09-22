@@ -153,7 +153,6 @@ use @Kore_Graphics2_Graphics2_setFontColor[None](
 //   self: Pointer[_KoreGraphics2Handle] tag,
 //   transformation: Pointer[_KoreMat3Handle] tag)
 
-
 primitive ImageScaleQualityLow
   fun apply(): I32 => 0
 primitive ImageScaleQualityHigh

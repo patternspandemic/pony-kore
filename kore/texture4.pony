@@ -155,6 +155,9 @@ class KoreGraphics4Texture
     _handle = @Kore_Graphics4_Texture_createWHFR(
       width, height, format(), readable)
 
+  new _from_handle(handle: Pointer[_KoreGraphics4TextureHandle] tag) =>
+    _handle = handle
+
   new create_3D(
     width: I32,
     height: I32,
