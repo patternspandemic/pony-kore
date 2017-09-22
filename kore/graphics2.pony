@@ -46,12 +46,14 @@ use @Kore_Graphics2_Graphics2_drawStringTXY[None](
   text: Pointer[U8] tag,
   x: F32,
   y: F32)
-use @Kore_Graphics2_Graphics2_drawStringTLXY[None](
-  self: Pointer[_KoreGraphics2Handle] tag,
-  text: Pointer[U8] tag,
-  length: I32,
-  x: F32,
-  y: F32)
+// TODO: Add start to Kore_Graphics2_Graphics2_drawStringTSLXY
+// use @Kore_Graphics2_Graphics2_drawStringTSLXY[None](
+//   self: Pointer[_KoreGraphics2Handle] tag,
+//   text: Pointer[U8] tag,
+//   start: I32,
+//   length: I32,
+//   x: F32,
+//   y: F32)
 use @Kore_Graphics2_Graphics2_drawLine[None](
   self: Pointer[_KoreGraphics2Handle] tag,
   x1: F32,
@@ -127,13 +129,12 @@ use @Kore_Graphics2_Graphics2_getMipmapScaleQuality[I32](
 use @Kore_Graphics2_Graphics2_setMipmapScaleQuality[None](
   self: Pointer[_KoreGraphics2Handle] tag,
   value: I32)
-// TODO: Kravur type
-// use @Kore_Graphics2_Graphics2_getFont[
-//   Pointer[_KoreKravurHandle] tag](
-//     self: Pointer[_KoreGraphics2Handle] tag)
-// use @Kore_Graphics2_Graphics2_setFont[None](
-//   self: Pointer[_KoreGraphics2Handle] tag,
-//   font: Pointer[_KoreKravurHandle] tag)
+use @Kore_Graphics2_Graphics2_getFont[
+  Pointer[_KoreKravurHandle] tag](
+    self: Pointer[_KoreGraphics2Handle] tag)
+use @Kore_Graphics2_Graphics2_setFont[None](
+  self: Pointer[_KoreGraphics2Handle] tag,
+  font: Pointer[_KoreKravurHandle] tag)
 use @Kore_Graphics2_Graphics2_getFontSize[I32](
   self: Pointer[_KoreGraphics2Handle] tag)
 use @Kore_Graphics2_Graphics2_setFontSize[None](
@@ -193,6 +194,7 @@ class KoreGraphics2
   var _render_target: (KoreGraphics4RenderTarget | None) = None
   var _g4: KoreGraphics4
   let _opacities: Array[F32]
+  var _font: (KoreKravur | None) = None
 
   new create(target: Canvas) =>
     _target = target
@@ -400,8 +402,14 @@ class KoreGraphics2
   fun ref set_mipmap_scale_quality(value: KoreGraphics2ImageScaleQuality) =>
     @Kore_Graphics2_Graphics2_setMipmapScaleQuality(_handle, value())
 
-// get_font
-// set_font
+  fun ref get_font(): (KoreKravur | None) =>
+    _font
+
+  fun ref set_font(font: KoreKravur) =>
+    @Kore_Graphics2_Graphics2_setFont(_handle, font._get_handle())
+    _font = font
+
+// TODO: `fontGlyphs` are private in Kore::Graphics2::Graphics2
 // get_font_glyphs +
 // set_font_glyphs +
 
@@ -417,8 +425,22 @@ class KoreGraphics2
   fun ref set_font_color(color: U32) =>
     @Kore_Graphics2_Graphics2_setFontColor(_handle, color)
 
-// draw_string
-// draw_sub_string? (draw_characters in Kha?)
+  // Be careful to keep reference to the text String.
+  fun draw_string(text: String val, x: F32, y: F32) =>
+    @Kore_Graphics2_Graphics2_drawStringTXY(_handle, text.cstring(), x, y)
+
+  // Be careful to keep reference to the text String.
+  /* TODO: Add start to Kore_Graphics2_Graphics2_drawStringTSLXY
+  fun draw_sub_string(
+    text: String val,
+    start: I32,
+    length: I32,
+    x: F32,
+    y: F32)
+  =>
+    @Kore_Graphics2_Graphics2_drawStringTSLXY(
+      _handle, text.cstring(), start, length, x, y)
+  */
 
 // get_transformation
 // set_transformation

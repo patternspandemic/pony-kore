@@ -5,10 +5,12 @@ use "promises"
 use "regex"
 
 type ImageAsset is {(): Image iso^} val
+type FontAsset is {(KravurFontStyle val, F32): KoreKravur iso^} val
 // TODO: Other asset types
 
 interface AssetReceiver
-  be receive_image(name: String val, image_asset: ImageAsset val) => None
+  be receive_image(path: String val, image_asset: ImageAsset val) => None
+  be receive_font(path: String val, font_asset: FontAsset val) => None
   // TODO: Other receive_*
 
 // Not sure how useful Assets will be as a holder of various collections, as
@@ -19,6 +21,8 @@ interface AssetReceiver
 // may still be useful to store a collection. Regardless, the Assets actor can
 // provide async loading of an asset and return it iso through the various
 // load_<asset-type> methods.
+
+// ---> Actually could store the *Asset types in the collections! Yeah.
 
 // TODO: Load assets concurrently?
 // class Assets
@@ -193,15 +197,63 @@ actor Assets
         "[Error] Cannot load image asset. Assets path not provided.")
     end
 
-  // fun load_blob(rel_path: String val, done: {(Blob)}) =>
-  // fun load_sound(rel_path: String val, done: {(Sound)}) =>
-  // fun load_font(rel_path: String val, done: {(Font)}) =>
-  // fun load_video(rel_path: String val, done: {(Video)}) =>
+  // load_blob
+  // load_sound
+
+  be load_font(
+    requester: AssetReceiver tag,
+    rel_path: String val)
+  =>
+    match _dir_path
+    | let assets_path: FilePath =>
+      try
+        let font_path = assets_path.join(rel_path)?
+        let font_info = FileInfo(font_path)?
+        let extention = Path.ext(font_path.path)
+
+        if font_info.file and
+           get_font_formats().contains(
+             extention,
+             {(s1: String val, s2: String val): Bool => s1 == s2})
+        then
+          try
+            let font_rel = // possibly cleaned rel path
+              Path.rel(
+                assets_path.path,
+                font_path.path)?
+            let fnt_asset: FontAsset val =
+              {(style: KravurFontStyle val, size: F32): KoreKravur iso^ =>
+                recover KoreKravur(font_path.path, style, size) end} val
+            _logger(Info) and _logger.log(
+              "[Info] Found font asset at: " + font_rel)
+            requester.receive_font(rel_path, fnt_asset)
+          else
+            _logger(Error) and _logger.log(
+              "[Error] Failed to load font asset: " + font_path.path)
+          end
+        else
+          _logger(Error) and _logger.log(
+            "[Error] Font asset not a file or is unsupported format: " +
+            font_path.path)
+        end
+      else
+        _logger(Error) and _logger.log(
+          "[Error] Font asset (" + rel_path +
+          ") not found in assets path of: " + assets_path.path)
+      end
+    | None =>
+      _logger(Error) and _logger.log(
+        "[Error] Cannot load font asset. Assets path not provided.")
+    end
+
+
+  // load_video
 
   fun get_image_formats(): Array[String val] =>
     ["hdr"; "jpg"; "k"; "kng"; "png"; "pvr"]
   // fun get_sound_formats(): Array[String val] => ["wav"; "ogg"]
-  // fun get_font_formats(): Array[String val] =>
+  fun get_font_formats(): Array[String val] =>
+    ["ttf"]
   // fun get_video_formats(): Array[String val] => // Kore_System_videoFormats
 
 /*

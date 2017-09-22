@@ -32,7 +32,7 @@ use @Kore_Kravur_getHeight[I32](
   self: Pointer[_KoreKravurHandle] tag)
 use @Kore_Kravur_load[Pointer[_KoreKravurHandle] tag](
   name: Pointer[U8] tag,
-  style: KravurFontStyle,
+  style: KravurFontStyle val,
   size: F32)
 
 
@@ -41,7 +41,7 @@ struct KravurFontStyle
   var italic: Bool = false
   var underlined: Bool = false
 
-  new create(
+  new val create(
     bold': Bool = false,
     italic': Bool = false,
     underlined': Bool = false)
@@ -78,10 +78,10 @@ primitive _KoreKravurHandle
 class KoreKravur
   let _handle: Pointer[_KoreKravurHandle] tag
   let _name: String val
-  let _style: KravurFontStyle
+  let _style: KravurFontStyle val
   let _texture: KoreGraphics4Texture // (KoreGraphics4Texture | None) = None
 
-  new create(name: String val, style: KravurFontStyle, size: F32) =>
+  new create(name: String val, style: KravurFontStyle val, size: F32) =>
     _name = name
     _style = style
     _handle = @Kore_Kravur_load(_name.cstring(), _style, size)
