@@ -1,7 +1,6 @@
 use "collections"
 use "files"
 use "logger"
-// use "promises"
 use "regex"
 
 interface ShaderReceiver

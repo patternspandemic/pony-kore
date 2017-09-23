@@ -87,9 +87,9 @@ class Graphics2Example
     let wf = F32.from[I32](mascot.width())
     let hf = F32.from[I32](mascot.height())
 
-    // g.set_font(font)
-    // g.set_font_size(26) // ?
-    g.set_font_color(Colors.black())
+    g.set_font(font)
+    g.set_font_size(16)
+    g.set_font_style("Regular")
 
     g.begin_gfx(true, grey)
 
@@ -133,14 +133,22 @@ class Graphics2Example
       g.set_color(Colors.blue())
       g.fill_triangle(300, 250, 320, 260, 340, 250)
 
-/*
-      g.set_font(font(36))
       g.draw_string("Hello from Pony-Kore!", 50, 300)
-      g.set_font(font(24 where bold' = true))
-      g.draw_string("Smaller text.", 50, 330)
-      g.set_font(font(14))
-      g.draw_string("And smaller still.", 50, 360)
-*/
+      g.set_font_style("Bold")
+      g.set_font_color(Colors.red())
+      g.draw_string("Some BOLD text.", 50, 330)
+      g.set_font_style("Italic")
+      g.set_font_color(Colors.green())
+      g.draw_string("And some with a slant to it!", 50, 360)
+      g.set_font_style("BoldItalic")
+      g.set_font_color(Colors.blue())
+      g.draw_string("Here we go full out text.", 50, 390)
+      g.set_font_color(Colors.black())
+      g.set_font_style("Bananas")
+      g.draw_string("This text shouldn't print.", 50, 420)
+      g.set_font_size(32)
+      g.set_font_style("Bold")
+      g.draw_string("Pony and Kore are awesome stuff :)", 50, 420)
 
       g.set_color(Colors.white())
 

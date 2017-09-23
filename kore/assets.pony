@@ -1,7 +1,6 @@
 use "collections"
 use "files"
 use "logger"
-// use "promises"
 use "regex"
 
 type ImageAsset is {(): Image iso^} val
@@ -246,7 +245,7 @@ actor Assets
                               assets_path.path,
                               file_path.path)?
                           _logger(Info) and _logger.log(
-                            "[Info] Found font assets at: " + kravur_rel)
+                            "[Info] Found font asset at: " + kravur_rel)
                         end
                       end
                     end
@@ -366,4 +365,52 @@ class SyncAssets
 
 fun get_image_formats(): Array[String val] =>
     ["hdr"; "jpg"; "k"; "kng"; "png"; "pvr"]
+*/
+
+/*
+  be load_font_old(
+    requester: AssetReceiver tag,
+    rel_path: String val)
+  =>
+    match _dir_path
+    | let assets_path: FilePath =>
+      try
+        let font_path = assets_path.join(rel_path)?
+        let font_info = FileInfo(font_path)?
+        let extention = Path.ext(font_path.path)
+
+        if font_info.file and
+           get_font_formats().contains(
+             extention,
+             {(s1: String val, s2: String val): Bool => s1 == s2})
+        then
+          try
+            let font_rel = // possibly cleaned rel path
+              Path.rel(
+                assets_path.path,
+                font_path.path)?
+            let fnt_asset: FontAsset val =
+              {(style: KravurFontStyle val, size: F32): KoreKravur iso^ =>
+                recover KoreKravur(font_path.path, style, size) end} val
+            _logger(Info) and _logger.log(
+              "[Info] Found font asset at: " + font_rel)
+            requester.receive_font(rel_path, fnt_asset)
+          else
+            _logger(Error) and _logger.log(
+              "[Error] Failed to load font asset: " + font_path.path)
+          end
+        else
+          _logger(Error) and _logger.log(
+            "[Error] Font asset not a file or is unsupported format: " +
+            font_path.path)
+        end
+      else
+        _logger(Error) and _logger.log(
+          "[Error] Font asset (" + rel_path +
+          ") not found in assets path of: " + assets_path.path)
+      end
+    | None =>
+      _logger(Error) and _logger.log(
+        "[Error] Cannot load font asset. Assets path not provided.")
+end
 */

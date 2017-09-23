@@ -194,7 +194,10 @@ class KoreGraphics2
   var _render_target: (KoreGraphics4RenderTarget | None) = None
   var _g4: KoreGraphics4
   let _opacities: Array[F32]
-  var _font: (KoreKravur | None) = None
+  // var _font: (KoreKravur | None) = None
+  var _font: (Font ref | None) = None
+  var _font_style: String val = "Regular"
+  var _font_size: F32 = 14
 
   new create(target: Canvas) =>
     _target = target
@@ -402,22 +405,27 @@ class KoreGraphics2
   fun ref set_mipmap_scale_quality(value: KoreGraphics2ImageScaleQuality) =>
     @Kore_Graphics2_Graphics2_setMipmapScaleQuality(_handle, value())
 
-  fun ref get_font(): (KoreKravur | None) =>
+  fun ref get_font(): (Font ref | None) =>
     _font
 
-  fun ref set_font(font: KoreKravur) =>
-    @Kore_Graphics2_Graphics2_setFont(_handle, font._get_handle())
+  fun ref set_font(font: Font ref) =>
     _font = font
 
 // TODO: `fontGlyphs` are private in Kore::Graphics2::Graphics2
 // get_font_glyphs +
 // set_font_glyphs +
 
-  fun get_font_size(): I32 =>
-    @Kore_Graphics2_Graphics2_getFontSize(_handle)
+  fun get_font_size(): F32 =>
+    _font_size
 
-  fun ref set_font_size(size: I32) =>
-    @Kore_Graphics2_Graphics2_setFontSize(_handle, size)
+  fun ref set_font_size(size: F32) =>
+    _font_size = size
+
+  fun get_font_style(): String val =>
+    _font_style
+
+  fun ref set_font_style(style: String val) =>
+    _font_style = style
 
   fun get_font_color(): U32 =>
     @Kore_Graphics2_Graphics2_getFontColor(_handle)
@@ -426,8 +434,20 @@ class KoreGraphics2
     @Kore_Graphics2_Graphics2_setFontColor(_handle, color)
 
   // Be careful to keep reference to the text String.
-  fun draw_string(text: String val, x: F32, y: F32) =>
-    @Kore_Graphics2_Graphics2_drawStringTXY(_handle, text.cstring(), x, y)
+  fun ref draw_string(text: String val, x: F32, y: F32) =>
+    match _font
+    | let font: Font ref =>
+      // Attempt to get a KoreKravur by applying the assigned style and size
+      try
+        let kravur: KoreKravur = font(_font_size, _font_style)?
+        @Kore_Graphics2_Graphics2_setFont(_handle, kravur._get_handle())
+        @Kore_Graphics2_Graphics2_drawStringTXY(_handle, text.cstring(), x, y)
+      //else
+        // TODO: Log warning when no matching font style and size?
+      end
+    | None => None
+      // TODO: Log warning when attempt to draw_string sans assigned font?
+    end
 
   // Be careful to keep reference to the text String.
   /* TODO: Add start to Kore_Graphics2_Graphics2_drawStringTSLXY
