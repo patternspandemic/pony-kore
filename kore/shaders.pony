@@ -1,7 +1,7 @@
 use "collections"
 use "files"
 use "logger"
-use "promises"
+// use "promises"
 use "regex"
 
 interface ShaderReceiver
@@ -29,8 +29,10 @@ actor Shaders
           : None val
         =>
           try
+            /* let shader_file_re =
+              Regex("(?i)(?<name>.+)\\.(?<type>vert|frag|geom|tesc|tese|comp){1}(\\.glsl)?$")? */
             let shader_file_re =
-              Regex("(?i)(?<name>.+)\\.(?<type>vert|frag|geom|tesc|tese|comp){1}(\\.glsl)?$")?
+              Regex("(?i)(?<name>\\w+)\\.(?<type>vert|frag|geom|tesc|tese|comp){1}(\\.glsl)?$")?
             let dir = Directory(dir_path')?
 
             for entry in dir_entries.values() do

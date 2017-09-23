@@ -1,11 +1,11 @@
 use "collections"
 use "files"
 use "logger"
-use "promises"
+// use "promises"
 use "regex"
 
 type ImageAsset is {(): Image iso^} val
-type FontAsset is {(KravurFontStyle val, F32): KoreKravur iso^} val
+type FontAsset is {(): Font iso^} val
 // TODO: Other asset types
 
 interface AssetReceiver
@@ -158,7 +158,7 @@ actor Assets
     match _dir_path
     | let assets_path: FilePath =>
       try
-        let image_path = assets_path.join(rel_path)?
+        let image_path = assets_path.join(Path.clean(rel_path))?
         let image_info = FileInfo(image_path)?
         let extention = Path.ext(image_path.path)
 
@@ -207,33 +207,75 @@ actor Assets
     match _dir_path
     | let assets_path: FilePath =>
       try
-        let font_path = assets_path.join(rel_path)?
+        let font_path = assets_path.join(Path.clean(rel_path))?
         let font_info = FileInfo(font_path)?
-        let extention = Path.ext(font_path.path)
+        let face = Path.split(font_info.filepath.path)._2
 
-        if font_info.file and
-           get_font_formats().contains(
-             extention,
-             {(s1: String val, s2: String val): Bool => s1 == s2})
-        then
-          try
-            let font_rel = // possibly cleaned rel path
-              Path.rel(
-                assets_path.path,
-                font_path.path)?
+        if font_info.directory then
+          // map of style to sizes: "Bold" -> "12,14,16"
+          let variants: Map[String val, String val] = variants.create()
+          let combiner =
+            {(o: String val, n: String val): String val =>
+              o.clone().>append("," + n)}
+
+          font_info.filepath.walk(
+            object ref is WalkHandler
+              fun ref apply(
+                dir_path': FilePath val,
+                dir_entries: Array[String val] ref)
+                : None val
+              =>
+                try
+                  let kravur_file_re =
+                    Regex("^(?i)(?<face>\\w+)-(?<style>\\w+)-(?<size>(\\d{1,3})(\\.\\d{1,2})?)\\.kravur$")?
+                  let dir = Directory(dir_path')?
+
+                  for entry in dir_entries.values() do
+                    let file_info = dir.infoat(entry)?
+                    let file_path = file_info.filepath
+
+                    if file_info.file and (kravur_file_re == entry) then
+                      let matched = kravur_file_re(entry)?
+                      try
+                        if face == matched.find("face")? then
+                          let style: String val = matched.find("style")?
+                          let size: String val = matched.find("size")?
+                          variants.upsert(style, size, combiner)?
+                          let kravur_rel = // possibly cleaned rel path
+                            Path.rel(
+                              assets_path.path,
+                              file_path.path)?
+                          _logger(Info) and _logger.log(
+                            "[Info] Found font assets at: " + kravur_rel)
+                        end
+                      end
+                    end
+                  end
+                else
+                  _logger(Error) and _logger.log(
+                    "[Error] Failed to load font asset: " + font_path.path)
+                end
+            end)
+
+          if variants.size() > 0 then
+            let variants': Map[String val, String val] trn =
+              recover variants'.create() end
+            for (k, v) in variants.pairs() do
+              variants'(k) = v
+            end
+            let variants'': Map[String val, String val] val = consume variants'
             let fnt_asset: FontAsset val =
-              {(style: KravurFontStyle val, size: F32): KoreKravur iso^ =>
-                recover KoreKravur(font_path.path, style, size) end} val
-            _logger(Info) and _logger.log(
-              "[Info] Found font asset at: " + font_rel)
+              {(): Font iso^ =>
+                recover Font(font_path.path, variants'') end} val
             requester.receive_font(rel_path, fnt_asset)
           else
             _logger(Error) and _logger.log(
-              "[Error] Failed to load font asset: " + font_path.path)
+              "[Warning] No font assets for face (" +
+              face + ") found in: " + font_path.path)
           end
         else
           _logger(Error) and _logger.log(
-            "[Error] Font asset not a file or is unsupported format: " +
+            "[Error] Font asset not a directory: " +
             font_path.path)
         end
       else
@@ -246,14 +288,13 @@ actor Assets
         "[Error] Cannot load font asset. Assets path not provided.")
     end
 
-
   // load_video
 
   fun get_image_formats(): Array[String val] =>
     ["hdr"; "jpg"; "k"; "kng"; "png"; "pvr"]
   // fun get_sound_formats(): Array[String val] => ["wav"; "ogg"]
   fun get_font_formats(): Array[String val] =>
-    ["ttf"]
+    ["kravur"]
   // fun get_video_formats(): Array[String val] => // Kore_System_videoFormats
 
 /*

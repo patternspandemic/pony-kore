@@ -7,7 +7,7 @@ actor Main
   let mascot_path: String val = "pony-mascot.png"
   var mascot: (ImageAsset val | None) = None
 
-  let font_path: String val = "HackRegular.ttf"
+  let font_path: String val = "Fonts/Hack"
   var font: (FontAsset val | None) = None
 
   new create(env: Env) =>
@@ -68,7 +68,7 @@ actor Main
 class Graphics2Example
   let system: KoreSystem
   let mascot: Image ref
-  let font: KoreKravur ref
+  let font: Font ref
 
   new create(
     system': KoreSystem,
@@ -77,7 +77,7 @@ class Graphics2Example
   =>
     system = system'
     mascot = mascot'() // Apply assets to receive them.
-    font = font'(KravurFontStyle(), 16.0)
+    font = font'()
 
     system.notify_on_render(this~render())
 
@@ -87,9 +87,9 @@ class Graphics2Example
     let wf = F32.from[I32](mascot.width())
     let hf = F32.from[I32](mascot.height())
 
-    g.set_font(font)
-    // g.set_font_size(16)
-    g.set_font_color(Colors.purple())
+    // g.set_font(font)
+    // g.set_font_size(26) // ?
+    g.set_font_color(Colors.black())
 
     g.begin_gfx(true, grey)
 
@@ -133,7 +133,14 @@ class Graphics2Example
       g.set_color(Colors.blue())
       g.fill_triangle(300, 250, 320, 260, 340, 250)
 
-      g.draw_string("Hard Kore Pony", 50, 400)
+/*
+      g.set_font(font(36))
+      g.draw_string("Hello from Pony-Kore!", 50, 300)
+      g.set_font(font(24 where bold' = true))
+      g.draw_string("Smaller text.", 50, 330)
+      g.set_font(font(14))
+      g.draw_string("And smaller still.", 50, 360)
+*/
 
       g.set_color(Colors.white())
 
