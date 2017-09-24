@@ -1,5 +1,8 @@
 use "lib:korec"
 
+use "collections"
+use "debug"
+
 /* FFI to WC_Kore_Graphics2_Graphics2 */
 use @Kore_Graphics2_Graphics2_create[
   Pointer[_KoreGraphics2Handle] tag](
@@ -304,8 +307,67 @@ class KoreGraphics2
   =>
     @Kore_Graphics2_Graphics2_fillTriangle(_handle, x1, y1, x2, y2, x3, y3)
 
-// draw_circle ++
-// fill_circle ++
+  fun draw_circle(
+    cx: F32,
+    cy: F32,
+    radius: F32,
+    strength: F32 = 1.0,
+    segments: I32 = 0)
+  =>
+    let segments': USize =
+      if segments <= 0 then
+        USize.from[F32]((10 * radius.sqrt()).floor())
+      else
+        USize.from[I32](segments)
+      end
+
+    let theta = (2 * F32.pi()) / F32.from[USize](segments')
+    let c = theta.cos()
+    let s = theta.sin()
+    var x = radius
+    var y = F32(0)
+
+    for n in Range(0, segments') do
+      let px = x + cx
+      let py = y + cy
+
+      let t = x
+      x = (c * x) - (s * y)
+      y = (c * y) + (s * t)
+
+      draw_line(px, py, (x + cx), (y + cy), strength)
+    end
+
+  fun fill_circle(
+    cx: F32,
+    cy: F32,
+    radius: F32,
+    segments: I32 = 0)
+  =>
+    let segments': USize =
+      if segments <= 0 then
+        USize.from[F32]((10 * radius.sqrt()).floor())
+      else
+        USize.from[I32](segments)
+      end
+
+    let theta = (2 * F32.pi()) / F32.from[USize](segments')
+    let c = theta.cos()
+    let s = theta.sin()
+    var x = radius
+    var y = F32(0)
+
+    for n in Range(0, segments') do
+      let px = x + cx
+      let py = y + cy
+
+      let t = x
+      x = (c * x) - (s * y)
+      y = (c * y) + (s * t)
+
+      fill_triangle(px, py, (x + cx), (y + cy), cx, cy)
+    end
+
 // draw_polygon ++
 // fill_polygon ++
 // drawCubicBezier ++

@@ -133,6 +133,12 @@ class Graphics2Example
       g.set_color(Colors.blue())
       g.fill_triangle(300, 250, 320, 260, 340, 250)
 
+      g.set_color(Colors.cyan())
+      g.draw_circle(420, 330, 40, 8)
+
+      g.set_color(Colors.magenta())
+      g.fill_circle(420, 330, 25)
+
       g.draw_string("Hello from Pony-Kore!", 50, 300)
       g.set_font_style("Bold")
       g.set_font_color(Colors.red())
