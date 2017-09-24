@@ -1,7 +1,6 @@
 use "lib:korec"
 
 use "collections"
-use "debug"
 
 /* FFI to WC_Kore_Graphics2_Graphics2 */
 use @Kore_Graphics2_Graphics2_create[
@@ -49,14 +48,19 @@ use @Kore_Graphics2_Graphics2_drawStringTXY[None](
   text: Pointer[U8] tag,
   x: F32,
   y: F32)
-// TODO: Add start to Kore_Graphics2_Graphics2_drawStringTSLXY
-// use @Kore_Graphics2_Graphics2_drawStringTSLXY[None](
-//   self: Pointer[_KoreGraphics2Handle] tag,
-//   text: Pointer[U8] tag,
-//   start: I32,
-//   length: I32,
-//   x: F32,
-//   y: F32)
+use @Kore_Graphics2_Graphics2_drawStringTLXY[None](
+  self: Pointer[_KoreGraphics2Handle] tag,
+  text: Pointer[U8] tag,
+  length: I32,
+  x: F32,
+  y: F32)
+use @Kore_Graphics2_Graphics2_drawStringTSLXY[None](
+  self: Pointer[_KoreGraphics2Handle] tag,
+  text: Pointer[U8] tag,
+  start: I32,
+  length: I32,
+  x: F32,
+  y: F32)
 use @Kore_Graphics2_Graphics2_drawLine[None](
   self: Pointer[_KoreGraphics2Handle] tag,
   x1: F32,
@@ -592,7 +596,6 @@ class KoreGraphics2
     end
 
   // Be careful to keep reference to the text String.
-  /* TODO: Add start to Kore_Graphics2_Graphics2_drawStringTSLXY
   fun draw_sub_string(
     text: String val,
     start: I32,
@@ -600,9 +603,23 @@ class KoreGraphics2
     x: F32,
     y: F32)
   =>
-    @Kore_Graphics2_Graphics2_drawStringTSLXY(
-      _handle, text.cstring(), start, length, x, y)
-  */
+    match _font
+    | let font: Font ref =>
+      // Attempt to get a KoreKravur by applying the assigned style and size
+      try
+        let kravur: KoreKravur = font(_font_size, _font_style)?
+        @Kore_Graphics2_Graphics2_setFont(_handle, kravur._get_handle())
+        @Kore_Graphics2_Graphics2_drawStringTSLXY(
+          _handle, text.cstring(), start, length, x, y)
+      //else
+        // TODO: Log warning when no matching font style and size?
+      end
+    | None => None
+      // TODO: Log warning when attempt to draw_string sans assigned font?
+    end
+
+    // @Kore_Graphics2_Graphics2_drawStringTSLXY(
+    //   _handle, text.cstring(), start, length, x, y)
 
 // get_transformation
 // set_transformation

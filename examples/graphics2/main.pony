@@ -155,6 +155,8 @@ class Graphics2Example
       g.set_font_size(32)
       g.set_font_style("Bold")
       g.draw_string("Pony and Kore are awesome stuff :)", 50, 420)
+      g.draw_sub_string(
+        "Pre sub-string. Hello sub-string! Post sub-string.", 16, 17, 170, 50)
 
       g.set_color(Colors.pink())
       g.draw_cubic_bezier(
