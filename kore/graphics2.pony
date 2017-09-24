@@ -368,10 +368,90 @@ class KoreGraphics2
       fill_triangle(px, py, (x + cx), (y + cy), cx, cy)
     end
 
-// draw_polygon ++
-// fill_polygon ++
-// drawCubicBezier ++
-// drawCubicBezierPath ++
+// draw_polygon ++ Requires Vec
+// fill_polygon ++ Requires Vec
+
+  fun draw_cubic_bezier(
+    x: Array[F32],
+    y: Array[F32],
+    strength: F32 = 1.0,
+    segments: USize = 20)
+  =>
+    try
+      var t: F32 = 0
+      var q0 = _calculate_cubic_bezier_point(0, x, y)?
+      var q1 = Array[F32]
+
+      for i in Range(1, (segments + 1)) do
+        t = F32.from[USize](i) / F32.from[USize](segments)
+        q1 = _calculate_cubic_bezier_point(t, x, y)?
+        draw_line(q0(0)?, q0(1)?, q1(0)?, q1(1)?, strength)
+        q0 = q1
+      end
+    end
+
+  fun draw_cubic_bezier_path(
+    x: Array[F32],
+    y: Array[F32],
+    strength: F32 = 1.0,
+    segments: USize = 20)
+  =>
+    try
+      var i: USize = 0
+      var t: F32 = 0
+      var q0 = Array[F32]
+      var q1 = Array[F32]
+
+      while i < (x.size() - 3) do
+        if i == 0 then
+          q0 = _calculate_cubic_bezier_point(
+            0,
+            [x(i)?; x(i + 1)?; x(i + 2)?; x(i + 3)?],
+            [y(i)?; y(i + 1)?; y(i + 2)?; y(i + 3)?])?
+        end
+
+        for j in Range(1, (segments + 1)) do
+          t = F32.from[USize](j) / F32.from[USize](segments)
+          q1 = _calculate_cubic_bezier_point(
+            t,
+            [x(i)?; x(i + 1)?; x(i + 2)?; x(i + 3)?],
+            [y(i)?; y(i + 1)?; y(i + 2)?; y(i + 3)?])?
+          draw_line(q0(0)?, q0(1)?, q1(0)?, q1(1)?, strength)
+          q0 = q1
+        end
+
+        i = i + 3
+      end
+    end
+
+
+  fun _calculate_cubic_bezier_point(
+    t: F32,
+    x: Array[F32],
+    y: Array[F32])
+    : Array[F32] ?
+  =>
+    let u: F32 = 1 - t
+		let tt: F32 = t * t
+		let uu: F32 = u * u
+		let uuu: F32 = uu * u
+		let ttt: F32 = tt * t
+
+		// first term
+		var p: Array[F32] = [(uuu * x(0)?); (uuu * y(0)?)]
+
+		// second term
+		p(0)? = p(0)? + (3 * uu * t * x(1)?)
+		p(1)? = p(1)? + (3 * uu * t * y(1)?)
+
+		// third term
+		p(0)? = p(0)? + (3 * u * tt * x(2)?)
+		p(1)? = p(1)? + (3 * u * tt * y(2)?)
+
+		// fourth term
+		p(0)? = p(0)? + (ttt * x(3)?)
+		p(1)? = p(1)? + (ttt * y(3)?)
+    p
 
   fun ref set_pipeline(pipeline: KoreGraphics4PipelineState) =>
     @Kore_Graphics2_Graphics2_setPipeline(

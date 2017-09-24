@@ -156,6 +156,18 @@ class Graphics2Example
       g.set_font_style("Bold")
       g.draw_string("Pony and Kore are awesome stuff :)", 50, 420)
 
+      g.set_color(Colors.pink())
+      g.draw_cubic_bezier(
+        [50; 320; 320; 590],
+        [245; 10; 470; 245],
+        12)
+
+      g.set_color(Colors.yellow())
+      g.draw_cubic_bezier_path(
+        [320; 370; 420; 590; 100; 30; 540; 320],
+        [50; 100; 470; 345; 200; 400; 240; 50],
+        5)
+
       g.set_color(Colors.white())
 
     g.end_gfx()
