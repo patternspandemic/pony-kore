@@ -596,7 +596,7 @@ class KoreGraphics2
     end
 
   // Be careful to keep reference to the text String.
-  fun draw_sub_string(
+  fun ref draw_sub_string(
     text: String val,
     start: I32,
     length: I32,
