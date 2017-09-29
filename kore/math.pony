@@ -71,6 +71,9 @@ class Vector2[
   fun ref normalize_mut() =>
     set_length(L.from[I8](1))
 
+  fun dot(other: Vector2[T, L]): T =>
+    (x * other.x) + (y * other.y)
+
   fun add(other: Vector2[T, L]): Vector2[T, L] =>
     Vector2[T, L](
       x + other.x,
@@ -79,6 +82,9 @@ class Vector2[
   fun ref add_mut(other: Vector2[T, L]) =>
     x = x + other.x
     y = y + other.y
+
+  // add_scaled
+  // add_scaled_mut
 
   fun sub(other: Vector2[T, L]): Vector2[T, L] =>
     Vector2[T, L](
@@ -132,6 +138,13 @@ class Vector2[
 
   fun distance(other: Vector2[T, L]): L =>
     (this - other).get_length()
+
+  fun eq(other: Vector2[T, L]): Bool =>
+    (x == other.x) and
+    (y == other.y)
+
+  fun ne(other: Vector2[T, L]): Bool =>
+    not eq(other)
 
 /* 3 Component Vectors */
 
@@ -192,6 +205,18 @@ class Vector3[
   fun ref normalize_mut() =>
     set_length(L.from[I8](1))
 
+  fun dot(other: Vector3[T, L]): T =>
+    (x * other.x) + (y * other.y) + (z * other.z)
+
+  fun cross(other: Vector3[T, L]): Vector3[T, L] =>
+    let x' = (y * other.z) - (z * other.y)
+    let y' = (z * other.x) - (x * other.z)
+    let z' = (x * other.y) - (y * other.x)
+    Vector3[T, L](x', y', z')
+
+  fun mod(other: Vector3[T, L]): Vector3[T, L] =>
+    cross(other)
+
   fun add(other: Vector3[T, L]): Vector3[T, L] =>
     Vector3[T, L](
       x + other.x,
@@ -202,6 +227,9 @@ class Vector3[
     x = x + other.x
     y = y + other.y
     z = z + other.z
+
+  // add_scaled
+  // add_scaled_mut
 
   fun sub(other: Vector3[T, L]): Vector3[T, L] =>
     Vector3[T, L](
@@ -266,6 +294,14 @@ class Vector3[
 
   fun distance(other: Vector3[T, L]): L =>
     (this - other).get_length()
+
+  fun eq(other: Vector3[T, L]): Bool =>
+    (x == other.x) and
+    (y == other.y) and
+    (z == other.z)
+
+  fun ne(other: Vector3[T, L]): Bool =>
+    not eq(other)
 
 /* 4 Component Vectors */
 
@@ -339,6 +375,9 @@ class Vector4[
   fun ref normalize_mut() =>
     set_length(L.from[I8](1))
 
+  fun dot(other: Vector4[T, L]): T =>
+    (x * other.x) + (y * other.y) + (z * other.z) + (w * other.w)
+
   fun add(other: Vector4[T, L]): Vector4[T, L] =>
     Vector4[T, L](
       x + other.x,
@@ -351,6 +390,9 @@ class Vector4[
     y = y + other.y
     z = z + other.z
     w = w + other.w
+
+  // add_scaled
+  // add_scaled_mut
 
   fun sub(other: Vector4[T, L]): Vector4[T, L] =>
     Vector4[T, L](
@@ -427,22 +469,11 @@ class Vector4[
   fun distance(other: Vector4[T, L]): L =>
     (this - other).get_length()
 
-//////
+  fun eq(other: Vector4[T, L]): Bool =>
+    (x == other.x) and
+    (y == other.y) and
+    (z == other.z) and
+    (w == other.w)
 
-  // -add (to this)
-  // add_scaled_vector (to this)
-  // -sub (from this)
-  // -mult (to this)
-  // -component_product (new)
-  // -component_product (to this)
-  // -negate (this)
-  // -div ()
-  // dot -- and case method for */mul
-  // cross -- and % infix
-  // -distance
-  // -invert
-  // -normalize
-  // -square_length ? (x * x) + (y * y)
-  // -is_zero
-  // equality
-  // not equal
+  fun ne(other: Vector4[T, L]): Bool =>
+    not eq(other)
