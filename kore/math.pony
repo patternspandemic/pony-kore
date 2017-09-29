@@ -37,7 +37,10 @@ class Vector2[
   var x: T
   var y: T
 
-  new create(x': T, y': T) =>
+  new create(
+    x': T = T.from[I8](0),
+    y': T = T.from[I8](0))
+  =>
     x = x'
     y = y'
 
@@ -57,10 +60,78 @@ class Vector2[
 
   fun ref set_length(length: L): L =>
     let current_length = get_length()
-    let mul = T.from[L](length / current_length)
-    x = x * mul
-    y = y * mul
+    let mul' = T.from[L](length / current_length)
+    x = x * mul'
+    y = y * mul'
     length
+
+  fun normalize(): Vector2[T, L] =>
+    Vector2[T, L](x, y).>normalize()
+
+  fun ref normalize_mut() =>
+    set_length(L.from[I8](1))
+
+  fun add(other: Vector2[T, L]): Vector2[T, L] =>
+    Vector2[T, L](
+      x + other.x,
+      y + other.y)
+
+  fun ref add_mut(other: Vector2[T, L]) =>
+    x = x + other.x
+    y = y + other.y
+
+  fun sub(other: Vector2[T, L]): Vector2[T, L] =>
+    Vector2[T, L](
+      x - other.x,
+      y - other.y)
+
+  fun ref sub_mut(other: Vector2[T, L]) =>
+    x = x - other.x
+    y = y - other.y
+
+  fun mul(value: T): Vector2[T, L] =>
+    Vector2[T, L](
+      x * value,
+      y * value)
+
+  fun ref mul_mut(value: T) =>
+    x = x * value
+    y = y * value
+
+  fun div(value: T): Vector2[T, L] =>
+    Vector2[T, L](
+      x / value,
+      y / value)
+
+  fun ref div_mut(value: T) =>
+    x = x / value
+    y = y / value
+
+  fun component_product(other: Vector2[T, L]): Vector2[T, L] =>
+    Vector2[T, L](
+      x * other.x,
+      y * other.y)
+
+  fun ref component_product_mut(other: Vector2[T, L]) =>
+    x = x * other.x
+    y = y * other.y
+
+  fun neg(): Vector2[T, L] =>
+    Vector2[T, L](
+      -x,
+      -y)
+
+  fun ref neg_mut() =>
+    x = -x
+    y = -y
+
+  fun is_zero(): Bool =>
+    let zero = T.from[I8](0)
+    (x == zero) and
+    (y == zero)
+
+  fun distance(other: Vector2[T, L]): L =>
+    (this - other).get_length()
 
 /* 3 Component Vectors */
 
@@ -76,12 +147,15 @@ class Vector3[
   var y: T
   var z: T
 
-  new create(x': T, y': T, z': T) =>
+  new create(
+    x': T = T.from[I8](0),
+    y': T = T.from[I8](0),
+    z': T = T.from[I8](0)) =>
     x = x'
     y = y'
     z = z'
 
-  new from_vector2(v: Vector2[T, L], z': T) =>
+  new from_vector2(v: Vector2[T, L], z': T = T.from[I8](0)) =>
     x = v.x
     y = v.y
     z = z'
@@ -106,11 +180,92 @@ class Vector3[
 
   fun ref set_length(length: L): L =>
     let current_length = get_length()
-    let mul = T.from[L](length / current_length)
-    x = x * mul
-    y = y * mul
-    z = z * mul
+    let mul' = T.from[L](length / current_length)
+    x = x * mul'
+    y = y * mul'
+    z = z * mul'
     length
+
+  fun normalize(): Vector3[T, L] =>
+    Vector3[T, L](x, y).>normalize()
+
+  fun ref normalize_mut() =>
+    set_length(L.from[I8](1))
+
+  fun add(other: Vector3[T, L]): Vector3[T, L] =>
+    Vector3[T, L](
+      x + other.x,
+      y + other.y,
+      z + other.z)
+
+  fun ref add_mut(other: Vector3[T, L]) =>
+    x = x + other.x
+    y = y + other.y
+    z = z + other.z
+
+  fun sub(other: Vector3[T, L]): Vector3[T, L] =>
+    Vector3[T, L](
+      x - other.x,
+      y - other.y,
+      z - other.z)
+
+  fun ref sub_mut(other: Vector3[T, L]) =>
+    x = x - other.x
+    y = y - other.y
+    z = z - other.z
+
+  fun mul(value: T): Vector3[T, L] =>
+    Vector3[T, L](
+      x * value,
+      y * value,
+      z * value)
+
+  fun ref mul_mut(value: T) =>
+    x = x * value
+    y = y * value
+    z = z * value
+
+  fun div(value: T): Vector3[T, L] =>
+    Vector3[T, L](
+      x / value,
+      y / value,
+      z / value)
+
+  fun ref div_mut(value: T) =>
+    x = x / value
+    y = y / value
+    z = z / value
+
+  fun component_product(other: Vector3[T, L]): Vector3[T, L] =>
+    Vector3[T, L](
+      x * other.x,
+      y * other.y,
+      z * other.z)
+
+  fun ref component_product_mut(other: Vector3[T, L]) =>
+    x = x * other.x
+    y = y * other.y
+    z = z * other.z
+
+  fun neg(): Vector3[T, L] =>
+    Vector3[T, L](
+      -x,
+      -y,
+      -z)
+
+  fun ref neg_mut() =>
+    x = -x
+    y = -y
+    z = -z
+
+  fun is_zero(): Bool =>
+    let zero = T.from[I8](0)
+    (x == zero) and
+    (y == zero) and
+    (z == zero)
+
+  fun distance(other: Vector3[T, L]): L =>
+    (this - other).get_length()
 
 /* 4 Component Vectors */
 
@@ -127,13 +282,17 @@ class Vector4[
   var z: T
   var w: T
 
-  new create(x': T, y': T, z': T, w': T) =>
+  new create(
+    x': T = T.from[I8](0),
+    y': T = T.from[I8](0),
+    z': T = T.from[I8](0),
+    w': T = T.from[I8](0)) =>
     x = x'
     y = y'
     z = z'
     w = w'
 
-  new from_vector3(v: Vector3[T, L], w': T) =>
+  new from_vector3(v: Vector3[T, L], w': T = T.from[I8](0)) =>
     x = v.x
     y = v.y
     z = v.z
@@ -144,6 +303,17 @@ class Vector4[
     y = v.y
     z = v.z
     w = v.w
+
+  fun to_cartesian(): Vector3[T, L] =>
+    if (w != T.from[I8](0)) and (w != T.from[I8](1)) then
+      let w_inv: L = L.from[I8](1) / L.from[T](w)
+      Vector3[T, L](
+        x * T.from[L](w_inv),
+        y * T.from[L](w_inv),
+        z * T.from[L](w_inv))
+    else
+      Vector3[T, L](x, y, z)
+    end
 
   fun square_length(): L =>
     (L.from[T](x) * L.from[T](x)) +
@@ -156,29 +326,123 @@ class Vector4[
 
   fun ref set_length(length: L): L =>
     let current_length = get_length()
-    let mul = T.from[L](length / current_length)
-    x = x * mul
-    y = y * mul
-    z = z * mul
-    w = w * mul
+    let mul' = T.from[L](length / current_length)
+    x = x * mul'
+    y = y * mul'
+    z = z * mul'
+    w = w * mul'
     length
+
+  fun normalize(): Vector4[T, L] =>
+    Vector4[T, L](x, y).>normalize()
+
+  fun ref normalize_mut() =>
+    set_length(L.from[I8](1))
+
+  fun add(other: Vector4[T, L]): Vector4[T, L] =>
+    Vector4[T, L](
+      x + other.x,
+      y + other.y,
+      z + other.z,
+      w + other.w)
+
+  fun ref add_mut(other: Vector4[T, L]) =>
+    x = x + other.x
+    y = y + other.y
+    z = z + other.z
+    w = w + other.w
+
+  fun sub(other: Vector4[T, L]): Vector4[T, L] =>
+    Vector4[T, L](
+      x - other.x,
+      y - other.y,
+      z - other.z,
+      w - other.w)
+
+  fun ref sub_mut(other: Vector4[T, L]) =>
+    x = x - other.x
+    y = y - other.y
+    z = z - other.z
+    w = w - other.w
+
+  fun mul(value: T): Vector4[T, L] =>
+    Vector4[T, L](
+      x * value,
+      y * value,
+      z * value,
+      w * value)
+
+  fun ref mul_mut(value: T) =>
+    x = x * value
+    y = y * value
+    z = z * value
+    w = w * value
+
+  fun div(value: T): Vector4[T, L] =>
+    Vector4[T, L](
+      x / value,
+      y / value,
+      z / value,
+      w / value)
+
+  fun ref div_mut(value: T) =>
+    x = x / value
+    y = y / value
+    z = z / value
+    w = w / value
+
+  fun component_product(other: Vector4[T, L]): Vector4[T, L] =>
+    Vector4[T, L](
+      x * other.x,
+      y * other.y,
+      z * other.z,
+      w * other.w)
+
+  fun ref component_product_mut(other: Vector4[T, L]) =>
+    x = x * other.x
+    y = y * other.y
+    z = z * other.z
+    w = w * other.w
+
+  fun neg(): Vector4[T, L] =>
+    Vector4[T, L](
+      -x,
+      -y,
+      -z,
+      -w)
+
+  fun ref neg_mut() =>
+    x = -x
+    y = -y
+    z = -z
+    w = -w
+
+  fun is_zero(): Bool =>
+    let zero = T.from[I8](0)
+    (x == zero) and
+    (y == zero) and
+    (z == zero) and
+    (w == zero)
+
+  fun distance(other: Vector4[T, L]): L =>
+    (this - other).get_length()
 
 //////
 
-  // add (to this)
+  // -add (to this)
   // add_scaled_vector (to this)
-  // sub (from this)
-  // mult (to this)
-  // component_product (new)
-  // component_product (to this)
-  // negate (this)
-  // div ()
-  // dot
-  // cross
-  // distance
-  // invert
-  // normalize
+  // -sub (from this)
+  // -mult (to this)
+  // -component_product (new)
+  // -component_product (to this)
+  // -negate (this)
+  // -div ()
+  // dot -- and case method for */mul
+  // cross -- and % infix
+  // -distance
+  // -invert
+  // -normalize
   // -square_length ? (x * x) + (y * y)
-  // is_zero
+  // -is_zero
   // equality
   // not equal
