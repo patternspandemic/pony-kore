@@ -98,7 +98,6 @@ use @Kore_Graphics4_setFloat2[None](
   location: Pointer[_KoreGraphics4ConstantLocationHandle] tag,
   value1: F32,
   value2: F32)
-// TODO: Vector Type
 // use @Kore_Graphics4_setFloat2Vec[None](
 //   location: Pointer[_KoreGraphics4ConstantLocationHandle] tag,
 //   value: Pointer[_KoreVec2Handle] tag)
@@ -107,7 +106,6 @@ use @Kore_Graphics4_setFloat3[None](
   value1: F32,
   value2: F32,
   value3: F32)
-// TODO: Vector Type
 // use @Kore_Graphics4_setFloat3Vec[None](
 //   location: Pointer[_KoreGraphics4ConstantLocationHandle] tag,
 //   value: Pointer[_KoreVec3Handle] tag)
@@ -117,7 +115,6 @@ use @Kore_Graphics4_setFloat4[None](
   value2: F32,
   value3: F32,
   value4: F32)
-// TODO: Vector Type
 // use @Kore_Graphics4_setFloat4Vec[None](
 //   location: Pointer[_KoreGraphics4ConstantLocationHandle] tag,
 //   value: Pointer[_KoreVec4Handle] tag)
@@ -970,12 +967,12 @@ primitive KoreGraphics4Primitive
   =>
     @Kore_Graphics4_setFloat2(location._get_handle(), value1, value2)
 
-  // TODO: Vector Type
-  // fun set_float2_vec(
-  //   location: KoreGraphics4ConstantLocation,
-  //   value: KoreVec2)
-  // =>
-  //   @Kore_Graphics4_setFloat2Vec(location._get_handle(), value._get_handle())
+  fun set_float2_vec(
+    location: KoreGraphics4ConstantLocation,
+    value: Vec2)
+  =>
+    // @Kore_Graphics4_setFloat2Vec(location._get_handle(), value._get_handle())
+    set_float2(location, value.x, value.y)
 
   fun set_float3(
     location: KoreGraphics4ConstantLocation,
@@ -985,12 +982,12 @@ primitive KoreGraphics4Primitive
   =>
     @Kore_Graphics4_setFloat3(location._get_handle(), value1, value2, value3)
 
-  // TODO: Vector Type
-  // fun set_float3_vec(
-  //   location: KoreGraphics4ConstantLocation,
-  //   value: KoreVec3)
-  // =>
-  //   @Kore_Graphics4_setFloat3Vec(location._get_handle(), value._get_handle())
+  fun set_float3_vec(
+    location: KoreGraphics4ConstantLocation,
+    value: Vec3)
+  =>
+    // @Kore_Graphics4_setFloat3Vec(location._get_handle(), value._get_handle())
+    set_float3(location, value.x, value.y, value.z)
 
   fun set_float4(
     location: KoreGraphics4ConstantLocation,
@@ -1002,12 +999,12 @@ primitive KoreGraphics4Primitive
     @Kore_Graphics4_setFloat4(
       location._get_handle(), value1, value2, value3, value4)
 
-  // TODO: Vector Type
-  // fun set_float4_vec(
-  //   location: KoreGraphics4ConstantLocation,
-  //   value: KoreVec4)
-  // =>
-  //   @Kore_Graphics4_setFloat4Vec(location._get_handle(), value._get_handle())
+  fun set_float4_vec(
+    location: KoreGraphics4ConstantLocation,
+    value: Vec4)
+  =>
+    // @Kore_Graphics4_setFloat4Vec(location._get_handle(), value._get_handle())
+    set_float4(location, value.x, value.y, value.z, value.w)
 
   // Be careful to keep references to the array of floats.
   fun set_floats(
@@ -1459,8 +1456,6 @@ class KoreGraphics4
     KoreGraphics4Primitive.set_texture_3D_mipmap_filter(
       unit, mipmap_filter)
 
-// TODO: Requires implementation of Image, Video
-
   fun set_texture(unit: KoreGraphics4TextureUnit, image: Image) =>
     try
       if image.is_render_target() then
@@ -1556,26 +1551,26 @@ class KoreGraphics4
   =>
     KoreGraphics4Primitive.set_floats(location, floats)
 
-  // TODO: Vector and Matrix Types
-/*
   fun set_vector2(
     location: KoreGraphics4ConstantLocation,
-    value: KoreVec2)
+    value: Vec2)
   =>
     KoreGraphics4Primitive.set_float2_vec(location, value)
 
   fun set_vector3(
     location: KoreGraphics4ConstantLocation,
-    value: KoreVec3)
+    value: Vec3)
   =>
     KoreGraphics4Primitive.set_float3_vec(location, value)
 
   fun set_vector4(
     location: KoreGraphics4ConstantLocation,
-    value: KoreVec4)
+    value: Vec4)
   =>
     KoreGraphics4Primitive.set_float4_vec(location, value)
 
+  // TODO: Matrix Types
+/*
   fun set_matrix(
     location: KoreGraphics4ConstantLocation,
     value: KoreMat4)
