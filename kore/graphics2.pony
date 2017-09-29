@@ -372,8 +372,42 @@ class KoreGraphics2
       fill_triangle(px, py, (x + cx), (y + cy), cx, cy)
     end
 
-// draw_polygon ++ Requires Vec
-// fill_polygon ++ Requires Vec
+  fun draw_polygon(
+    x: F32,
+    y: F32,
+    vertices: Array[Vec2],
+    strength: F32 = 1.0)
+  =>
+    try
+      var iter = vertices.values()
+      var v0 = iter.next()?
+      var v1 = v0
+
+      while iter.has_next() do
+        var v2 = iter.next()?
+        draw_line(v1.x + x, v1.y + y, v2.x + x, v2.y + y, strength)
+        v1 = v2
+      end
+      draw_line(v1.x + x, v1.y + y, v0.x + x, v0.y + y, strength)
+    end
+
+  fun fill_polygon(
+    x: F32,
+    y: F32,
+    vertices: Array[Vec2])
+  =>
+    try
+      var iter = vertices.values()
+      var v0 = iter.next()?
+      var v1 = v0
+
+      while iter.has_next() do
+        var v2 = iter.next()?
+        fill_triangle(v1.x + x, v1.y + y, v2.x + x, v2.y + y, x, y)
+        v1 = v2
+      end
+      fill_triangle(v1.x + x, v1.y + y, v0.x + x, v0.y + y, x, y)
+    end
 
   fun draw_cubic_bezier(
     x: Array[F32],

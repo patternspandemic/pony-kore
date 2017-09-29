@@ -170,6 +170,29 @@ class Graphics2Example
         [50; 100; 470; 345; 200; 400; 240; 50],
         5)
 
+      g.set_color(Colors.blue())
+      g.draw_polygon(
+        70, 140,
+        [
+          Vec2(-40, -40)
+          Vec2(0, 0)
+          Vec2(40, 0)
+          Vec2(40, 40)
+          Vec2(-40, 0)
+        ],
+        3.0)
+
+      g.set_color(Colors.black())
+      g.fill_polygon(
+        70, 250,
+        [
+          Vec2(-40, -40)
+          Vec2(0, 0)
+          Vec2(40, 0)
+          Vec2(40, 40)
+          Vec2(-40, 0)
+        ])
+
       g.set_color(Colors.white())
 
     g.end_gfx()
