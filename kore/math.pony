@@ -477,3 +477,247 @@ class Vector4[
 
   fun ne(other: Vector4[T, L]): Bool =>
     not eq(other)
+
+
+/* 2x2 Matrix */
+
+type Mat2 is Matrix2[F32]
+type DMat2 is Matrix2[F64]
+
+// class Matrix2[T: ((F32 val|F64 val) & Real[T])]
+class Matrix2[T: (Float & FloatingPoint[T])]
+  let width: I32 = 2
+  let height: I32 = 2
+  // Row 0
+  var _e00: T
+  var _e10: T
+  // Row 1
+  var _e01: T
+  var _e11: T
+
+  new create(
+    e00: T, e10: T,
+    e01: T, e11: T)
+  =>
+    _e00 = e00; _e10 = e10
+    _e01 = e01; _e11 = e11
+
+  new empty() =>
+    let zero: T = T.from[I8](0)
+    _e00 = zero; _e10 = zero
+    _e01 = zero; _e11 = zero
+
+  new identity() =>
+    let zero: T = T.from[I8](0)
+    let one: T = T.from[I8](1)
+    _e00 = one;  _e10 = zero
+    _e01 = zero; _e11 = one
+
+  new scale(x: T, y: T) =>
+    let zero: T = T.from[I8](0)
+    _e00 = x;    _e10 = zero
+    _e01 = zero; _e11 = y
+
+  new rotation(alpha: T) =>
+    let ca: T = alpha.cos()
+    let sa: T = alpha.sin()
+    _e00 = ca; _e10 = -sa
+    _e01 = sa; _e11 =  ca
+
+  fun ref set_from(m: Matrix2[T]) =>
+    _e00 = m._e00; _e10 = m._e10
+    _e01 = m._e01; _e11 = m._e11
+
+/* 3x3 Matrix */
+
+type Mat3 is Matrix3[F32]
+type DMat3 is Matrix3[F64]
+
+// class Matrix3[T: ((F32 val|F64 val) & Real[T])]
+class Matrix3[T: (Float & FloatingPoint[T])]
+  let width: I32 = 3
+  let height: I32 = 3
+  // Row 0
+  var _e00: T
+  var _e10: T
+  var _e20: T
+  // Row 1
+  var _e01: T
+  var _e11: T
+  var _e21: T
+  // Row 2
+  var _e02: T
+  var _e12: T
+  var _e22: T
+
+  new create(
+    e00: T, e10: T, e20: T,
+    e01: T, e11: T, e21: T,
+    e02: T, e12: T, e22: T)
+  =>
+    _e00 = e00; _e10 = e10; _e20 = e20
+    _e01 = e01; _e11 = e11; _e21 = e21
+    _e02 = e02; _e12 = e12; _e22 = e22
+
+  new empty() =>
+    let zero: T = T.from[I8](0)
+    _e00 = zero; _e10 = zero; _e20 = zero
+    _e01 = zero; _e11 = zero; _e21 = zero
+    _e02 = zero; _e12 = zero; _e22 = zero
+
+  new identity() =>
+    let zero: T = T.from[I8](0)
+    let one: T = T.from[I8](1)
+    _e00 = one;  _e10 = zero; _e20 = zero
+    _e01 = zero; _e11 = one;  _e21 = zero
+    _e02 = zero; _e12 = zero; _e22 = one
+
+  new translation(x: T, y: T) =>
+    let zero: T = T.from[I8](0)
+    let one: T = T.from[I8](1)
+    _e00 = one;  _e10 = zero; _e20 = x
+    _e01 = zero; _e11 = one;  _e21 = y
+    _e02 = zero; _e12 = zero; _e22 = one
+
+  new scale(x: T, y: T) =>
+    let zero: T = T.from[I8](0)
+    let one: T = T.from[I8](1)
+    _e00 = x;    _e10 = zero; _e20 = zero
+    _e01 = zero; _e11 = y;    _e21 = zero
+    _e02 = zero; _e12 = zero; _e22 = one
+
+  new rotation(alpha: T) =>
+    let zero: T = T.from[I8](0)
+    let one: T = T.from[I8](1)
+    let ca: T = alpha.cos()
+    let sa: T = alpha.sin()
+    _e00 = ca;   _e10 = -sa;   _e20 = zero
+    _e01 = sa;   _e11 =  ca;   _e21 = zero
+    _e02 = zero; _e12 =  zero; _e22 = one
+
+  fun ref set_from(m: Matrix3[T]) =>
+    _e00 = m._e00; _e10 = m._e10; _e20 = m._e20
+    _e01 = m._e01; _e11 = m._e11; _e21 = m._e21
+    _e02 = m._e02; _e12 = m._e12; _e22 = m._e22
+
+/* 4x4 Matrix */
+
+type Mat4 is Matrix4[F32]
+type DMat4 is Matrix4[F64]
+
+// class Matrix4[T: ((F32 val|F64 val) & Real[T])]
+class Matrix4[T: (Float & FloatingPoint[T])]
+  let width: I32 = 4
+  let height: I32 = 4
+  // Row 0
+  var _e00: T
+  var _e10: T
+  var _e20: T
+  var _e30: T
+  // Row 1
+  var _e01: T
+  var _e11: T
+  var _e21: T
+  var _e31: T
+  // Row 2
+  var _e02: T
+  var _e12: T
+  var _e22: T
+  var _e32: T
+  // Row 3
+  var _e03: T
+  var _e13: T
+  var _e23: T
+  var _e33: T
+
+  new create(
+    e00: T, e10: T, e20: T, e30: T,
+    e01: T, e11: T, e21: T, e31: T,
+    e02: T, e12: T, e22: T, e32: T,
+    e03: T, e13: T, e23: T, e33: T)
+  =>
+    _e00 = e00; _e10 = e10; _e20 = e20; _e30 = e30
+    _e01 = e01; _e11 = e11; _e21 = e21; _e31 = e31
+    _e02 = e02; _e12 = e12; _e22 = e22; _e32 = e32
+    _e03 = e03; _e13 = e13; _e23 = e23; _e33 = e33
+
+  new empty() =>
+    let zero: T = T.from[I8](0)
+    _e00 = zero; _e10 = zero; _e20 = zero; _e30 = zero
+    _e01 = zero; _e11 = zero; _e21 = zero; _e31 = zero
+    _e02 = zero; _e12 = zero; _e22 = zero; _e32 = zero
+    _e03 = zero; _e13 = zero; _e23 = zero; _e33 = zero
+
+  new identity() =>
+    let zero: T = T.from[I8](0)
+    let one: T = T.from[I8](1)
+    _e00 = one;  _e10 = zero; _e20 = zero; _e30 = zero
+    _e01 = zero; _e11 = one;  _e21 = zero; _e31 = zero
+    _e02 = zero; _e12 = zero; _e22 = one;  _e32 = zero
+    _e03 = zero; _e13 = zero; _e23 = zero; _e33 = one
+
+  new translation(x: T, y: T, z: T) =>
+    let zero: T = T.from[I8](0)
+    let one: T = T.from[I8](1)
+    _e00 = one;  _e10 = zero; _e20 = zero; _e30 = x
+    _e01 = zero; _e11 = one;  _e21 = zero; _e31 = y
+    _e02 = zero; _e12 = zero; _e22 = one;  _e32 = z
+    _e03 = zero; _e13 = zero; _e23 = zero; _e33 = one
+
+  new scale(x: T, y: T, z: T) =>
+    let zero: T = T.from[I8](0)
+    let one: T = T.from[I8](1)
+    _e00 = x;    _e10 = zero; _e20 = zero; _e30 = zero
+    _e01 = zero; _e11 = y;    _e21 = zero; _e31 = zero
+    _e02 = zero; _e12 = zero; _e22 = z;    _e32 = zero
+    _e03 = zero; _e13 = zero; _e23 = zero; _e33 = one
+
+  new rotation_x(alpha: T) =>
+    let zero: T = T.from[I8](0)
+    let one: T = T.from[I8](1)
+    let ca: T = alpha.cos()
+    let sa: T = alpha.sin()
+    _e00 = one;  _e10 = zero; _e20 = zero; _e30 = zero
+    _e01 = zero; _e11 = ca;   _e21 = -sa;  _e31 = zero
+    _e02 = zero; _e12 = sa;   _e22 =  ca;  _e32 = zero
+    _e03 = zero; _e13 = zero; _e23 = zero; _e33 = one
+
+  new rotation_y(alpha: T) =>
+    let zero: T = T.from[I8](0)
+    let one: T = T.from[I8](1)
+    let ca: T = alpha.cos()
+    let sa: T = alpha.sin()
+    _e00 = ca;   _e10 = zero; _e20 = sa;   _e30 = zero
+    _e01 = zero; _e11 = one;  _e21 = zero; _e31 = zero
+    _e02 = -sa;  _e12 = zero; _e22 = ca;   _e32 = zero
+    _e03 = zero; _e13 = zero; _e23 = zero; _e33 = one
+
+  new rotation_z(alpha: T) =>
+    let zero: T = T.from[I8](0)
+    let one: T = T.from[I8](1)
+    let ca: T = alpha.cos()
+    let sa: T = alpha.sin()
+    _e00 = ca;   _e10 = -sa;  _e20 = zero; _e30 = zero
+    _e01 = sa;   _e11 =  ca;  _e21 = zero; _e31 = zero
+    _e02 = zero; _e12 = zero; _e22 = one;  _e32 = zero
+    _e03 = zero; _e13 = zero; _e23 = zero; _e33 = one
+
+  new rotation(yaw: T, pitch: T, roll: T) =>
+    let zero: T = T.from[I8](0)
+    let one: T = T.from[I8](1)
+    let sy: T = yaw.sin()
+    let cy: T = yaw.cos()
+    let sx: T = pitch.sin()
+    let cx: T = pitch.cos()
+    let sz: T = roll.sin()
+    let cz: T = roll.cos()
+    _e00 = (cx * cy); _e10 = ((cx * sy * sz) - (sx * cz)); _e20 = ((cx * sy * cz) + (sx * sz)); _e30 = zero
+    _e01 = (sx * cy); _e11 = ((sx * sy * sz) + (cx * cz)); _e21 = ((sx * sy * cz) - (cx * sz)); _e31 = zero
+    _e02 = -sy;       _e12 = (cy * sz);                    _e22 = (cy * cz);                    _e32 = zero
+    _e03 = zero;      _e13 = zero;                         _e23 = zero;                         _e33 = one
+
+  fun ref set_from(m: Matrix4[T]) =>
+    _e00 = m._e00; _e10 = m._e10; _e20 = m._e20; _e30 = m._e30
+    _e01 = m._e01; _e11 = m._e11; _e21 = m._e21; _e31 = m._e31
+    _e02 = m._e02; _e12 = m._e12; _e22 = m._e22; _e32 = m._e32
+    _e03 = m._e03; _e13 = m._e13; _e23 = m._e23; _e33 = m._e33
