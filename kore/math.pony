@@ -480,11 +480,10 @@ class Vector4[
 
 
 /* 2x2 Matrix */
-
 type Mat2 is Matrix2[F32]
 type DMat2 is Matrix2[F64]
 
-// class Matrix2[T: ((F32 val|F64 val) & Real[T])]
+// TODO: Make Matrix2 default refcap val?
 class Matrix2[T: (Float & FloatingPoint[T])]
   let width: I32 = 2
   let height: I32 = 2
@@ -501,6 +500,12 @@ class Matrix2[T: (Float & FloatingPoint[T])]
   =>
     _e00 = e00; _e10 = e10
     _e01 = e01; _e11 = e11
+
+  new from_matrix2(m: Matrix2[T]) =>
+    _e00 = m._e00; _e10 = m._e10
+    _e01 = m._e01; _e11 = m._e11
+
+  // TODO: Matrix2.from_matrix3
 
   new empty() =>
     let zero: T = T.from[I8](0)
@@ -523,6 +528,10 @@ class Matrix2[T: (Float & FloatingPoint[T])]
     let sa: T = alpha.sin()
     _e00 = ca; _e10 = -sa
     _e01 = sa; _e11 =  ca
+
+  fun ref set_from(m: Matrix2[T]) =>
+    _e00 = m._e00; _e10 = m._e10
+    _e01 = m._e01; _e11 = m._e11
 
   fun add(m: Matrix2[T]): Matrix2[T] =>
     Matrix2[T](
@@ -549,16 +558,23 @@ class Matrix2[T: (Float & FloatingPoint[T])]
     let y: T = (_e01 * vector.x) + (_e11 * vector.y)
     Vector2[T, T](x, y)
 
-  fun ref set_from(m: Matrix2[T]) =>
-    _e00 = m._e00; _e10 = m._e10
-    _e01 = m._e01; _e11 = m._e11
+  fun transpose(): Matrix2[T] =>
+    Matrix2[T](
+      _e00, _e01,
+      _e10, _e11)
+
+  fun trace(): T =>
+    _e00 + _e11
+
+  // TODO: Matrix2.linear_interpolate
+  // https://github.com/Kode/Kore/blob/master/Sources/Kore/Math/Matrix.h#L419
+
 
 /* 3x3 Matrix */
-
 type Mat3 is Matrix3[F32]
 type DMat3 is Matrix3[F64]
 
-// class Matrix3[T: ((F32 val|F64 val) & Real[T])]
+// TODO: Make Matrix3 default refcap val?
 class Matrix3[T: (Float & FloatingPoint[T])]
   let width: I32 = 3
   let height: I32 = 3
@@ -583,6 +599,15 @@ class Matrix3[T: (Float & FloatingPoint[T])]
     _e00 = e00; _e10 = e10; _e20 = e20
     _e01 = e01; _e11 = e11; _e21 = e21
     _e02 = e02; _e12 = e12; _e22 = e22
+
+  // TODO: Matrix3.from_matrix2
+
+  new from_matrix3(m: Matrix3[T]) =>
+    _e00 = m._e00; _e10 = m._e10; _e20 = m._e20
+    _e01 = m._e01; _e11 = m._e11; _e21 = m._e21
+    _e02 = m._e02; _e12 = m._e12; _e22 = m._e22
+
+  // TODO: Matrix3.from_matrix4
 
   new empty() =>
     let zero: T = T.from[I8](0)
@@ -620,6 +645,11 @@ class Matrix3[T: (Float & FloatingPoint[T])]
     _e01 = sa;   _e11 =  ca;   _e21 = zero
     _e02 = zero; _e12 =  zero; _e22 = one
 
+  fun ref set_from(m: Matrix3[T]) =>
+    _e00 = m._e00; _e10 = m._e10; _e20 = m._e20
+    _e01 = m._e01; _e11 = m._e11; _e21 = m._e21
+    _e02 = m._e02; _e12 = m._e12; _e22 = m._e22
+
   fun add(m: Matrix3[T]): Matrix3[T] =>
     Matrix3[T](
       _e00 + m._e00, _e10 + m._e10, _e20 + m._e20,
@@ -651,17 +681,58 @@ class Matrix3[T: (Float & FloatingPoint[T])]
     let y: T = ((_e01 * vector.x) + (_e11 * vector.y) + (_e21 * one)) / w
     Vector2[T, T](x, y)
 
-  fun ref set_from(m: Matrix3[T]) =>
-    _e00 = m._e00; _e10 = m._e10; _e20 = m._e20
-    _e01 = m._e01; _e11 = m._e11; _e21 = m._e21
-    _e02 = m._e02; _e12 = m._e12; _e22 = m._e22
+  fun transpose(): Matrix3[T] =>
+    Matrix3[T](
+      _e00, _e01, _e02,
+      _e10, _e11, _e12,
+      _e20, _e21, _e22)
+
+  fun trace(): T =>
+      _e00 + _e11 + _e22
+
+  fun cofactor(m0: T, m1: T, m2: T, m3: T): T =>
+    (m0 * m3) - (m1 * m2)
+
+  fun determinant(): T =>
+    let c00 = cofactor(_e11, _e21, _e12, _e22)
+    let c01 = cofactor(_e10, _e20, _e12, _e22)
+    let c02 = cofactor(_e10, _e20, _e11, _e21)
+    (_e00 * c00) - ((_e01 * c01) + (_e02 * c02))
+
+  fun inverse(): Matrix3[T] ? =>
+    let c00 = cofactor(_e11, _e21, _e12, _e22)
+    let c01 = cofactor(_e10, _e20, _e12, _e22)
+    let c02 = cofactor(_e10, _e20, _e11, _e21)
+
+    let det = (_e00 * c00) - ((_e01 * c01) + (_e02 * c02))
+    if det.abs() < T.from[F32](0.000001) then
+      // Determinant is too small
+      error
+    end
+
+    let c10 = cofactor(_e01, _e21, _e02, _e22)
+    let c11 = cofactor(_e00, _e20, _e02, _e22)
+    let c12 = cofactor(_e00, _e20, _e01, _e21)
+
+    let c20 = cofactor(_e01, _e11, _e02, _e12)
+    let c21 = cofactor(_e00, _e10, _e02, _e12)
+    let c22 = cofactor(_e00, _e10, _e01, _e11)
+
+    let inv_det = T.from[I8](1) / det
+    Matrix3[T](
+      c00 * inv_det, -c01 * inv_det,  c02 * inv_det,
+    -c10 * inv_det,  c11 * inv_det, -c12 * inv_det,
+      c20 * inv_det, -c21 * inv_det,  c22 * inv_det)
+
+  // TODO: Matrix3.linear_interpolate
+  // https://github.com/Kode/Kore/blob/master/Sources/Kore/Math/Matrix.h#L419
+
 
 /* 4x4 Matrix */
-
 type Mat4 is Matrix4[F32]
 type DMat4 is Matrix4[F64]
 
-// class Matrix4[T: ((F32 val|F64 val) & Real[T])]
+// TODO: Make Matrix4 default refcap val?
 class Matrix4[T: (Float & FloatingPoint[T])]
   let width: I32 = 4
   let height: I32 = 4
@@ -696,6 +767,14 @@ class Matrix4[T: (Float & FloatingPoint[T])]
     _e01 = e01; _e11 = e11; _e21 = e21; _e31 = e31
     _e02 = e02; _e12 = e12; _e22 = e22; _e32 = e32
     _e03 = e03; _e13 = e13; _e23 = e23; _e33 = e33
+
+  // TODO: Matrix4.from_matrix3
+
+  new from_matrix4(m: Matrix4[T]) =>
+    _e00 = m._e00; _e10 = m._e10; _e20 = m._e20; _e30 = m._e30
+    _e01 = m._e01; _e11 = m._e11; _e21 = m._e21; _e31 = m._e31
+    _e02 = m._e02; _e12 = m._e12; _e22 = m._e22; _e32 = m._e32
+    _e03 = m._e03; _e13 = m._e13; _e23 = m._e23; _e33 = m._e33
 
   new empty() =>
     let zero: T = T.from[I8](0)
@@ -791,6 +870,10 @@ class Matrix4[T: (Float & FloatingPoint[T])]
     _e02 = zero;                 _e12 = zero;                 _e22 = -two / (z_far - z_near); _e32 = tz
     _e03 = zero;                 _e13 = zero;                 _e23 = zero;                    _e33 = one
 
+  // TODO: Matrix4.perspective_projection2
+  // new perspective_projection2(left, right, top, bottom, near, far)
+  // https://github.com/Kode/Kore/blob/master/Sources/Kore/Math/Matrix.h#L88
+
   new perspective_projection(
     fov_y: T,
     aspect: T,
@@ -823,6 +906,15 @@ class Matrix4[T: (Float & FloatingPoint[T])]
     _e01 =  y_axis.x; _e11 =  y_axis.y; _e21 =  y_axis.z; _e31 = -y_axis.dot(eye)
     _e02 = -z_axis.x; _e12 = -z_axis.y; _e22 = -z_axis.z; _e32 =  z_axis.dot(eye)
     _e03 =  zero;     _e13 =  zero;     _e23 =  zero;     _e33 = one
+
+  // TODO: Matrix4.look_along
+  // https://github.com/Kode/Kore/blob/master/Sources/Kore/Math/Matrix.h#L139
+
+  fun ref set_from(m: Matrix4[T]) =>
+    _e00 = m._e00; _e10 = m._e10; _e20 = m._e20; _e30 = m._e30
+    _e01 = m._e01; _e11 = m._e11; _e21 = m._e21; _e31 = m._e31
+    _e02 = m._e02; _e12 = m._e12; _e22 = m._e22; _e32 = m._e32
+    _e03 = m._e03; _e13 = m._e13; _e23 = m._e23; _e33 = m._e33
 
   fun add(m: Matrix4[T]): Matrix4[T] =>
     Matrix4[T](
@@ -860,8 +952,71 @@ class Matrix4[T: (Float & FloatingPoint[T])]
     product.w = (_e03 * vector.x) + (_e13 * vector.y) + (_e23 * vector.z) + (_e33 * vector.w)
     product
 
-  fun ref set_from(m: Matrix4[T]) =>
-    _e00 = m._e00; _e10 = m._e10; _e20 = m._e20; _e30 = m._e30
-    _e01 = m._e01; _e11 = m._e11; _e21 = m._e21; _e31 = m._e31
-    _e02 = m._e02; _e12 = m._e12; _e22 = m._e22; _e32 = m._e32
-    _e03 = m._e03; _e13 = m._e13; _e23 = m._e23; _e33 = m._e33
+  fun transpose(): Matrix4[T] =>
+    Matrix4[T](
+      _e00, _e01, _e02, _e03,
+      _e10, _e11, _e12, _e13,
+      _e20, _e21, _e22, _e23,
+      _e30, _e31, _e32, _e33)
+
+  fun transpose_3x3(): Matrix4[T] =>
+    Matrix4[T](
+      _e00, _e01, _e02, _e30,
+      _e10, _e11, _e12, _e31,
+      _e20, _e21, _e22, _e32,
+      _e03, _e13, _e23, _e33)
+
+  fun trace(): T =>
+    _e00 + _e11 + _e22 + _e33
+
+  fun cofactor(
+    m0: T, m1: T, m2: T,
+    m3: T, m4: T, m5: T,
+    m6: T, m7: T, m8: T)
+    : T
+  =>
+    (m0 * ( (m4 * m8) - (m5 * m7) )) - ((m1 * ( (m3 * m8) - (m5 * m6) )) + (m2 * ( (m3 * m7) - (m4 * m6) )))
+
+  fun determinant(): T =>
+    let c00 = cofactor(_e11, _e21, _e31, _e12, _e22, _e32, _e13, _e23, _e33)
+    let c01 = cofactor(_e10, _e20, _e30, _e12, _e22, _e32, _e13, _e23, _e33)
+    let c02 = cofactor(_e10, _e20, _e30, _e11, _e21, _e31, _e13, _e23, _e33)
+    let c03 = cofactor(_e10, _e20, _e30, _e11, _e21, _e31, _e12, _e22, _e32)
+    ((_e00 * c00) - (_e01 * c01)) + ((_e02 * c02) - (_e03 * c03))
+
+  fun inverse(): Matrix4[T] ? =>
+    let c00 = cofactor(_e11, _e21, _e31, _e12, _e22, _e32, _e13, _e23, _e33)
+    let c01 = cofactor(_e10, _e20, _e30, _e12, _e22, _e32, _e13, _e23, _e33)
+    let c02 = cofactor(_e10, _e20, _e30, _e11, _e21, _e31, _e13, _e23, _e33)
+    let c03 = cofactor(_e10, _e20, _e30, _e11, _e21, _e31, _e12, _e22, _e32)
+
+    let det = ((_e00 * c00) - (_e01 * c01)) + ((_e02 * c02) - (_e03 * c03))
+    if det.abs() < T.from[F32](0.000001) then
+      // Determinant is too small
+      error
+    end
+
+    let c10 = cofactor(_e01, _e21, _e31, _e02, _e22, _e32, _e03, _e23, _e33)
+    let c11 = cofactor(_e00, _e20, _e30, _e02, _e22, _e32, _e03, _e23, _e33)
+    let c12 = cofactor(_e00, _e20, _e30, _e01, _e21, _e31, _e03, _e23, _e33)
+    let c13 = cofactor(_e00, _e20, _e30, _e01, _e21, _e31, _e02, _e22, _e32)
+
+    let c20 = cofactor(_e01, _e11, _e31, _e02, _e12, _e32, _e03, _e13, _e33)
+    let c21 = cofactor(_e00, _e10, _e30, _e02, _e12, _e32, _e03, _e13, _e33)
+    let c22 = cofactor(_e00, _e10, _e30, _e01, _e11, _e31, _e03, _e13, _e33)
+    let c23 = cofactor(_e00, _e10, _e30, _e01, _e11, _e31, _e02, _e12, _e32)
+
+    let c30 = cofactor(_e01, _e11, _e21, _e02, _e12, _e22, _e03, _e13, _e23)
+    let c31 = cofactor(_e00, _e10, _e20, _e02, _e12, _e22, _e03, _e13, _e23)
+    let c32 = cofactor(_e00, _e10, _e20, _e01, _e11, _e21, _e03, _e13, _e23)
+    let c33 = cofactor(_e00, _e10, _e20, _e01, _e11, _e21, _e02, _e12, _e22)
+
+    let inv_det = T.from[I8](1) / det
+      Matrix4[T](
+        c00 * inv_det, -c01 * inv_det,  c02 * inv_det, -c03 * inv_det,
+       -c10 * inv_det,  c11 * inv_det, -c12 * inv_det,  c13 * inv_det,
+        c20 * inv_det, -c21 * inv_det,  c22 * inv_det, -c23 * inv_det,
+       -c30 * inv_det,  c31 * inv_det, -c32 * inv_det,  c33 * inv_det)
+
+  // TODO: Matrix4.linear_interpolate
+  // https://github.com/Kode/Kore/blob/master/Sources/Kore/Math/Matrix.h#L419
