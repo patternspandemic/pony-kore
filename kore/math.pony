@@ -524,6 +524,31 @@ class Matrix2[T: (Float & FloatingPoint[T])]
     _e00 = ca; _e10 = -sa
     _e01 = sa; _e11 =  ca
 
+  fun add(m: Matrix2[T]): Matrix2[T] =>
+    Matrix2[T](
+      _e00 + m._e00, _e10 + m._e10,
+      _e01 + m._e01, _e11 + m._e11)
+
+  fun sub(m: Matrix2[T]): Matrix2[T] =>
+    Matrix2[T](
+      _e00 - m._e00, _e10 - m._e10,
+      _e01 - m._e01, _e11 - m._e11)
+
+  fun multiply_scalar(value: T): Matrix2[T] =>
+    Matrix2[T](
+      _e00 * value, _e10 * value,
+      _e01 * value, _e11 * value)
+
+  fun multiply_matrix(m: Matrix2[T]): Matrix2[T] =>
+    Matrix2[T](
+      (_e00 * m._e00) + (_e10 * m._e01), (_e00 * m._e10) + (_e10 * m._e11),
+      (_e01 * m._e00) + (_e11 * m._e01), (_e01 * m._e10) + (_e11 * m._e11))
+
+  fun multiply_vector(vector: Vector2[T, T]): Vector2[T, T] =>
+    let x: T = (_e00 * vector.x) + (_e10 * vector.y)
+    let y: T = (_e01 * vector.x) + (_e11 * vector.y)
+    Vector2[T, T](x, y)
+
   fun ref set_from(m: Matrix2[T]) =>
     _e00 = m._e00; _e10 = m._e10
     _e01 = m._e01; _e11 = m._e11
@@ -594,6 +619,37 @@ class Matrix3[T: (Float & FloatingPoint[T])]
     _e00 = ca;   _e10 = -sa;   _e20 = zero
     _e01 = sa;   _e11 =  ca;   _e21 = zero
     _e02 = zero; _e12 =  zero; _e22 = one
+
+  fun add(m: Matrix3[T]): Matrix3[T] =>
+    Matrix3[T](
+      _e00 + m._e00, _e10 + m._e10, _e20 + m._e20,
+      _e01 + m._e01, _e11 + m._e11, _e21 + m._e21,
+      _e02 + m._e02, _e12 + m._e12, _e22 + m._e22)
+
+  fun sub(m: Matrix3[T]): Matrix3[T] =>
+    Matrix3[T](
+      _e00 - m._e00, _e10 - m._e10, _e20 - m._e20,
+      _e01 - m._e01, _e11 - m._e11, _e21 - m._e21,
+      _e02 - m._e02, _e12 - m._e12, _e22 - m._e22)
+
+  fun multiply_scalar(value: T): Matrix3[T] =>
+    Matrix3[T](
+      _e00 * value, _e10 * value, _e20 * value,
+      _e01 * value, _e11 * value, _e21 * value,
+      _e02 * value, _e12 * value, _e22 * value)
+
+  fun multiply_matrix(m: Matrix3[T]): Matrix3[T] =>
+    Matrix3[T](
+      (_e00 * m._e00) + (_e10 * m._e01) + (_e20 * m._e02), (_e00 * m._e10) + (_e10 * m._e11) + (_e20 * m._e12), (_e00 * m._e20) + (_e10 * m._e21) + (_e20 * m._e22),
+      (_e01 * m._e00) + (_e11 * m._e01) + (_e21 * m._e02), (_e01 * m._e10) + (_e11 * m._e11) + (_e21 * m._e12), (_e01 * m._e20) + (_e11 * m._e21) + (_e21 * m._e22),
+      (_e02 * m._e00) + (_e12 * m._e01) + (_e22 * m._e02), (_e02 * m._e10) + (_e12 * m._e11) + (_e22 * m._e12), (_e02 * m._e20) + (_e12 * m._e21) + (_e22 * m._e22))
+
+  fun multiply_vector(vector: Vector2[T, T]): Vector2[T, T] =>
+    let one: T = T.from[I8](1)
+    let w: T = (_e02 * vector.x) + (_e12 * vector.y) + (_e22 * one)
+    let x: T = ((_e00 * vector.x) + (_e10 * vector.y) + (_e20 * one)) / w
+    let y: T = ((_e01 * vector.x) + (_e11 * vector.y) + (_e21 * one)) / w
+    Vector2[T, T](x, y)
 
   fun ref set_from(m: Matrix3[T]) =>
     _e00 = m._e00; _e10 = m._e10; _e20 = m._e20
@@ -715,6 +771,94 @@ class Matrix4[T: (Float & FloatingPoint[T])]
     _e01 = (sx * cy); _e11 = ((sx * sy * sz) + (cx * cz)); _e21 = ((sx * sy * cz) - (cx * sz)); _e31 = zero
     _e02 = -sy;       _e12 = (cy * sz);                    _e22 = (cy * cz);                    _e32 = zero
     _e03 = zero;      _e13 = zero;                         _e23 = zero;                         _e33 = one
+
+  new orthogonal_projection(
+    left: T,
+    right: T,
+    bottom: T,
+    top: T,
+    z_near: T,
+    z_far: T)
+  =>
+    let zero: T = T.from[I8](0)
+    let one: T = T.from[I8](1)
+    let two: T = T.from[I8](2)
+    let tx: T = -(right + left) / (right - left)
+    let ty: T = -(top + bottom) / (top - bottom)
+    let tz: T = -(z_far + z_near) / (z_far - z_near)
+    _e00 = two / (right - left); _e10 = zero;                 _e20 = zero;                    _e30 = tx
+    _e01 = zero;                 _e11 = two / (top - bottom); _e21 = zero;                    _e31 = ty
+    _e02 = zero;                 _e12 = zero;                 _e22 = -two / (z_far - z_near); _e32 = tz
+    _e03 = zero;                 _e13 = zero;                 _e23 = zero;                    _e33 = one
+
+  new perspective_projection(
+    fov_y: T,
+    aspect: T,
+    z_near: T,
+    z_far: T)
+  =>
+    let zero: T = T.from[I8](0)
+    let one: T = T.from[I8](1)
+    let two: T = T.from[I8](2)
+    let uh: T = one / (fov_y / two).tan()
+    let uw: T = uh / aspect
+    _e00 = uw;   _e10 = zero; _e20 = zero;                                _e30 = zero
+    _e01 = zero; _e11 = uh;   _e21 = zero;                                _e31 = zero
+    _e02 = zero; _e12 = zero; _e22 = (z_far + z_near) / (z_near - z_far); _e32 = (two * z_far * z_near) / (z_near - z_far)
+    _e03 = zero; _e13 = zero; _e23 = -one;                                _e33 = zero
+
+  new look_at(
+    eye: Vector3[T, T],
+    at: Vector3[T, T],
+    up: Vector3[T, T])
+  =>
+    let zero: T = T.from[I8](0)
+    let one: T = T.from[I8](1)
+    var z_axis = at - eye
+    z_axis.normalize_mut()
+    var x_axis = z_axis.cross(up)
+    x_axis.normalize_mut()
+    var y_axis = x_axis.cross(z_axis)
+    _e00 =  x_axis.x; _e10 =  x_axis.y; _e20 =  x_axis.z; _e30 = -x_axis.dot(eye)
+    _e01 =  y_axis.x; _e11 =  y_axis.y; _e21 =  y_axis.z; _e31 = -y_axis.dot(eye)
+    _e02 = -z_axis.x; _e12 = -z_axis.y; _e22 = -z_axis.z; _e32 =  z_axis.dot(eye)
+    _e03 =  zero;     _e13 =  zero;     _e23 =  zero;     _e33 = one
+
+  fun add(m: Matrix4[T]): Matrix4[T] =>
+    Matrix4[T](
+      _e00 + m._e00, _e10 + m._e10, _e20 + m._e20, _e30 + m._e30,
+      _e01 + m._e01, _e11 + m._e11, _e21 + m._e21, _e31 + m._e31,
+      _e02 + m._e02, _e12 + m._e12, _e22 + m._e22, _e32 + m._e32,
+      _e03 + m._e03, _e13 + m._e13, _e23 + m._e23, _e33 + m._e33)
+
+  fun sub(m: Matrix4[T]): Matrix4[T] =>
+    Matrix4[T](
+      _e00 - m._e00, _e10 - m._e10, _e20 - m._e20, _e30 - m._e30,
+      _e01 - m._e01, _e11 - m._e11, _e21 - m._e21, _e31 - m._e31,
+      _e02 - m._e02, _e12 - m._e12, _e22 - m._e22, _e32 - m._e32,
+      _e03 - m._e03, _e13 - m._e13, _e23 - m._e23, _e33 - m._e33)
+
+  fun multiply_scalar(value: T): Matrix4[T] =>
+    Matrix4[T](
+      _e00 * value, _e10 * value, _e20 * value, _e30 * value,
+      _e01 * value, _e11 * value, _e21 * value, _e31 * value,
+      _e02 * value, _e12 * value, _e22 * value, _e32 * value,
+      _e03 * value, _e13 * value, _e23 * value, _e33 * value)
+
+  fun multiply_matrix(m: Matrix4[T]): Matrix4[T] =>
+    Matrix4[T](
+      (_e00 * m._e00) + (_e10 * m._e01) + (_e20 * m._e02) + (_e30 * m._e03), (_e00 * m._e10) + (_e10 * m._e11) + (_e20 * m._e12) + (_e30 * m._e13), (_e00 * m._e20) + (_e10 * m._e21) + (_e20 * m._e22) + (_e30 * m._e23), (_e00 * m._e30) + (_e10 * m._e31) + (_e20 * m._e32) + (_e30 * m._e33),
+			(_e01 * m._e00) + (_e11 * m._e01) + (_e21 * m._e02) + (_e31 * m._e03), (_e01 * m._e10) + (_e11 * m._e11) + (_e21 * m._e12) + (_e31 * m._e13), (_e01 * m._e20) + (_e11 * m._e21) + (_e21 * m._e22) + (_e31 * m._e23), (_e01 * m._e30) + (_e11 * m._e31) + (_e21 * m._e32) + (_e31 * m._e33),
+			(_e02 * m._e00) + (_e12 * m._e01) + (_e22 * m._e02) + (_e32 * m._e03), (_e02 * m._e10) + (_e12 * m._e11) + (_e22 * m._e12) + (_e32 * m._e13), (_e02 * m._e20) + (_e12 * m._e21) + (_e22 * m._e22) + (_e32 * m._e23), (_e02 * m._e30) + (_e12 * m._e31) + (_e22 * m._e32) + (_e32 * m._e33),
+      (_e03 * m._e00) + (_e13 * m._e01) + (_e23 * m._e02) + (_e33 * m._e03), (_e03 * m._e10) + (_e13 * m._e11) + (_e23 * m._e12) + (_e33 * m._e13), (_e03 * m._e20) + (_e13 * m._e21) + (_e23 * m._e22) + (_e33 * m._e23), (_e03 * m._e30) + (_e13 * m._e31) + (_e23 * m._e32) + (_e33 * m._e33))
+
+  fun multiply_vector(vector: Vector4[T, T]): Vector4[T, T] =>
+    var product = Vector4[T, T]
+    product.x = (_e00 * vector.x) + (_e10 * vector.y) + (_e20 * vector.z) + (_e30 * vector.w)
+    product.y = (_e01 * vector.x) + (_e11 * vector.y) + (_e21 * vector.z) + (_e31 * vector.w)
+    product.z = (_e02 * vector.x) + (_e12 * vector.y) + (_e22 * vector.z) + (_e32 * vector.w)
+    product.w = (_e03 * vector.x) + (_e13 * vector.y) + (_e23 * vector.z) + (_e33 * vector.w)
+    product
 
   fun ref set_from(m: Matrix4[T]) =>
     _e00 = m._e00; _e10 = m._e10; _e20 = m._e20; _e30 = m._e30
