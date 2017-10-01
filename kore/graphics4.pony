@@ -122,14 +122,12 @@ use @Kore_Graphics4_setFloats[None](
   location: Pointer[_KoreGraphics4ConstantLocationHandle] tag,
   floats: Pointer[F32] tag,
   count: I32)
-// TODO: Matrix Type
-// use @Kore_Graphics4_setMatrix3[None](
-//   location: Pointer[_KoreGraphics4ConstantLocationHandle] tag,
-//   value: Pointer[_KoreMat3Handle] tag)
-// TODO: Matrix Type
-// use @Kore_Graphics4_setMatrix4[None](
-//   location: Pointer[_KoreGraphics4ConstantLocationHandle] tag,
-//   value: Pointer[_KoreMat4Handle] tag)
+use @Kore_Graphics4_setMatrix3FromElements[None](
+  location: Pointer[_KoreGraphics4ConstantLocationHandle] tag,
+  elements: Mat3Elements)
+use @Kore_Graphics4_setMatrix4FromElements[None](
+  location: Pointer[_KoreGraphics4ConstantLocationHandle] tag,
+  elements: Mat4Elements)
 use @Kore_Graphics4_setVertexBuffer[None](
   vertex_buffer: Pointer[_KoreGraphics4VertexBufferHandle] tag)
 // TODO: Verify vertex_buffers type
@@ -1014,19 +1012,19 @@ primitive KoreGraphics4Primitive
     @Kore_Graphics4_setFloats(
       location._get_handle(), floats.cpointer(), I32.from[USize](floats.size()))
 
-  // TODO: Matrix Type
-  // fun set_matrix3(
-  //   location: KoreGraphics4ConstantLocation,
-  //   value: KoreMat3)
-  // =>
-  //   @Kore_Graphics4_setMatrix3(location._get_handle(), value._get_handle())
+  fun set_matrix3(
+    location: KoreGraphics4ConstantLocation,
+    value: Mat3)
+  =>
+    let mat_elements = Mat3Elements(value)
+    @Kore_Graphics4_setMatrix3FromElements(location._get_handle(), mat_elements)
 
-  // TODO: Matrix Type
-  // fun set_matrix4(
-  //   location: KoreGraphics4ConstantLocation,
-  //   value: KoreMat4)
-  // =>
-  //   @Kore_Graphics4_setMatrix4(location._get_handle(), value._get_handle())
+  fun set_matrix4(
+    location: KoreGraphics4ConstantLocation,
+    value: Mat4)
+  =>
+    let mat_elements = Mat4Elements(value)
+    @Kore_Graphics4_setMatrix4FromElements(location._get_handle(), mat_elements)
 
   fun set_vertex_buffer(
     vertex_buffer: KoreGraphics4VertexBuffer) //box
@@ -1569,20 +1567,17 @@ class KoreGraphics4
   =>
     KoreGraphics4Primitive.set_float4_vec(location, value)
 
-  // TODO: Matrix Types
-/*
-  fun set_matrix(
-    location: KoreGraphics4ConstantLocation,
-    value: KoreMat4)
-  =>
-    KoreGraphics4Primitive.set_matrix4(location, value)
-
   fun set_matrix3(
     location: KoreGraphics4ConstantLocation,
-    value: KoreMat3)
+    value: Mat3)
   =>
     KoreGraphics4Primitive.set_matrix3(location, value)
-*/
+
+  fun set_matrix4(
+    location: KoreGraphics4ConstantLocation,
+    value: Mat4)
+  =>
+    KoreGraphics4Primitive.set_matrix4(location, value)
 
   fun draw_indexed_vertices(start: I32 = 0, count: I32 = -1) =>
     if count < 0 then

@@ -152,14 +152,12 @@ use @Kore_Graphics2_Graphics2_getFontColor[U32](
 use @Kore_Graphics2_Graphics2_setFontColor[None](
   self: Pointer[_KoreGraphics2Handle] tag,
   color: U32)
-// TODO: Matrix Type
-// use @Kore_Graphics2_Graphics2_getTransformation[
-//   Pointer[_KoreMat3Handle] tag](
-//     self: Pointer[_KoreGraphics2Handle] tag)
-// TODO: Matrix Type
-// use @Kore_Graphics2_Graphics2_setTransformation[None](
-//   self: Pointer[_KoreGraphics2Handle] tag,
-//   transformation: Pointer[_KoreMat3Handle] tag)
+use @Kore_Graphics2_Graphics2_getTransformationElements[None](
+  self: Pointer[_KoreGraphics2Handle] tag,
+  elements_out: Mat3Elements)
+use @Kore_Graphics2_Graphics2_setTransformationElements[None](
+  self: Pointer[_KoreGraphics2Handle] tag,
+  elements: Mat3Elements)
 
 primitive ImageScaleQualityLow
   fun apply(): I32 => 0

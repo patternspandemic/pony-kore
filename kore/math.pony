@@ -574,6 +574,31 @@ class Matrix2[T: (Float & FloatingPoint[T])]
 type Mat3 is Matrix3[F32]
 type DMat3 is Matrix3[F64]
 
+struct Mat3Elements
+  // Row 0
+  var e00: F32 = 1.0
+  var e10: F32 = 0.0
+  var e20: F32 = 0.0
+  // Row 1
+  var e01: F32 = 0.0
+  var e11: F32 = 1.0
+  var e21: F32 = 0.0
+  // Row 2
+  var e02: F32 = 0.0
+  var e12: F32 = 0.0
+  var e22: F32 = 1.0
+
+  new create(m: Mat3) =>
+    e00 = m._e00
+    e10 = m._e10
+    e20 = m._e20
+    e01 = m._e01
+    e11 = m._e11
+    e21 = m._e21
+    e02 = m._e02
+    e12 = m._e12
+    e22 = m._e22
+
 // TODO: Make Matrix3 default refcap val?
 class Matrix3[T: (Float & FloatingPoint[T])]
   let width: I32 = 3
@@ -731,6 +756,46 @@ class Matrix3[T: (Float & FloatingPoint[T])]
 /* 4x4 Matrix */
 type Mat4 is Matrix4[F32]
 type DMat4 is Matrix4[F64]
+
+struct Mat4Elements
+  // Row 0
+  var e00: F32 = 1.0
+  var e10: F32 = 0.0
+  var e20: F32 = 0.0
+  var e30: F32 = 0.0
+  // Row 1
+  var e01: F32 = 0.0
+  var e11: F32 = 1.0
+  var e21: F32 = 0.0
+  var e31: F32 = 0.0
+  // Row 2
+  var e02: F32 = 0.0
+  var e12: F32 = 0.0
+  var e22: F32 = 1.0
+  var e32: F32 = 0.0
+  // Row 3
+  var e03: F32 = 0.0
+  var e13: F32 = 0.0
+  var e23: F32 = 0.0
+  var e33: F32 = 1.0
+
+  new create(m: Mat4) =>
+    e00 = m._e00
+    e10 = m._e10
+    e20 = m._e20
+    e30 = m._e30
+    e01 = m._e01
+    e11 = m._e11
+    e21 = m._e21
+    e31 = m._e31
+    e02 = m._e02
+    e12 = m._e12
+    e22 = m._e22
+    e32 = m._e32
+    e03 = m._e03
+    e13 = m._e13
+    e23 = m._e23
+    e33 = m._e33
 
 // TODO: Make Matrix4 default refcap val?
 class Matrix4[T: (Float & FloatingPoint[T])]
@@ -1020,3 +1085,9 @@ class Matrix4[T: (Float & FloatingPoint[T])]
 
   // TODO: Matrix4.linear_interpolate
   // https://github.com/Kode/Kore/blob/master/Sources/Kore/Math/Matrix.h#L419
+
+
+/* Quaternion */
+// TODO: KoreQuaternion
+// https://github.com/Kode/Kore/blob/master/Sources/Kore/Math/Quaternion.h
+// https://github.com/Kode/Kha/blob/master/Sources/kha/math/Quaternion.hx
