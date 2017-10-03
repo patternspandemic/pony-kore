@@ -44,11 +44,11 @@ class Vector2[
     x = x'
     y = y'
 
-  new from_vector2(v: Vector2[T, L]) =>
+  new from_vector2(v: Vector2[T, L] box) =>
     x = v.x
     y = v.y
 
-  new from_vector3(v: Vector3[T, L]) =>
+  new from_vector3(v: Vector3[T, L] box) =>
     x = v.x
     y = v.y
 
@@ -66,32 +66,32 @@ class Vector2[
     length
 
   fun normalize(): Vector2[T, L] =>
-    Vector2[T, L](x, y).>normalize()
+    Vector2[T, L](x, y).>normalize_mut()
 
   fun ref normalize_mut() =>
     set_length(L.from[I8](1))
 
-  fun dot(other: Vector2[T, L]): T =>
+  fun dot(other: Vector2[T, L] box): T =>
     (x * other.x) + (y * other.y)
 
-  fun add(other: Vector2[T, L]): Vector2[T, L] =>
+  fun add(other: Vector2[T, L] box): Vector2[T, L] =>
     Vector2[T, L](
       x + other.x,
       y + other.y)
 
-  fun ref add_mut(other: Vector2[T, L]) =>
+  fun ref add_mut(other: Vector2[T, L] box) =>
     x = x + other.x
     y = y + other.y
 
   // add_scaled
   // add_scaled_mut
 
-  fun sub(other: Vector2[T, L]): Vector2[T, L] =>
+  fun sub(other: Vector2[T, L] box): Vector2[T, L] =>
     Vector2[T, L](
       x - other.x,
       y - other.y)
 
-  fun ref sub_mut(other: Vector2[T, L]) =>
+  fun ref sub_mut(other: Vector2[T, L] box) =>
     x = x - other.x
     y = y - other.y
 
@@ -113,12 +113,12 @@ class Vector2[
     x = x / value
     y = y / value
 
-  fun component_product(other: Vector2[T, L]): Vector2[T, L] =>
+  fun component_product(other: Vector2[T, L] box): Vector2[T, L] =>
     Vector2[T, L](
       x * other.x,
       y * other.y)
 
-  fun ref component_product_mut(other: Vector2[T, L]) =>
+  fun ref component_product_mut(other: Vector2[T, L] box) =>
     x = x * other.x
     y = y * other.y
 
@@ -136,14 +136,14 @@ class Vector2[
     (x == zero) and
     (y == zero)
 
-  fun distance(other: Vector2[T, L]): L =>
+  fun distance(other: Vector2[T, L] box): L =>
     (this - other).get_length()
 
-  fun eq(other: Vector2[T, L]): Bool =>
+  fun eq(other: Vector2[T, L] box): Bool =>
     (x == other.x) and
     (y == other.y)
 
-  fun ne(other: Vector2[T, L]): Bool =>
+  fun ne(other: Vector2[T, L] box): Bool =>
     not eq(other)
 
 /* 3 Component Vectors */
@@ -163,22 +163,23 @@ class Vector3[
   new create(
     x': T = T.from[I8](0),
     y': T = T.from[I8](0),
-    z': T = T.from[I8](0)) =>
+    z': T = T.from[I8](0))
+  =>
     x = x'
     y = y'
     z = z'
 
-  new from_vector2(v: Vector2[T, L], z': T = T.from[I8](0)) =>
+  new from_vector2(v: Vector2[T, L] box, z': T = T.from[I8](0)) =>
     x = v.x
     y = v.y
     z = z'
 
-  new from_vector3(v: Vector3[T, L]) =>
+  new from_vector3(v: Vector3[T, L] box) =>
     x = v.x
     y = v.y
     z = v.z
 
-  new from_vector4(v: Vector4[T, L]) =>
+  new from_vector4(v: Vector4[T, L] box) =>
     x = v.x
     y = v.y
     z = v.z
@@ -200,30 +201,30 @@ class Vector3[
     length
 
   fun normalize(): Vector3[T, L] =>
-    Vector3[T, L](x, y).>normalize()
+    Vector3[T, L](x, y).>normalize_mut()
 
   fun ref normalize_mut() =>
     set_length(L.from[I8](1))
 
-  fun dot(other: Vector3[T, L]): T =>
+  fun dot(other: Vector3[T, L] box): T =>
     (x * other.x) + (y * other.y) + (z * other.z)
 
-  fun cross(other: Vector3[T, L]): Vector3[T, L] =>
+  fun cross(other: Vector3[T, L] box): Vector3[T, L] =>
     let x' = (y * other.z) - (z * other.y)
     let y' = (z * other.x) - (x * other.z)
     let z' = (x * other.y) - (y * other.x)
     Vector3[T, L](x', y', z')
 
-  fun mod(other: Vector3[T, L]): Vector3[T, L] =>
+  fun mod(other: Vector3[T, L] box): Vector3[T, L] =>
     cross(other)
 
-  fun add(other: Vector3[T, L]): Vector3[T, L] =>
+  fun add(other: Vector3[T, L] box): Vector3[T, L] =>
     Vector3[T, L](
       x + other.x,
       y + other.y,
       z + other.z)
 
-  fun ref add_mut(other: Vector3[T, L]) =>
+  fun ref add_mut(other: Vector3[T, L] box) =>
     x = x + other.x
     y = y + other.y
     z = z + other.z
@@ -231,13 +232,13 @@ class Vector3[
   // add_scaled
   // add_scaled_mut
 
-  fun sub(other: Vector3[T, L]): Vector3[T, L] =>
+  fun sub(other: Vector3[T, L] box): Vector3[T, L] =>
     Vector3[T, L](
       x - other.x,
       y - other.y,
       z - other.z)
 
-  fun ref sub_mut(other: Vector3[T, L]) =>
+  fun ref sub_mut(other: Vector3[T, L] box) =>
     x = x - other.x
     y = y - other.y
     z = z - other.z
@@ -264,13 +265,13 @@ class Vector3[
     y = y / value
     z = z / value
 
-  fun component_product(other: Vector3[T, L]): Vector3[T, L] =>
+  fun component_product(other: Vector3[T, L] box): Vector3[T, L] =>
     Vector3[T, L](
       x * other.x,
       y * other.y,
       z * other.z)
 
-  fun ref component_product_mut(other: Vector3[T, L]) =>
+  fun ref component_product_mut(other: Vector3[T, L] box) =>
     x = x * other.x
     y = y * other.y
     z = z * other.z
@@ -292,15 +293,15 @@ class Vector3[
     (y == zero) and
     (z == zero)
 
-  fun distance(other: Vector3[T, L]): L =>
+  fun distance(other: Vector3[T, L] box): L =>
     (this - other).get_length()
 
-  fun eq(other: Vector3[T, L]): Bool =>
+  fun eq(other: Vector3[T, L] box): Bool =>
     (x == other.x) and
     (y == other.y) and
     (z == other.z)
 
-  fun ne(other: Vector3[T, L]): Bool =>
+  fun ne(other: Vector3[T, L] box): Bool =>
     not eq(other)
 
 /* 4 Component Vectors */
@@ -322,19 +323,20 @@ class Vector4[
     x': T = T.from[I8](0),
     y': T = T.from[I8](0),
     z': T = T.from[I8](0),
-    w': T = T.from[I8](0)) =>
+    w': T = T.from[I8](0))
+  =>
     x = x'
     y = y'
     z = z'
     w = w'
 
-  new from_vector3(v: Vector3[T, L], w': T = T.from[I8](0)) =>
+  new from_vector3(v: Vector3[T, L] box, w': T = T.from[I8](0)) =>
     x = v.x
     y = v.y
     z = v.z
     w = w'
 
-  new from_vector4(v: Vector4[T, L]) =>
+  new from_vector4(v: Vector4[T, L] box) =>
     x = v.x
     y = v.y
     z = v.z
@@ -370,22 +372,22 @@ class Vector4[
     length
 
   fun normalize(): Vector4[T, L] =>
-    Vector4[T, L](x, y).>normalize()
+    Vector4[T, L](x, y).>normalize_mut()
 
   fun ref normalize_mut() =>
     set_length(L.from[I8](1))
 
-  fun dot(other: Vector4[T, L]): T =>
+  fun dot(other: Vector4[T, L] box): T =>
     (x * other.x) + (y * other.y) + (z * other.z) + (w * other.w)
 
-  fun add(other: Vector4[T, L]): Vector4[T, L] =>
+  fun add(other: Vector4[T, L] box): Vector4[T, L] =>
     Vector4[T, L](
       x + other.x,
       y + other.y,
       z + other.z,
       w + other.w)
 
-  fun ref add_mut(other: Vector4[T, L]) =>
+  fun ref add_mut(other: Vector4[T, L] box) =>
     x = x + other.x
     y = y + other.y
     z = z + other.z
@@ -394,14 +396,14 @@ class Vector4[
   // add_scaled
   // add_scaled_mut
 
-  fun sub(other: Vector4[T, L]): Vector4[T, L] =>
+  fun sub(other: Vector4[T, L] box): Vector4[T, L] =>
     Vector4[T, L](
       x - other.x,
       y - other.y,
       z - other.z,
       w - other.w)
 
-  fun ref sub_mut(other: Vector4[T, L]) =>
+  fun ref sub_mut(other: Vector4[T, L] box) =>
     x = x - other.x
     y = y - other.y
     z = z - other.z
@@ -433,14 +435,14 @@ class Vector4[
     z = z / value
     w = w / value
 
-  fun component_product(other: Vector4[T, L]): Vector4[T, L] =>
+  fun component_product(other: Vector4[T, L] box): Vector4[T, L] =>
     Vector4[T, L](
       x * other.x,
       y * other.y,
       z * other.z,
       w * other.w)
 
-  fun ref component_product_mut(other: Vector4[T, L]) =>
+  fun ref component_product_mut(other: Vector4[T, L] box) =>
     x = x * other.x
     y = y * other.y
     z = z * other.z
@@ -466,16 +468,16 @@ class Vector4[
     (z == zero) and
     (w == zero)
 
-  fun distance(other: Vector4[T, L]): L =>
+  fun distance(other: Vector4[T, L] box): L =>
     (this - other).get_length()
 
-  fun eq(other: Vector4[T, L]): Bool =>
+  fun eq(other: Vector4[T, L] box): Bool =>
     (x == other.x) and
     (y == other.y) and
     (z == other.z) and
     (w == other.w)
 
-  fun ne(other: Vector4[T, L]): Bool =>
+  fun ne(other: Vector4[T, L] box): Bool =>
     not eq(other)
 
 
@@ -484,7 +486,7 @@ type Mat2 is Matrix2[F32]
 type DMat2 is Matrix2[F64]
 
 // TODO: Make Matrix2 default refcap val?
-class Matrix2[T: (Float & FloatingPoint[T])]
+class val Matrix2[T: (Float & FloatingPoint[T])]
   let width: I32 = 2
   let height: I32 = 2
   // Row 0
@@ -494,14 +496,14 @@ class Matrix2[T: (Float & FloatingPoint[T])]
   var _e01: T
   var _e11: T
 
-  new create(
+  new val create(
     e00: T, e10: T,
     e01: T, e11: T)
   =>
     _e00 = e00; _e10 = e10
     _e01 = e01; _e11 = e11
 
-  new from_matrix2(m: Matrix2[T]) =>
+  new val from_matrix2(m: Matrix2[T] val) =>
     _e00 = m._e00; _e10 = m._e10
     _e01 = m._e01; _e11 = m._e11
 
@@ -512,53 +514,53 @@ class Matrix2[T: (Float & FloatingPoint[T])]
     _e00 = zero; _e10 = zero
     _e01 = zero; _e11 = zero
 
-  new identity() =>
+  new val identity() =>
     let zero: T = T.from[I8](0)
     let one: T = T.from[I8](1)
     _e00 = one;  _e10 = zero
     _e01 = zero; _e11 = one
 
-  new scale(x: T, y: T) =>
+  new val scale(x: T, y: T) =>
     let zero: T = T.from[I8](0)
     _e00 = x;    _e10 = zero
     _e01 = zero; _e11 = y
 
-  new rotation(alpha: T) =>
+  new val rotation(alpha: T) =>
     let ca: T = alpha.cos()
     let sa: T = alpha.sin()
     _e00 = ca; _e10 = -sa
     _e01 = sa; _e11 =  ca
 
-  fun ref set_from(m: Matrix2[T]) =>
+  fun ref set_from(m: Matrix2[T] box) =>
     _e00 = m._e00; _e10 = m._e10
     _e01 = m._e01; _e11 = m._e11
 
-  fun add(m: Matrix2[T]): Matrix2[T] =>
+  fun add(m: Matrix2[T] box): Matrix2[T] val =>
     Matrix2[T](
       _e00 + m._e00, _e10 + m._e10,
       _e01 + m._e01, _e11 + m._e11)
 
-  fun sub(m: Matrix2[T]): Matrix2[T] =>
+  fun sub(m: Matrix2[T] box): Matrix2[T] val =>
     Matrix2[T](
       _e00 - m._e00, _e10 - m._e10,
       _e01 - m._e01, _e11 - m._e11)
 
-  fun multiply_scalar(value: T): Matrix2[T] =>
+  fun multiply_scalar(value: T): Matrix2[T] val =>
     Matrix2[T](
       _e00 * value, _e10 * value,
       _e01 * value, _e11 * value)
 
-  fun multiply_matrix(m: Matrix2[T]): Matrix2[T] =>
+  fun multiply_matrix(m: Matrix2[T] box): Matrix2[T] val =>
     Matrix2[T](
       (_e00 * m._e00) + (_e10 * m._e01), (_e00 * m._e10) + (_e10 * m._e11),
       (_e01 * m._e00) + (_e11 * m._e01), (_e01 * m._e10) + (_e11 * m._e11))
 
-  fun multiply_vector(vector: Vector2[T, T]): Vector2[T, T] =>
+  fun multiply_vector(vector: Vector2[T, T] box): Vector2[T, T] =>
     let x: T = (_e00 * vector.x) + (_e10 * vector.y)
     let y: T = (_e01 * vector.x) + (_e11 * vector.y)
     Vector2[T, T](x, y)
 
-  fun transpose(): Matrix2[T] =>
+  fun transpose(): Matrix2[T] val =>
     Matrix2[T](
       _e00, _e01,
       _e10, _e11)
@@ -601,7 +603,7 @@ struct Mat3Elements
     e22 = elements._9
 
 // TODO: Make Matrix3 default refcap val?
-class Matrix3[T: (Float & FloatingPoint[T])]
+class val Matrix3[T: (Float & FloatingPoint[T])]
   let width: I32 = 3
   let height: I32 = 3
   // Row 0
@@ -617,7 +619,7 @@ class Matrix3[T: (Float & FloatingPoint[T])]
   var _e12: T
   var _e22: T
 
-  new create(
+  new val create(
     e00: T, e10: T, e20: T,
     e01: T, e11: T, e21: T,
     e02: T, e12: T, e22: T)
@@ -628,7 +630,7 @@ class Matrix3[T: (Float & FloatingPoint[T])]
 
   // TODO: Matrix3.from_matrix2
 
-  new from_matrix3(m: Matrix3[T]) =>
+  new val from_matrix3(m: Matrix3[T] val) =>
     _e00 = m._e00; _e10 = m._e10; _e20 = m._e20
     _e01 = m._e01; _e11 = m._e11; _e21 = m._e21
     _e02 = m._e02; _e12 = m._e12; _e22 = m._e22
@@ -641,28 +643,28 @@ class Matrix3[T: (Float & FloatingPoint[T])]
     _e01 = zero; _e11 = zero; _e21 = zero
     _e02 = zero; _e12 = zero; _e22 = zero
 
-  new identity() =>
+  new val identity() =>
     let zero: T = T.from[I8](0)
     let one: T = T.from[I8](1)
     _e00 = one;  _e10 = zero; _e20 = zero
     _e01 = zero; _e11 = one;  _e21 = zero
     _e02 = zero; _e12 = zero; _e22 = one
 
-  new translation(x: T, y: T) =>
+  new val translation(x: T, y: T) =>
     let zero: T = T.from[I8](0)
     let one: T = T.from[I8](1)
     _e00 = one;  _e10 = zero; _e20 = x
     _e01 = zero; _e11 = one;  _e21 = y
     _e02 = zero; _e12 = zero; _e22 = one
 
-  new scale(x: T, y: T) =>
+  new val scale(x: T, y: T) =>
     let zero: T = T.from[I8](0)
     let one: T = T.from[I8](1)
     _e00 = x;    _e10 = zero; _e20 = zero
     _e01 = zero; _e11 = y;    _e21 = zero
     _e02 = zero; _e12 = zero; _e22 = one
 
-  new rotation(alpha: T) =>
+  new val rotation(alpha: T) =>
     let zero: T = T.from[I8](0)
     let one: T = T.from[I8](1)
     let ca: T = alpha.cos()
@@ -678,43 +680,43 @@ class Matrix3[T: (Float & FloatingPoint[T])]
       F32.from[T](_e02), F32.from[T](_e12), F32.from[T](_e22)
     )
 
-  fun ref set_from(m: Matrix3[T]) =>
+  fun ref set_from(m: Matrix3[T] box) =>
     _e00 = m._e00; _e10 = m._e10; _e20 = m._e20
     _e01 = m._e01; _e11 = m._e11; _e21 = m._e21
     _e02 = m._e02; _e12 = m._e12; _e22 = m._e22
 
-  fun add(m: Matrix3[T]): Matrix3[T] =>
+  fun add(m: Matrix3[T] box): Matrix3[T] val =>
     Matrix3[T](
       _e00 + m._e00, _e10 + m._e10, _e20 + m._e20,
       _e01 + m._e01, _e11 + m._e11, _e21 + m._e21,
       _e02 + m._e02, _e12 + m._e12, _e22 + m._e22)
 
-  fun sub(m: Matrix3[T]): Matrix3[T] =>
+  fun sub(m: Matrix3[T] box): Matrix3[T] val =>
     Matrix3[T](
       _e00 - m._e00, _e10 - m._e10, _e20 - m._e20,
       _e01 - m._e01, _e11 - m._e11, _e21 - m._e21,
       _e02 - m._e02, _e12 - m._e12, _e22 - m._e22)
 
-  fun multiply_scalar(value: T): Matrix3[T] =>
+  fun multiply_scalar(value: T): Matrix3[T] val =>
     Matrix3[T](
       _e00 * value, _e10 * value, _e20 * value,
       _e01 * value, _e11 * value, _e21 * value,
       _e02 * value, _e12 * value, _e22 * value)
 
-  fun multiply_matrix(m: Matrix3[T]): Matrix3[T] =>
+  fun multiply_matrix(m: Matrix3[T] box): Matrix3[T] val =>
     Matrix3[T](
       (_e00 * m._e00) + (_e10 * m._e01) + (_e20 * m._e02), (_e00 * m._e10) + (_e10 * m._e11) + (_e20 * m._e12), (_e00 * m._e20) + (_e10 * m._e21) + (_e20 * m._e22),
       (_e01 * m._e00) + (_e11 * m._e01) + (_e21 * m._e02), (_e01 * m._e10) + (_e11 * m._e11) + (_e21 * m._e12), (_e01 * m._e20) + (_e11 * m._e21) + (_e21 * m._e22),
       (_e02 * m._e00) + (_e12 * m._e01) + (_e22 * m._e02), (_e02 * m._e10) + (_e12 * m._e11) + (_e22 * m._e12), (_e02 * m._e20) + (_e12 * m._e21) + (_e22 * m._e22))
 
-  fun multiply_vector(vector: Vector2[T, T]): Vector2[T, T] =>
+  fun multiply_vector(vector: Vector2[T, T] box): Vector2[T, T] =>
     let one: T = T.from[I8](1)
     let w: T = (_e02 * vector.x) + (_e12 * vector.y) + (_e22 * one)
     let x: T = ((_e00 * vector.x) + (_e10 * vector.y) + (_e20 * one)) / w
     let y: T = ((_e01 * vector.x) + (_e11 * vector.y) + (_e21 * one)) / w
     Vector2[T, T](x, y)
 
-  fun transpose(): Matrix3[T] =>
+  fun transpose(): Matrix3[T] val =>
     Matrix3[T](
       _e00, _e01, _e02,
       _e10, _e11, _e12,
@@ -732,7 +734,7 @@ class Matrix3[T: (Float & FloatingPoint[T])]
     let c02 = cofactor(_e10, _e20, _e11, _e21)
     (_e00 * c00) - ((_e01 * c01) + (_e02 * c02))
 
-  fun inverse(): Matrix3[T] ? =>
+  fun inverse(): Matrix3[T] val ? =>
     let c00 = cofactor(_e11, _e21, _e12, _e22)
     let c01 = cofactor(_e10, _e20, _e12, _e22)
     let c02 = cofactor(_e10, _e20, _e11, _e21)
@@ -807,7 +809,7 @@ struct Mat4Elements
     e33 = elements._16
 
 // TODO: Make Matrix4 default refcap val?
-class Matrix4[T: (Float & FloatingPoint[T])]
+class val Matrix4[T: (Float & FloatingPoint[T])]
   let width: I32 = 4
   let height: I32 = 4
   // Row 0
@@ -831,7 +833,7 @@ class Matrix4[T: (Float & FloatingPoint[T])]
   var _e23: T
   var _e33: T
 
-  new create(
+  new val create(
     e00: T, e10: T, e20: T, e30: T,
     e01: T, e11: T, e21: T, e31: T,
     e02: T, e12: T, e22: T, e32: T,
@@ -844,7 +846,7 @@ class Matrix4[T: (Float & FloatingPoint[T])]
 
   // TODO: Matrix4.from_matrix3
 
-  new from_matrix4(m: Matrix4[T]) =>
+  new val from_matrix4(m: Matrix4[T] val) =>
     _e00 = m._e00; _e10 = m._e10; _e20 = m._e20; _e30 = m._e30
     _e01 = m._e01; _e11 = m._e11; _e21 = m._e21; _e31 = m._e31
     _e02 = m._e02; _e12 = m._e12; _e22 = m._e22; _e32 = m._e32
@@ -857,7 +859,7 @@ class Matrix4[T: (Float & FloatingPoint[T])]
     _e02 = zero; _e12 = zero; _e22 = zero; _e32 = zero
     _e03 = zero; _e13 = zero; _e23 = zero; _e33 = zero
 
-  new identity() =>
+  new val identity() =>
     let zero: T = T.from[I8](0)
     let one: T = T.from[I8](1)
     _e00 = one;  _e10 = zero; _e20 = zero; _e30 = zero
@@ -865,7 +867,7 @@ class Matrix4[T: (Float & FloatingPoint[T])]
     _e02 = zero; _e12 = zero; _e22 = one;  _e32 = zero
     _e03 = zero; _e13 = zero; _e23 = zero; _e33 = one
 
-  new translation(x: T, y: T, z: T) =>
+  new val translation(x: T, y: T, z: T) =>
     let zero: T = T.from[I8](0)
     let one: T = T.from[I8](1)
     _e00 = one;  _e10 = zero; _e20 = zero; _e30 = x
@@ -873,7 +875,7 @@ class Matrix4[T: (Float & FloatingPoint[T])]
     _e02 = zero; _e12 = zero; _e22 = one;  _e32 = z
     _e03 = zero; _e13 = zero; _e23 = zero; _e33 = one
 
-  new scale(x: T, y: T, z: T) =>
+  new val scale(x: T, y: T, z: T) =>
     let zero: T = T.from[I8](0)
     let one: T = T.from[I8](1)
     _e00 = x;    _e10 = zero; _e20 = zero; _e30 = zero
@@ -881,7 +883,7 @@ class Matrix4[T: (Float & FloatingPoint[T])]
     _e02 = zero; _e12 = zero; _e22 = z;    _e32 = zero
     _e03 = zero; _e13 = zero; _e23 = zero; _e33 = one
 
-  new rotation_x(alpha: T) =>
+  new val rotation_x(alpha: T) =>
     let zero: T = T.from[I8](0)
     let one: T = T.from[I8](1)
     let ca: T = alpha.cos()
@@ -891,7 +893,7 @@ class Matrix4[T: (Float & FloatingPoint[T])]
     _e02 = zero; _e12 = sa;   _e22 =  ca;  _e32 = zero
     _e03 = zero; _e13 = zero; _e23 = zero; _e33 = one
 
-  new rotation_y(alpha: T) =>
+  new val rotation_y(alpha: T) =>
     let zero: T = T.from[I8](0)
     let one: T = T.from[I8](1)
     let ca: T = alpha.cos()
@@ -901,7 +903,7 @@ class Matrix4[T: (Float & FloatingPoint[T])]
     _e02 = -sa;  _e12 = zero; _e22 = ca;   _e32 = zero
     _e03 = zero; _e13 = zero; _e23 = zero; _e33 = one
 
-  new rotation_z(alpha: T) =>
+  new val rotation_z(alpha: T) =>
     let zero: T = T.from[I8](0)
     let one: T = T.from[I8](1)
     let ca: T = alpha.cos()
@@ -911,7 +913,7 @@ class Matrix4[T: (Float & FloatingPoint[T])]
     _e02 = zero; _e12 = zero; _e22 = one;  _e32 = zero
     _e03 = zero; _e13 = zero; _e23 = zero; _e33 = one
 
-  new rotation(yaw: T, pitch: T, roll: T) =>
+  new val rotation(yaw: T, pitch: T, roll: T) =>
     let zero: T = T.from[I8](0)
     let one: T = T.from[I8](1)
     let sy: T = yaw.sin()
@@ -925,7 +927,7 @@ class Matrix4[T: (Float & FloatingPoint[T])]
     _e02 = -sy;       _e12 = (cy * sz);                    _e22 = (cy * cz);                    _e32 = zero
     _e03 = zero;      _e13 = zero;                         _e23 = zero;                         _e33 = one
 
-  new orthogonal_projection(
+  new val orthogonal_projection(
     left: T,
     right: T,
     bottom: T,
@@ -948,7 +950,7 @@ class Matrix4[T: (Float & FloatingPoint[T])]
   // new perspective_projection2(left, right, top, bottom, near, far)
   // https://github.com/Kode/Kore/blob/master/Sources/Kore/Math/Matrix.h#L88
 
-  new perspective_projection(
+  new val perspective_projection(
     fov_y: T,
     aspect: T,
     z_near: T,
@@ -964,10 +966,10 @@ class Matrix4[T: (Float & FloatingPoint[T])]
     _e02 = zero; _e12 = zero; _e22 = (z_far + z_near) / (z_near - z_far); _e32 = (two * z_far * z_near) / (z_near - z_far)
     _e03 = zero; _e13 = zero; _e23 = -one;                                _e33 = zero
 
-  new look_at(
-    eye: Vector3[T, T],
-    at: Vector3[T, T],
-    up: Vector3[T, T])
+  new val look_at(
+    eye: Vector3[T, T] val,
+    at: Vector3[T, T] val,
+    up: Vector3[T, T] val)
   =>
     let zero: T = T.from[I8](0)
     let one: T = T.from[I8](1)
@@ -992,41 +994,41 @@ class Matrix4[T: (Float & FloatingPoint[T])]
       F32.from[T](_e03), F32.from[T](_e13), F32.from[T](_e23), F32.from[T](_e33)
     )
 
-  fun ref set_from(m: Matrix4[T]) =>
+  fun ref set_from(m: Matrix4[T] box) =>
     _e00 = m._e00; _e10 = m._e10; _e20 = m._e20; _e30 = m._e30
     _e01 = m._e01; _e11 = m._e11; _e21 = m._e21; _e31 = m._e31
     _e02 = m._e02; _e12 = m._e12; _e22 = m._e22; _e32 = m._e32
     _e03 = m._e03; _e13 = m._e13; _e23 = m._e23; _e33 = m._e33
 
-  fun add(m: Matrix4[T]): Matrix4[T] =>
+  fun add(m: Matrix4[T] box): Matrix4[T] val =>
     Matrix4[T](
       _e00 + m._e00, _e10 + m._e10, _e20 + m._e20, _e30 + m._e30,
       _e01 + m._e01, _e11 + m._e11, _e21 + m._e21, _e31 + m._e31,
       _e02 + m._e02, _e12 + m._e12, _e22 + m._e22, _e32 + m._e32,
       _e03 + m._e03, _e13 + m._e13, _e23 + m._e23, _e33 + m._e33)
 
-  fun sub(m: Matrix4[T]): Matrix4[T] =>
+  fun sub(m: Matrix4[T] box): Matrix4[T] val =>
     Matrix4[T](
       _e00 - m._e00, _e10 - m._e10, _e20 - m._e20, _e30 - m._e30,
       _e01 - m._e01, _e11 - m._e11, _e21 - m._e21, _e31 - m._e31,
       _e02 - m._e02, _e12 - m._e12, _e22 - m._e22, _e32 - m._e32,
       _e03 - m._e03, _e13 - m._e13, _e23 - m._e23, _e33 - m._e33)
 
-  fun multiply_scalar(value: T): Matrix4[T] =>
+  fun multiply_scalar(value: T): Matrix4[T] val =>
     Matrix4[T](
       _e00 * value, _e10 * value, _e20 * value, _e30 * value,
       _e01 * value, _e11 * value, _e21 * value, _e31 * value,
       _e02 * value, _e12 * value, _e22 * value, _e32 * value,
       _e03 * value, _e13 * value, _e23 * value, _e33 * value)
 
-  fun multiply_matrix(m: Matrix4[T]): Matrix4[T] =>
+  fun multiply_matrix(m: Matrix4[T] box): Matrix4[T] val =>
     Matrix4[T](
       (_e00 * m._e00) + (_e10 * m._e01) + (_e20 * m._e02) + (_e30 * m._e03), (_e00 * m._e10) + (_e10 * m._e11) + (_e20 * m._e12) + (_e30 * m._e13), (_e00 * m._e20) + (_e10 * m._e21) + (_e20 * m._e22) + (_e30 * m._e23), (_e00 * m._e30) + (_e10 * m._e31) + (_e20 * m._e32) + (_e30 * m._e33),
 			(_e01 * m._e00) + (_e11 * m._e01) + (_e21 * m._e02) + (_e31 * m._e03), (_e01 * m._e10) + (_e11 * m._e11) + (_e21 * m._e12) + (_e31 * m._e13), (_e01 * m._e20) + (_e11 * m._e21) + (_e21 * m._e22) + (_e31 * m._e23), (_e01 * m._e30) + (_e11 * m._e31) + (_e21 * m._e32) + (_e31 * m._e33),
 			(_e02 * m._e00) + (_e12 * m._e01) + (_e22 * m._e02) + (_e32 * m._e03), (_e02 * m._e10) + (_e12 * m._e11) + (_e22 * m._e12) + (_e32 * m._e13), (_e02 * m._e20) + (_e12 * m._e21) + (_e22 * m._e22) + (_e32 * m._e23), (_e02 * m._e30) + (_e12 * m._e31) + (_e22 * m._e32) + (_e32 * m._e33),
       (_e03 * m._e00) + (_e13 * m._e01) + (_e23 * m._e02) + (_e33 * m._e03), (_e03 * m._e10) + (_e13 * m._e11) + (_e23 * m._e12) + (_e33 * m._e13), (_e03 * m._e20) + (_e13 * m._e21) + (_e23 * m._e22) + (_e33 * m._e23), (_e03 * m._e30) + (_e13 * m._e31) + (_e23 * m._e32) + (_e33 * m._e33))
 
-  fun multiply_vector(vector: Vector4[T, T]): Vector4[T, T] =>
+  fun multiply_vector(vector: Vector4[T, T] box): Vector4[T, T] =>
     var product = Vector4[T, T]
     product.x = (_e00 * vector.x) + (_e10 * vector.y) + (_e20 * vector.z) + (_e30 * vector.w)
     product.y = (_e01 * vector.x) + (_e11 * vector.y) + (_e21 * vector.z) + (_e31 * vector.w)
@@ -1034,14 +1036,14 @@ class Matrix4[T: (Float & FloatingPoint[T])]
     product.w = (_e03 * vector.x) + (_e13 * vector.y) + (_e23 * vector.z) + (_e33 * vector.w)
     product
 
-  fun transpose(): Matrix4[T] =>
+  fun transpose(): Matrix4[T] val =>
     Matrix4[T](
       _e00, _e01, _e02, _e03,
       _e10, _e11, _e12, _e13,
       _e20, _e21, _e22, _e23,
       _e30, _e31, _e32, _e33)
 
-  fun transpose_3x3(): Matrix4[T] =>
+  fun transpose_3x3(): Matrix4[T] val =>
     Matrix4[T](
       _e00, _e01, _e02, _e30,
       _e10, _e11, _e12, _e31,
@@ -1066,7 +1068,7 @@ class Matrix4[T: (Float & FloatingPoint[T])]
     let c03 = cofactor(_e10, _e20, _e30, _e11, _e21, _e31, _e12, _e22, _e32)
     ((_e00 * c00) - (_e01 * c01)) + ((_e02 * c02) - (_e03 * c03))
 
-  fun inverse(): Matrix4[T] ? =>
+  fun inverse(): Matrix4[T] val ? =>
     let c00 = cofactor(_e11, _e21, _e31, _e12, _e22, _e32, _e13, _e23, _e33)
     let c01 = cofactor(_e10, _e20, _e30, _e12, _e22, _e32, _e13, _e23, _e33)
     let c02 = cofactor(_e10, _e20, _e30, _e11, _e21, _e31, _e13, _e23, _e33)
