@@ -1016,14 +1016,14 @@ primitive KoreGraphics4Primitive
     location: KoreGraphics4ConstantLocation,
     value: Mat3)
   =>
-    let mat_elements = Mat3Elements(value)
+    let mat_elements = Mat3Elements(value.elements())
     @Kore_Graphics4_setMatrix3FromElements(location._get_handle(), mat_elements)
 
   fun set_matrix4(
     location: KoreGraphics4ConstantLocation,
     value: Mat4)
   =>
-    let mat_elements = Mat4Elements(value)
+    let mat_elements = Mat4Elements(value.elements())
     @Kore_Graphics4_setMatrix4FromElements(location._get_handle(), mat_elements)
 
   fun set_vertex_buffer(

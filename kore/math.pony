@@ -588,16 +588,17 @@ struct Mat3Elements
   var e12: F32 = 0.0
   var e22: F32 = 1.0
 
-  new create(m: Mat3) =>
-    e00 = m._e00
-    e10 = m._e10
-    e20 = m._e20
-    e01 = m._e01
-    e11 = m._e11
-    e21 = m._e21
-    e02 = m._e02
-    e12 = m._e12
-    e22 = m._e22
+  // new create(m: Mat3) =>
+  new create(elements: (F32, F32, F32, F32, F32, F32, F32, F32, F32)) =>
+    e00 = elements._1
+    e10 = elements._2
+    e20 = elements._3
+    e01 = elements._4
+    e11 = elements._5
+    e21 = elements._6
+    e02 = elements._7
+    e12 = elements._8
+    e22 = elements._9
 
 // TODO: Make Matrix3 default refcap val?
 class Matrix3[T: (Float & FloatingPoint[T])]
@@ -669,6 +670,13 @@ class Matrix3[T: (Float & FloatingPoint[T])]
     _e00 = ca;   _e10 = -sa;   _e20 = zero
     _e01 = sa;   _e11 =  ca;   _e21 = zero
     _e02 = zero; _e12 =  zero; _e22 = one
+
+  fun elements(): (F32, F32, F32, F32, F32, F32, F32, F32, F32) =>
+    (
+      F32.from[T](_e00), F32.from[T](_e10), F32.from[T](_e20),
+      F32.from[T](_e01), F32.from[T](_e11), F32.from[T](_e21),
+      F32.from[T](_e02), F32.from[T](_e12), F32.from[T](_e22)
+    )
 
   fun ref set_from(m: Matrix3[T]) =>
     _e00 = m._e00; _e10 = m._e10; _e20 = m._e20
@@ -779,23 +787,24 @@ struct Mat4Elements
   var e23: F32 = 0.0
   var e33: F32 = 1.0
 
-  new create(m: Mat4) =>
-    e00 = m._e00
-    e10 = m._e10
-    e20 = m._e20
-    e30 = m._e30
-    e01 = m._e01
-    e11 = m._e11
-    e21 = m._e21
-    e31 = m._e31
-    e02 = m._e02
-    e12 = m._e12
-    e22 = m._e22
-    e32 = m._e32
-    e03 = m._e03
-    e13 = m._e13
-    e23 = m._e23
-    e33 = m._e33
+  // new create(m: Mat4) =>
+  new create(elements: (F32, F32, F32, F32, F32, F32, F32, F32, F32, F32, F32, F32, F32, F32, F32, F32)) =>
+    e00 = elements._1
+    e10 = elements._2
+    e20 = elements._3
+    e30 = elements._4
+    e01 = elements._5
+    e11 = elements._6
+    e21 = elements._7
+    e31 = elements._8
+    e02 = elements._9
+    e12 = elements._10
+    e22 = elements._11
+    e32 = elements._12
+    e03 = elements._13
+    e13 = elements._14
+    e23 = elements._15
+    e33 = elements._16
 
 // TODO: Make Matrix4 default refcap val?
 class Matrix4[T: (Float & FloatingPoint[T])]
@@ -974,6 +983,14 @@ class Matrix4[T: (Float & FloatingPoint[T])]
 
   // TODO: Matrix4.look_along
   // https://github.com/Kode/Kore/blob/master/Sources/Kore/Math/Matrix.h#L139
+
+  fun elements(): (F32, F32, F32, F32, F32, F32, F32, F32, F32, F32, F32, F32, F32, F32, F32, F32) =>
+    (
+      F32.from[T](_e00), F32.from[T](_e10), F32.from[T](_e20), F32.from[T](_e30),
+      F32.from[T](_e01), F32.from[T](_e11), F32.from[T](_e21), F32.from[T](_e31),
+      F32.from[T](_e02), F32.from[T](_e12), F32.from[T](_e22), F32.from[T](_e32),
+      F32.from[T](_e03), F32.from[T](_e13), F32.from[T](_e23), F32.from[T](_e33)
+    )
 
   fun ref set_from(m: Matrix4[T]) =>
     _e00 = m._e00; _e10 = m._e10; _e20 = m._e20; _e30 = m._e30
