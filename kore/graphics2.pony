@@ -198,6 +198,7 @@ class KoreGraphics2
   let _render_targets: Bool
   var _render_target: (KoreGraphics4RenderTarget | None) = None
   var _g4: KoreGraphics4
+  let _transformations: Array[Mat3 val]
   let _opacities: Array[F32]
   // var _font: (KoreKravur | None) = None
   var _font: (Font ref | None) = None
@@ -207,6 +208,8 @@ class KoreGraphics2
   new create(target: Canvas) =>
     _target = target
     _g4 = _target.g4()
+    _transformations = _transformations.create()
+    _transformations.push(Mat3.identity())
     _opacities = _opacities.create()
     _opacities.push(1.0)
 
@@ -537,9 +540,10 @@ class KoreGraphics2
     @Kore_Graphics2_Graphics2_getOpacity(_handle)
 
   fun ref set_opacity(opacity: F32): F32 =>
-    @Kore_Graphics2_Graphics2_setOpacity(_handle, opacity)
     try
-      _opacities(_opacities.size() - 1)? = opacity
+      let ret = _opacities(_opacities.size() - 1)? = opacity
+      @Kore_Graphics2_Graphics2_setOpacity(_handle, opacity)
+      ret
     else
       F32(1.0)
     end
@@ -653,14 +657,99 @@ class KoreGraphics2
     // @Kore_Graphics2_Graphics2_drawStringTSLXY(
     //   _handle, text.cstring(), start, length, x, y)
 
-// get_transformation
-// set_transformation
-// push_transformation +
-// pop_transformation +
-// translate +
-// push_translation +
-// rotate +
-// push_rotation +
+  fun get_transformation(): Mat3 val =>
+    try
+      _transformations(_transformations.size() - 1)?
+    else
+      Mat3.identity()
+    end
+
+  fun ref set_transformation(trans: Mat3 val): Mat3 val =>
+    try
+      let ret = _transformations(_transformations.size() - 1)? = trans
+      let mat_elements = Mat3Elements(trans.elements())
+      @Kore_Graphics2_Graphics2_setTransformationElements(
+        _handle, mat_elements)
+      ret
+    else
+      Mat3.identity()
+    end
+
+  fun ref push_transformation(trans: Mat3 val) =>
+    let mat_elements = Mat3Elements(trans.elements())
+    @Kore_Graphics2_Graphics2_setTransformationElements(
+      _handle, mat_elements)
+    _transformations.push(trans)
+
+  fun ref pop_transformation(): Mat3 val =>
+    let popped =
+      try
+        let popped' = _transformations.pop()?
+        if _transformations.size() == 0 then
+          _transformations.push(Mat3.identity())
+        end
+        popped'
+      else
+        let identity = Mat3.identity()
+        _transformations.push(identity)
+        identity
+      end
+    let next =
+      try
+        _transformations(_transformations.size() - 1)?
+      else
+        Mat3.identity()
+      end
+    let mat_elements = Mat3Elements(next.elements())
+    @Kore_Graphics2_Graphics2_setTransformationElements(
+      _handle, mat_elements)
+    popped
+
+  fun _translation(tx: F32, ty: F32): Mat3 val =>
+    let transform =
+      try
+        _transformations(_transformations.size() - 1)?
+      else
+        Mat3.identity()
+      end
+    Mat3.translation(tx, ty).multiply_matrix(transform)
+
+  fun ref translate(tx: F32, ty: F32) =>
+    set_transformation(_translation(tx, ty))
+
+  fun ref push_translation(tx: F32, ty: F32) =>
+    push_transformation(_translation(tx, ty))
+
+  fun _rotation(
+    angle: F32,
+    center_x: F32,
+    center_y: F32)
+    : Mat3 val
+  =>
+    let transform =
+      try
+        _transformations(_transformations.size() - 1)?
+      else
+        Mat3.identity()
+      end
+    Mat3.translation(center_x, center_y)
+      .multiply_matrix(Mat3.rotation(angle))
+      .multiply_matrix(Mat3.translation(-center_x, -center_y))
+      .multiply_matrix(transform)
+
+  fun ref rotate(
+    angle: F32,
+    center_x: F32,
+    center_y: F32)
+  =>
+    set_transformation(_rotation(angle, center_x, center_y))
+
+  fun ref push_rotation(
+    angle: F32,
+    center_x: F32,
+    center_y: F32)
+  =>
+    push_transformation(_rotation(angle, center_x, center_y))
 
   fun _get_handle(): Pointer[_KoreGraphics2Handle] tag =>
     _handle
