@@ -7,6 +7,9 @@ actor Main
   let mascot_path: String val = "pony-mascot.png"
   var mascot: (ImageAsset val | None) = None
 
+  let kode_k_path: String val = "kode-k.png"
+  var kode_k: (ImageAsset val | None) = None
+
   let font_path: String val = "Fonts/Hack"
   var font: (FontAsset val | None) = None
 
@@ -21,6 +24,7 @@ actor Main
 
     // Request assets
     system.assets.load_image(this, mascot_path)
+    system.assets.load_image(this, kode_k_path)
     system.assets.load_font(this, font_path)
 
   be receive_image(
@@ -29,6 +33,7 @@ actor Main
   =>
     match path
     | mascot_path => mascot = image_asset
+    | kode_k_path => kode_k = image_asset
     end
     try_proceed()
 
@@ -44,6 +49,7 @@ actor Main
   fun ref try_proceed() =>
     if
       not (mascot is None) and
+      not (kode_k is None) and
       not (font is None)
     then
       try
@@ -51,6 +57,8 @@ actor Main
           object
             var mascot': ImageAsset val =
               mascot as ImageAsset val
+            var kode_k': ImageAsset val =
+              kode_k as ImageAsset val
             var font': FontAsset val =
               font as FontAsset val
 
@@ -58,6 +66,7 @@ actor Main
               Graphics2Example(
                 system,
                 mascot',
+                kode_k',
                 font')
           end
 
@@ -68,15 +77,18 @@ actor Main
 class Graphics2Example
   let system: KoreSystem
   let mascot: Image ref
+  let kode_k: Image ref
   let font: Font ref
 
   new create(
     system': KoreSystem,
     mascot': ImageAsset,
+    kode_k': ImageAsset,
     font': FontAsset)
   =>
     system = system'
     mascot = mascot'() // Apply assets to receive them.
+    kode_k = kode_k'()
     font = font'()
 
     system.notify_on_render(this~render())
@@ -84,14 +96,45 @@ class Graphics2Example
   fun ref render(framebuffer: Framebuffer) =>
     let g = framebuffer.g2()
     let grey: U32 = 0xff666666
+    let center_x: F32 = F32.from[I32](KoreSystemPrimitive.window_width()) * 0.5
+    let center_y: F32 = F32.from[I32](KoreSystemPrimitive.window_height()) * 0.5
+    let k_width = F32.from[I32](kode_k.width())
+    let k_height = F32.from[I32](kode_k.height())
+    let mascot_width = F32.from[I32](mascot.width())
+    let mascot_height = F32.from[I32](mascot.height())
+
     let wf = F32.from[I32](mascot.width())
     let hf = F32.from[I32](mascot.height())
+    let a = F32.pi() * F32(0.33)
 
     g.set_font(font)
     g.set_font_size(16)
     g.set_font_style("Regular")
 
     g.begin_gfx(true, grey)
+      g.draw_image(
+        kode_k,
+        center_x - (k_width * 0.5),
+        center_y - (k_height * 0.5))
+
+      // let a = F32.pi() * F32(0.33)
+      g.push_opacity(0.25)
+      g.push_rotation(F32.pi(), 320, 240)
+      g.draw_scaled_image(
+        mascot,
+        (center_x - 50) - (mascot_width * 0.5),
+        (center_y - 20) - (mascot_height * 0.5),
+        mascot_width,
+        mascot_height)
+      // g.draw_image(
+      //   mascot,
+      //   (center_x - 50) - (mascot_width * 0.5),
+      //   (center_y - 20) - (mascot_height * 0.5))
+      g.pop_transformation()
+      g.pop_opacity()
+/*
+
+    // 
 
       g.scissor(0, 0, 640, 240)
 
@@ -105,7 +148,9 @@ class Graphics2Example
 
       // Scaled mascot
       g.set_color(Colors.red())
+      g.push_rotation(-a, 30, 30)
       g.draw_scaled_image(mascot, 10, 10, wf*0.33, hf*0.33)
+      g.pop_transformation()
 
       // Mascot head
       g.set_color(Colors.orange())
@@ -121,14 +166,31 @@ class Graphics2Example
 
       g.pop_opacity()
 
+      g.push_rotation(a, 70, 140)
       g.set_color(Colors.red())
       g.draw_rect(30, 100, 80, 80, 3.0)
+      g.pop_transformation()
 
+      g.push_rotation(a, 70, 250)
       g.set_color(Colors.green())
       g.fill_rect(30, 210, 80, 80)
+      g.pop_transformation()
 
       g.set_color(Colors.black())
-      g.draw_line(50, 245, 590, 245, 5.0)
+      g.push_rotation(-a, 320, 240)
+      g.draw_line(50, 240, 590, 240, 6.0)
+      // g.set_color(Colors.yellow())
+      // g.fill_triangle(50, 243, 50, 237, 590, 243)
+      // g.fill_triangle(50, 237, 590, 237, 590, 243)
+      // g.set_color(Colors.green())
+      // g.draw_rect(50, 237, 540, 6)
+      g.pop_transformation()
+
+      g.set_color(Colors.blue())
+      g.draw_line(50, 240, 590, 240, 5.0)
+
+      g.set_color(Colors.magenta())
+      g.fill_circle(320, 240, 3)
 
       g.set_color(Colors.blue())
       g.fill_triangle(300, 250, 320, 260, 340, 250)
@@ -155,14 +217,17 @@ class Graphics2Example
       g.set_font_size(32)
       g.set_font_style("Bold")
       g.draw_string("Pony and Kore are awesome stuff :)", 50, 420)
+
       g.draw_sub_string(
         "Pre sub-string. Hello sub-string! Post sub-string.", 16, 17, 170, 50)
 
+      g.push_rotation(-a, 320, 240)
       g.set_color(Colors.pink())
       g.draw_cubic_bezier(
         [50; 320; 320; 590],
         [245; 10; 470; 245],
         12)
+      g.pop_transformation()
 
       g.set_color(Colors.yellow())
       g.draw_cubic_bezier_path(
@@ -192,6 +257,7 @@ class Graphics2Example
           Vec2(40, 40)
           Vec2(-40, 0)
         ])
+*/
 
       g.set_color(Colors.white())
 

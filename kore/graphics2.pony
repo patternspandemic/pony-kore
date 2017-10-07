@@ -200,7 +200,6 @@ class KoreGraphics2
   var _g4: KoreGraphics4
   let _transformations: Array[Mat3 val]
   let _opacities: Array[F32]
-  // var _font: (KoreKravur | None) = None
   var _font: (Font ref | None) = None
   var _font_style: String val = "Regular"
   var _font_size: F32 = 14
