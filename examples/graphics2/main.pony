@@ -103,38 +103,44 @@ class Graphics2Example
     let mascot_width = F32.from[I32](mascot.width())
     let mascot_height = F32.from[I32](mascot.height())
 
-    let wf = F32.from[I32](mascot.width())
-    let hf = F32.from[I32](mascot.height())
-    let a = F32.pi() * F32(0.33)
+    // let wf = F32.from[I32](mascot.width())
+    // let hf = F32.from[I32](mascot.height())
 
     g.set_font(font)
     g.set_font_size(16)
     g.set_font_style("Regular")
+    g.set_image_scale_quality(ImageScaleQualityHigh)
 
     g.begin_gfx(true, grey)
+
+      // Pony mascot peaking around Kode's K
+      g.scissor(
+        0, 0, 
+        I32.from[F32](center_x - 61),
+        KoreSystemPrimitive.window_height())
+      let a = F32.pi() * F32(0.2)
+      g.push_rotation(-a, center_x, center_y)
+      g.draw_scaled_image(
+        mascot,
+        (center_x - 10) - (mascot_width * 0.5),
+        (center_y - 35) - (mascot_height * 0.5),
+        mascot_width,
+        mascot_height)
+      // draw_image doesn't rotate just yet.
+      // g.draw_image(
+      //   mascot,
+      //   (center_x - 10) - (mascot_width * 0.5),
+      //   (center_y - 35) - (mascot_height * 0.5))
+      g.pop_transformation()
+      g.disable_scissor()
+
+      // Kode's K centered
       g.draw_image(
         kode_k,
         center_x - (k_width * 0.5),
         center_y - (k_height * 0.5))
 
-      // let a = F32.pi() * F32(0.33)
-      g.push_opacity(0.25)
-      g.push_rotation(F32.pi(), 320, 240)
-      g.draw_scaled_image(
-        mascot,
-        (center_x - 50) - (mascot_width * 0.5),
-        (center_y - 20) - (mascot_height * 0.5),
-        mascot_width,
-        mascot_height)
-      // g.draw_image(
-      //   mascot,
-      //   (center_x - 50) - (mascot_width * 0.5),
-      //   (center_y - 20) - (mascot_height * 0.5))
-      g.pop_transformation()
-      g.pop_opacity()
 /*
-
-    // 
 
       g.scissor(0, 0, 640, 240)
 
