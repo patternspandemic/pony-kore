@@ -4,6 +4,9 @@ use "logger"
 actor Main
   var system: KoreSystem
 
+  let logo_path: String val = "pony-logo.png"
+  var logo: (ImageAsset val | None) = None
+
   let mascot_path: String val = "pony-mascot.png"
   var mascot: (ImageAsset val | None) = None
 
@@ -23,6 +26,7 @@ actor Main
       height = 480)
 
     // Request assets
+    system.assets.load_image(this, logo_path)
     system.assets.load_image(this, mascot_path)
     system.assets.load_image(this, kode_k_path)
     system.assets.load_font(this, font_path)
@@ -32,6 +36,7 @@ actor Main
     image_asset: ImageAsset val)
   =>
     match path
+    | logo_path => logo = image_asset
     | mascot_path => mascot = image_asset
     | kode_k_path => kode_k = image_asset
     end
@@ -48,6 +53,7 @@ actor Main
 
   fun ref try_proceed() =>
     if
+      not (logo is None) and
       not (mascot is None) and
       not (kode_k is None) and
       not (font is None)
@@ -55,6 +61,8 @@ actor Main
       try
         let entry_point =
           object
+            var logo': ImageAsset val =
+              logo as ImageAsset val
             var mascot': ImageAsset val =
               mascot as ImageAsset val
             var kode_k': ImageAsset val =
@@ -65,6 +73,7 @@ actor Main
             fun ref apply() =>
               Graphics2Example(
                 system,
+                logo',
                 mascot',
                 kode_k',
                 font')
@@ -76,18 +85,21 @@ actor Main
 
 class Graphics2Example
   let system: KoreSystem
+  let logo: Image ref
   let mascot: Image ref
   let kode_k: Image ref
   let font: Font ref
 
   new create(
     system': KoreSystem,
+    logo': ImageAsset,
     mascot': ImageAsset,
     kode_k': ImageAsset,
     font': FontAsset)
   =>
     system = system'
-    mascot = mascot'() // Apply assets to receive them.
+    logo = logo'() // Apply assets to receive them.
+    mascot = mascot'()
     kode_k = kode_k'()
     font = font'()
 
@@ -102,6 +114,8 @@ class Graphics2Example
     let k_height = F32.from[I32](kode_k.height())
     let mascot_width = F32.from[I32](mascot.width())
     let mascot_height = F32.from[I32](mascot.height())
+    let logo_width = F32.from[I32](logo.width())
+    let logo_height = F32.from[I32](logo.height())
 
     // let wf = F32.from[I32](mascot.width())
     // let hf = F32.from[I32](mascot.height())
@@ -113,17 +127,23 @@ class Graphics2Example
 
     g.begin_gfx(true, grey)
 
+      // Pony logo centered
+      g.draw_image(
+        logo,
+        center_x - (logo_width * 0.5),
+        (center_y - 70) - (logo_height * 0.5))
+
       // Pony mascot peaking around Kode's K
       g.scissor(
         0, 0, 
-        I32.from[F32](center_x - 61),
+        I32.from[F32](center_x + 5),
         KoreSystemPrimitive.window_height())
       let a = F32.pi() * F32(0.2)
-      g.push_rotation(-a, center_x, center_y)
+      g.push_rotation(-a, (center_x + 50), (center_y + 50))
       g.draw_scaled_image(
         mascot,
-        (center_x - 10) - (mascot_width * 0.5),
-        (center_y - 35) - (mascot_height * 0.5),
+        (center_x + 20) - (mascot_width * 0.5), // (center_x - 10) - (mascot_width * 0.5),
+        (center_y + 65) - (mascot_height * 0.5), // (center_y - 35) - (mascot_height * 0.5),
         mascot_width,
         mascot_height)
       // draw_image doesn't rotate just yet.
@@ -137,8 +157,8 @@ class Graphics2Example
       // Kode's K centered
       g.draw_image(
         kode_k,
-        center_x - (k_width * 0.5),
-        center_y - (k_height * 0.5))
+        (center_x + 60) - (k_width * 0.5),
+        (center_y + 100) - (k_height * 0.5))
 
 /*
 
