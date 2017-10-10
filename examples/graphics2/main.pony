@@ -116,6 +116,7 @@ class Graphics2Example
     let mascot_height = F32.from[I32](mascot.height())
     let logo_width = F32.from[I32](logo.width())
     let logo_height = F32.from[I32](logo.height())
+    var a: F32
 
     // let wf = F32.from[I32](mascot.width())
     // let hf = F32.from[I32](mascot.height())
@@ -127,23 +128,18 @@ class Graphics2Example
 
     g.begin_gfx(true, grey)
 
-      // Pony logo centered
-      g.draw_image(
-        logo,
-        center_x - (logo_width * 0.5),
-        (center_y - 70) - (logo_height * 0.5))
 
-      // Pony mascot peaking around Kode's K
+      // Mascot peaking around Pony's logo.
       g.scissor(
         0, 0, 
-        I32.from[F32](center_x + 5),
+        I32.from[F32](center_x - 90),
         KoreSystemPrimitive.window_height())
-      let a = F32.pi() * F32(0.2)
-      g.push_rotation(-a, (center_x + 50), (center_y + 50))
+      a = F32.pi() * F32(0.15)
+      g.push_rotation(-a, center_x, center_y)
       g.draw_scaled_image(
         mascot,
-        (center_x + 20) - (mascot_width * 0.5), // (center_x - 10) - (mascot_width * 0.5),
-        (center_y + 65) - (mascot_height * 0.5), // (center_y - 35) - (mascot_height * 0.5),
+        (center_x - 50) - (mascot_width * 0.5),
+        (center_y - 65) - (mascot_height * 0.5),
         mascot_width,
         mascot_height)
       // draw_image doesn't rotate just yet.
@@ -154,11 +150,22 @@ class Graphics2Example
       g.pop_transformation()
       g.disable_scissor()
 
-      // Kode's K centered
+      // Pony logo centered
       g.draw_image(
+        logo,
+        center_x - (logo_width * 0.5),
+        center_y - (logo_height * 0.5))
+
+      // Kode's K hanging off Pony's logo.
+      a = F32.pi() * F32(0.08)
+      g.push_rotation(a, (center_x + 155), (center_y + 100))
+      g.draw_scaled_image(
         kode_k,
-        (center_x + 60) - (k_width * 0.5),
-        (center_y + 100) - (k_height * 0.5))
+        (center_x + 140) - (k_width * 0.5),
+        (center_y + 75) - (k_height * 0.5),
+        (k_width * 0.6),
+        (k_height * 0.6))
+      g.pop_transformation()
 
 /*
 
