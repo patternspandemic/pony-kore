@@ -21,6 +21,7 @@ actor Main
       env,
       Info
     where
+      name = "Pony-Kore",
       title = "Graphics2 Example",
       width = 640,
       height = 480)

@@ -98,6 +98,7 @@ type KoreOrientation is
   )
 
 class _SystemOptions
+  var name: String = ""
   var title: String = "Kore"
 	var width: I32 = 800
 	var height: I32 = 600
@@ -123,6 +124,7 @@ class KoreSystem
   new create(
     env: Env,
     log_level: LogLevel,
+    name: String = "",
     title: String = "Kore",
     width: I32 = 800,
     height: I32 = 600,
@@ -134,6 +136,7 @@ class KoreSystem
     minimizable: Bool = true)
   =>
     _options = _SystemOptions
+    _options.name = name
     _options.title = title
     _options.width = width
     _options.height = height
@@ -191,7 +194,11 @@ class KoreSystem
 
   fun ref apply(callback': {ref()} ref) =>
     KoreRandom.init()
-    KoreSystemPrimitive.set_name(_options.title)
+    if _options.name == "" then
+      KoreSystemPrimitive.set_name(_options.title)
+    else
+      KoreSystemPrimitive.set_name(_options.name)
+    end
     KoreSystemPrimitive.setup()
 
     var window_options = KoreWindowOptions(_options.title)
