@@ -13,7 +13,7 @@ actor Main
   let kode_k_path: String val = "kode-k.png"
   var kode_k: (ImageAsset val | None) = None
 
-  let font_path: String val = "Fonts/Hack"
+  let font_path: String val = "Fonts/Rustler"
   var font: (FontAsset val | None) = None
 
   new create(env: Env) =>
@@ -99,7 +99,9 @@ class Graphics2Example
     font': FontAsset)
   =>
     system = system'
-    logo = logo'() // Apply assets to receive them.
+
+    // Apply assets to receive them.
+    logo = logo'()
     mascot = mascot'()
     kode_k = kode_k'()
     font = font'()
@@ -108,7 +110,6 @@ class Graphics2Example
 
   fun ref render(framebuffer: Framebuffer) =>
     let g = framebuffer.g2()
-    let grey: U32 = 0xff666666
     let center_x: F32 = F32.from[I32](KoreSystemPrimitive.window_width()) * 0.5
     let center_y: F32 = F32.from[I32](KoreSystemPrimitive.window_height()) * 0.5
     let k_width = F32.from[I32](kode_k.width())
@@ -123,12 +124,11 @@ class Graphics2Example
     // let hf = F32.from[I32](mascot.height())
 
     g.set_font(font)
-    g.set_font_size(16)
+    g.set_font_size(40)
     g.set_font_style("Regular")
     g.set_image_scale_quality(ImageScaleQualityHigh)
 
-    g.begin_gfx(true, grey)
-
+    g.begin_gfx(true, Colors.white())
 
       // Mascot peaking around Pony's logo.
       g.scissor(
@@ -168,8 +168,11 @@ class Graphics2Example
         (k_height * 0.6))
       g.pop_transformation()
 
-/*
+      let text_x = center_x - 255
+      g.set_font_color(0xFF2B1100)
+      g.draw_string("Put Some Graphics in your Giddyup", text_x, 410)  
 
+/*
       g.scissor(0, 0, 640, 240)
 
       // Centered mascot
