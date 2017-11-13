@@ -129,7 +129,18 @@ class Graphics2Example
     g.set_image_scale_quality(ImageScaleQualityHigh)
 
     g.begin_gfx(true, Colors.white())
+a = F32.pi() * F32(0.15)
 
+      // Some filled triangle things for testing
+      g.set_color(Colors.magenta())
+      g.fill_triangle(50, 50, center_x, 25, 590, 50)
+      g.draw_line(50, 55, 590, 55, 4.0)
+
+
+
+      g.set_color(Colors.white())
+/*
+*/
       // Mascot peaking around Pony's logo.
       g.scissor(
         0, 0, 
@@ -137,17 +148,10 @@ class Graphics2Example
         KoreSystemPrimitive.window_height())
       a = F32.pi() * F32(0.15)
       g.push_rotation(-a, center_x, center_y)
-      g.draw_scaled_image(
+      g.draw_image(
         mascot,
         (center_x - 50) - (mascot_width * 0.5),
-        (center_y - 65) - (mascot_height * 0.5),
-        mascot_width,
-        mascot_height)
-      // draw_image doesn't rotate just yet.
-      // g.draw_image(
-      //   mascot,
-      //   (center_x - 10) - (mascot_width * 0.5),
-      //   (center_y - 35) - (mascot_height * 0.5))
+        (center_y - 65) - (mascot_height * 0.5))
       g.pop_transformation()
       g.disable_scissor()
 
@@ -167,12 +171,23 @@ class Graphics2Example
         (k_width * 0.6),
         (k_height * 0.6))
       g.pop_transformation()
+/*
+*/
 
       let text_x = center_x - 255
       g.set_font_color(0xFF2B1100)
       g.draw_string("Put Some Graphics in your Giddyup", text_x, 410)  
 
+      // Filled triangles and line won't draw without a fill_rect :( Issue filed
+      g.set_color(Colors.blue())
+      g.fill_rect(50, 50, -25, -25)
+
 /*
+      g.begin_gfx(true, 0xff333333)
+
+      g.set_color(Colors.magenta())
+      g.draw_line(50, 50, 590, 50, 6.0)
+
       g.scissor(0, 0, 640, 240)
 
       // Centered mascot
@@ -185,6 +200,7 @@ class Graphics2Example
 
       // Scaled mascot
       g.set_color(Colors.red())
+      a = F32.pi() * F32(0.15)
       g.push_rotation(-a, 30, 30)
       g.draw_scaled_image(mascot, 10, 10, wf*0.33, hf*0.33)
       g.pop_transformation()
